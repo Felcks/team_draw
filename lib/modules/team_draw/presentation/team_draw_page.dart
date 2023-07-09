@@ -1,0 +1,268 @@
+import 'package:flutter/material.dart';
+import 'package:team_randomizer/modules/game/domain/models/game_player_status.dart';
+import 'package:team_randomizer/modules/team_draw/domain/models/team_draw.dart';
+import 'package:team_randomizer/modules/team_draw/domain/repositories/team_draw_repository.dart';
+import 'package:team_randomizer/modules/team_draw/domain/usecases/new_team_randomizer_use_case.dart';
+
+import '../../game/domain/models/game.dart';
+import '../../game/domain/models/game_player.dart';
+import '../../game/domain/models/player.dart';
+import '../../game/presentation/group_home/new_player_widget.dart';
+import '../../randomizer/domain/models/team.dart';
+
+class TeamDrawPage extends StatefulWidget {
+  final Game game;
+
+  const TeamDrawPage({Key? key, required this.game}) : super(key: key);
+
+  @override
+  State<TeamDrawPage> createState() => _TeamDrawPageState();
+}
+
+class _TeamDrawPageState extends State<TeamDrawPage> {
+  int _playersPerTeam = 1;
+  NewTeamRandomizerUseCase _teamRandomizerUseCase = NewTeamRandomizerTrivialUseCase();
+  TeamDrawRepository teamDrawRepository = TeamDrawRepository();
+
+  TeamDraw? _teamDraw = null;
+
+  @override
+  void initState() {
+    super.initState();
+    _playersPerTeam =
+        (widget.game.players.where((element) => element.status == GamePlayerStatus.READY).length / 2).toInt();
+    setState(() {
+      _teamDraw = teamDrawRepository.getTeamDraw();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      /*body: playersListWidget(
+        widget.game.players.where((element) => element.status == GamePlayerStatus.READY).toList(),
+      ),*/
+      body: teamDrawHome(),
+      floatingActionButton: getFloatActionButton(),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+    );
+  }
+
+  Widget teamDrawHome() {
+    if (_teamDraw == null) {
+      return configuration();
+    }
+
+    return teamDraw(_teamDraw!);
+  }
+
+  Widget teamDraw(TeamDraw teamDraw) {
+    List<Team> teams = teamDraw.teams;
+
+    return SafeArea(
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        child: SingleChildScrollView(
+          child: Column(
+            children: List.generate(
+              teams.length,
+              (index) {
+                Team team = teams[index];
+                return Padding(
+                  padding: EdgeInsets.symmetric(vertical: 8),
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(team.teamName, style: TextStyle(fontSize: 20),),
+                          Text("Overall - ${(team.players.map((e) => e.overall).reduce((value, element) => value + element) / team.players.length).toInt()}")
+                        ],
+                      ),
+                      Column(
+                        children: List.generate(
+                          team.players.length,
+                          (index) {
+                            Player player = team.players[index];
+                            return NewPlayerWidget(
+                              player: player,
+                            );
+                          },
+                        ),
+                      )
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget configuration() {
+    return SafeArea(
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "Configurações",
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(
+              height: 8,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "Jogadores Prontos:",
+                  style: _getConfigTextStyle(),
+                ),
+                Text(
+                  "${widget.game.players.where((element) => element.status == GamePlayerStatus.READY).length}",
+                  style: _getConfigTextStyle(),
+                )
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "Jogadores por time:",
+                  style: _getConfigTextStyle(),
+                ),
+                Flexible(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      IconButton(
+                          onPressed: () {
+                            setState(() {
+                              _playersPerTeam -= 1;
+                            });
+                          },
+                          icon: Icon(Icons.remove_circle)),
+                      Text(
+                        _playersPerTeam.toString(),
+                        style: _getConfigTextStyle(),
+                      ),
+                      IconButton(
+                          onPressed: () {
+                            setState(() {
+                              _playersPerTeam += 1;
+                            });
+                          },
+                          icon: Icon(Icons.add_circle)),
+                    ],
+                  ),
+                )
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "Quantidade de times:",
+                  style: _getConfigTextStyle(),
+                ),
+                Text(
+                  "${(widget.game.players.where((element) => element.status == GamePlayerStatus.READY).length / _playersPerTeam).toInt()}",
+                  style: _getConfigTextStyle(),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  TextStyle _getConfigTextStyle() {
+    return TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.grey.shade600);
+  }
+
+  FloatingActionButton getFloatActionButton() {
+    //if (teams.isNotEmpty) {
+    if (_teamDraw != null) {
+      return FloatingActionButton.extended(
+        onPressed: () {
+          setState(() {
+            _teamDraw = null;
+            teamDrawRepository.setTeamDraw(_teamDraw);
+          });
+        },
+        label: Text("Desfazer times"),
+      );
+    } else {
+      return FloatingActionButton.extended(
+        onPressed: () {
+          setState(
+            () {
+              _teamDraw = _teamRandomizerUseCase
+                  .invoke(NewTeamRandomizerUseCaseParams(game: widget.game, playersPerTeam: _playersPerTeam));
+              teamDrawRepository.setTeamDraw(_teamDraw);
+            },
+          );
+        },
+        label: Text("Gerar times"),
+      );
+    }
+  }
+
+  Widget playersListWidget(List<GamePlayer> players) {
+    return SafeArea(
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 16),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Expanded(
+              flex: 1,
+              child: Row(
+                children: [
+                  Text(
+                    "Jogadores Prontos",
+                    style: TextStyle(fontSize: 20),
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              flex: 10,
+              child: ListView.builder(
+                padding: EdgeInsets.zero,
+                itemCount: players.length,
+                itemBuilder: (context, index) {
+                  GamePlayer gamePlayer = players[index];
+                  return SizedBox(
+                    height: 85,
+                    child: Stack(
+                      fit: StackFit.passthrough,
+                      children: [
+                        Align(
+                            alignment: Alignment.topCenter,
+                            child: SizedBox(height: 85, child: NewPlayerWidget(player: gamePlayer.player))),
+                        Positioned(
+                          left: 20,
+                          top: 50,
+                          child: Text(
+                            "(${gamePlayer.status.value})",
+                            style: TextStyle(fontSize: 12),
+                          ),
+                        )
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
