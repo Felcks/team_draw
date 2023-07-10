@@ -19,125 +19,118 @@ class _GroupHomePageState extends State<GroupHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
+      body: Stack(
         children: [
-          Expanded(
-            flex: 4,
-            child: Column(
-              children: [
-                SizedBox(
-                  height: 400,
-                  child: Stack(
-                    children: [
-                      Image.network(
-                        widget.group.image,
-                        height: 400,
-                        fit: BoxFit.fitHeight,
-                      ),
-                      Align(
-                        alignment: Alignment.bottomCenter,
-                        child: Container(
-                          width: 400,
-                          decoration: BoxDecoration(
-                            borderRadius: new BorderRadius.circular(4.0),
-                            shape: BoxShape.rectangle,
-                            color: Colors.black.withOpacity(0.5),
-                          ),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                widget.group.title,
-                                style: TextStyle(fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold),
-                              ),
-                              Padding(
-                                //TODO ajustar esses layouts de detalhe do campo
-                                padding: EdgeInsets.symmetric(horizontal: 16),
-                                child: Row(
-                                  children: [
-                                    Text(
-                                      "Próxima data: ",
-                                      style: TextStyle(color: Colors.white),
-                                    ),
-                                    Text(
-                                      formatNextDate(widget.group.date.getNextDate()),
-                                      style: TextStyle(color: Colors.white),
-                                    ),
-                                    //TODO substituir com data correta do jogo
-                                  ],
-                                ),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 16),
-                                child: Row(
-                                  children: [
-                                    Text(
-                                      "Horário: ",
-                                      style: TextStyle(color: Colors.white),
-                                    ),
-                                    Text(
-                                      widget.group.startTime.format(context) +
-                                          " - " +
-                                          widget.group.endTime.format(context),
-                                      style: TextStyle(color: Colors.white),
-                                    ),
-                                    //TODO substituir com horario correto
-                                  ],
-                                ),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 16),
-                                child: Row(
-                                  children: [
-                                    Text(
-                                      "Local: ",
-                                      style: TextStyle(color: Colors.white),
-                                    ),
-                                    ClipRect(
-                                        child: Text(
-                                      widget.group.local,
-                                      style: TextStyle(color: Colors.white),
-                                    )),
-                                    //TODO substituir com horario
-                                  ],
-                                ),
-                              ),
-                              SizedBox(
-                                height: 8,
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Expanded(
-            flex: 4,
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16),
-                    child: groupActions(),
-                  ),
-                  SizedBox(
-                    height: 16,
-                  ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16),
-                    child: frequentPlayers(),
-                  ),
-                  SizedBox(
-                    height: 16,
-                  ),
-                ],
+          Align(
+            alignment: Alignment.topCenter,
+            child: SizedBox(
+              height: 400,
+              child: Image.network(
+                widget.group.image,
+                height: 400,
+                fit: BoxFit.fitHeight,
               ),
             ),
           ),
+          Positioned(
+            top: 300,
+            left: 0,
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height - 300,
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: new BorderRadius.only(
+                  topLeft: Radius.circular(32),
+                  topRight: Radius.circular(32),
+                ),
+                shape: BoxShape.rectangle,
+                color: Colors.white,
+              ),
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    SizedBox(height: 16,),
+                    SizedBox(width: 59, child: Divider(color: Colors.black, height: 1, )),
+                    SizedBox(height: 8,),
+                    Text(
+                      widget.group.title,
+                      style: TextStyle(fontSize: 22, color: Colors.black, fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(height: 8,),
+                    Padding(
+                      //TODO ajustar esses layouts de detalhe do campo
+                      padding: EdgeInsets.symmetric(horizontal: 16),
+                      child: Row(
+                        children: [
+                          Text(
+                            "Próxima data: ",
+                            style: TextStyle(color: Colors.black),
+                          ),
+                          Text(
+                            formatNextDate(widget.group.date.getNextDate()),
+                            style: TextStyle(color: Colors.black),
+                          ),
+                          //TODO substituir com data correta do jogo
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16),
+                      child: Row(
+                        children: [
+                          Text(
+                            "Horário: ",
+                            style: TextStyle(color: Colors.black),
+                          ),
+                          Text(
+                            widget.group.startTime.format(context) +
+                                " - " +
+                                widget.group.endTime.format(context),
+                            style: TextStyle(color: Colors.black),
+                          ),
+                          //TODO substituir com horario correto
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16),
+                      child: Row(
+                        children: [
+                          Text(
+                            "Local: ",
+                            style: TextStyle(color: Colors.black),
+                          ),
+                          ClipRect(
+                              child: Text(
+                                widget.group.local,
+                                style: TextStyle(color: Colors.black),
+                              )),
+                          //TODO substituir com horario
+                        ],
+                      ),
+                    ),
+                    SizedBox(
+                      height: 16,
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16),
+                      child: groupActions(),
+                    ),
+                    SizedBox(
+                      height: 16,
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16),
+                      child: frequentPlayers(),
+                    ),
+                    SizedBox(
+                      height: 16,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          )
         ],
       ),
     );
@@ -182,7 +175,10 @@ class _GroupHomePageState extends State<GroupHomePage> {
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             Image.asset("assets/football-field.png"),
-                            Text("Partidas", style: TextStyle(fontSize: 24),),
+                            Text(
+                              "Partidas",
+                              style: TextStyle(fontSize: 24),
+                            ),
                           ],
                         ),
                       ),
