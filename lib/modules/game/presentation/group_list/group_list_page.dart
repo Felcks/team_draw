@@ -66,14 +66,24 @@ class _GroupListPageState extends State<GroupListPage> {
                       return Stack(
                         children: [
                           Container(
-                            color: Colors.grey,
+                            decoration: BoxDecoration(
+                              borderRadius: new BorderRadius.circular(32.0),
+                              shape: BoxShape.rectangle,
+                              color: Colors.grey.withOpacity(0.1),
+                            ),
                           ),
                           Align(
-                            child: Icon(
-                              Icons.add,
-                              size: 48,
+                            alignment: Alignment.centerLeft,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                Icon(
+                                  Icons.add,
+                                  size: 48,
+                                ),
+                              ],
                             ),
-                          )
+                          ),
                         ],
                       );
                     }

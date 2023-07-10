@@ -15,36 +15,45 @@ class GroupWidget extends StatelessWidget {
       onTap: () {
         onClick.call(group);
       },
-      child: Container(
-        child: Stack(
-          children: [
-            Image.network(
-              group.image,
-              fit: BoxFit.fitHeight,
-              height: 200,
-            ),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: Container(
-                width: 400,
-                decoration: BoxDecoration(
-                  borderRadius: new BorderRadius.circular(4.0),
-                  shape: BoxShape.rectangle,
-                  color: Colors.black.withOpacity(0.5),
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      group.title,
-                      style: TextStyle(color: Colors.white, fontSize: 16),
-                    )
-                  ],
-                ),
+      child: Stack(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.all(Radius.circular(32)),
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: new BorderRadius.circular(32.0),
+                shape: BoxShape.rectangle,
+                color: Colors.grey.withOpacity(0.1),
               ),
-            )
-          ],
-        ),
+              child: Image.network(
+                group.image,
+                fit: BoxFit.fitHeight,
+                height: 200,
+              ),
+            ),
+          ),
+
+          Align(
+            alignment: Alignment.center,
+            child: Container(
+              width: 200,
+              decoration: BoxDecoration(
+                borderRadius: new BorderRadius.circular(16.0),
+                shape: BoxShape.rectangle,
+                color: Colors.black.withOpacity(0.5),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    group.title,
+                    style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold,), textAlign: TextAlign.center,
+                  )
+                ],
+              ),
+            ),
+          )
+        ],
       ),
     );
   }

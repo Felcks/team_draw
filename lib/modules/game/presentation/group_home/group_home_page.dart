@@ -131,7 +131,9 @@ class _GroupHomePageState extends State<GroupHomePage> {
                     padding: EdgeInsets.symmetric(horizontal: 16),
                     child: frequentPlayers(),
                   ),
-                  SizedBox(height: 16,),
+                  SizedBox(
+                    height: 16,
+                  ),
                 ],
               ),
             ),
@@ -167,12 +169,23 @@ class _GroupHomePageState extends State<GroupHomePage> {
                   child: Stack(
                     children: [
                       Container(
-                        color: Colors.grey,
+                        decoration: BoxDecoration(
+                          borderRadius: new BorderRadius.circular(32.0),
+                          shape: BoxShape.rectangle,
+                          color: Colors.grey.withOpacity(0.1),
+                        ),
                       ),
+                      //Align(alignment: Alignment.center,)
                       Align(
-                        alignment: Alignment.center,
-                        child: Text("Jogos"),
-                      )
+                        alignment: Alignment.centerLeft,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Image.asset("assets/football-field.png"),
+                            Text("Partidas", style: TextStyle(fontSize: 24),),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -181,33 +194,6 @@ class _GroupHomePageState extends State<GroupHomePage> {
           ),
         ),
       ),
-    );
-
-    return GridView.count(
-      shrinkWrap: true,
-      padding: EdgeInsets.zero,
-      crossAxisCount: 2,
-      children: [
-        InkWell(
-          onTap: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => GameListPage(),
-              ),
-            );
-          },
-          child: Stack(
-            children: [
-              Container(
-                color: Colors.grey,
-              ),
-              Align(
-                child: Text("Jogos"),
-              )
-            ],
-          ),
-        )
-      ],
     );
   }
 
@@ -232,17 +218,6 @@ class _GroupHomePageState extends State<GroupHomePage> {
             },
           ),
         )
-        /*Flexible(
-          flex: 10,
-          child: ListView.builder(
-            padding: EdgeInsets.zero,
-            itemCount: widget.group.players.length,
-            itemBuilder: (context, index) {
-              Player player = widget.group.players[index];
-              return NewPlayerWidget(player: player);
-            },
-          ),
-        ),*/
       ],
     );
   }

@@ -29,7 +29,7 @@ class _GameListPageState extends State<GameListPage> {
                 child: Row(
                   children: [
                     Text(
-                      "Jogos",
+                      "Partidas",
                       style: TextStyle(fontSize: 22),
                       textAlign: TextAlign.start,
                     ),
@@ -64,14 +64,24 @@ class _GameListPageState extends State<GameListPage> {
                       return Stack(
                         children: [
                           Container(
-                            color: Colors.grey,
+                            decoration: BoxDecoration(
+                              borderRadius: new BorderRadius.circular(32.0),
+                              shape: BoxShape.rectangle,
+                              color: Colors.grey.withOpacity(0.1),
+                            ),
                           ),
                           Align(
-                            child: Icon(
-                              Icons.add,
-                              size: 48,
+                            alignment: Alignment.centerLeft,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                Icon(
+                                  Icons.add,
+                                  size: 48,
+                                ),
+                              ],
                             ),
-                          )
+                          ),
                         ],
                       );
                     }

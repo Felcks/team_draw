@@ -61,8 +61,12 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   # assets:
-  #   - images/a_dot_burr.jpeg
-  #   - images/a_dot_ham.jpeg
+  # https://www.flaticon.com/free-icon/football-field_5808371:
+  assets:
+  - assets/football-field.png
+  - assets/dice.png
+  - assets/pop.png
+  - assets/playing-card.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

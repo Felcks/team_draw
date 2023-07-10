@@ -18,10 +18,23 @@ class GameWidget extends StatelessWidget {
       child: Container(
         child: Stack(
           children: [
-            Container(color: Colors.grey),
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: new BorderRadius.circular(32.0),
+                shape: BoxShape.rectangle,
+                color: Colors.grey.withOpacity(0.1),
+              ),
+            ),
+            //Align(alignment: Alignment.center,)
             Align(
-              alignment: Alignment.bottomCenter,
-              child: Text(DateFormat("EEEE (dd/MM)").format(game.date)),
+              alignment: Alignment.center,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Image.asset("assets/football-field.png", width: 100, height: 100,),
+                  Text(DateFormat("EEEE (dd/MM)").format(game.date))
+                ],
+              ),
             ),
           ],
         ),
