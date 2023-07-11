@@ -5,4 +5,8 @@ class Team {
   final List<Player> players;
 
   Team({required this.teamName, required this.players});
+
+  double teamOverall() {
+    return (players.map((e) => e.overall).reduce((value, element) => value + element) / players.length);
+  }
 }

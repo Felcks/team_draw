@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:team_randomizer/modules/game/domain/models/game_player_status.dart';
 import 'package:team_randomizer/modules/team_draw/domain/models/team_draw.dart';
 import 'package:team_randomizer/modules/team_draw/domain/repositories/team_draw_repository.dart';
-import 'package:team_randomizer/modules/team_draw/domain/usecases/new_team_randomizer_use_case.dart';
+import 'package:team_randomizer/modules/team_draw/domain/usecases/team_draw_overall_use_case.dart';
+import 'package:team_randomizer/modules/team_draw/domain/usecases/team_draw_use_case.dart';
 
 import '../../game/domain/models/game.dart';
 import '../../game/domain/models/game_player.dart';
@@ -21,7 +22,7 @@ class TeamDrawPage extends StatefulWidget {
 
 class _TeamDrawPageState extends State<TeamDrawPage> {
   int _playersPerTeam = 1;
-  NewTeamRandomizerUseCase _teamRandomizerUseCase = NewTeamRandomizerTrivialUseCase();
+  TeamDrawUseCase _teamRandomizerUseCase = TeamDrawOverallUseCase();
   TeamDrawRepository teamDrawRepository = TeamDrawRepository();
 
   TeamDraw? _teamDraw = null;
@@ -203,7 +204,7 @@ class _TeamDrawPageState extends State<TeamDrawPage> {
           setState(
             () {
               _teamDraw = _teamRandomizerUseCase
-                  .invoke(NewTeamRandomizerUseCaseParams(game: widget.game, playersPerTeam: _playersPerTeam));
+                  .invoke(TeamDrawUseCaseParams(game: widget.game, playersPerTeam: _playersPerTeam));
               teamDrawRepository.setTeamDraw(_teamDraw);
             },
           );
