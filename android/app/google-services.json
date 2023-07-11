@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "1086848847780",
+    "project_id": "team-randomizer-1516f",
+    "storage_bucket": "team-randomizer-1516f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1086848847780:android:5b1fc55c5a7717edfebb31",
+        "android_client_info": {
+          "package_name": "com.vivacious.trandomizer.team_randomizer"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1086848847780-o2qg6thpkugug2qu1mk0gg7rmorils6m.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyChqnHDL2V4RulNxhgPn4YFlKEYwGUgXwc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1086848847780-o2qg6thpkugug2qu1mk0gg7rmorils6m.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1086848847780-586sj08ks7bhmvndb1l25u5vo6ui5lp7.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.vivacious.trandomizer.teamRandomizer"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

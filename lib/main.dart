@@ -1,7 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:team_randomizer/modules/home/presentation/home_page.dart';
+import 'package:firebase_core/firebase_core.dart';
 
-void main() {
+import 'firebase_options.dart';
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  FirebaseApp app = await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  print(app.options.databaseURL);
   runApp(const MyApp());
 }
 

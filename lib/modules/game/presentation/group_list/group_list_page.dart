@@ -5,6 +5,8 @@ import 'package:team_randomizer/modules/game/presentation/group_home//group_home
 import 'package:team_randomizer/modules/game/presentation/group_list/group_widget.dart';
 
 import '../../domain/models/group.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 class GroupListPage extends StatefulWidget {
   const GroupListPage({Key? key}) : super(key: key);
@@ -77,9 +79,24 @@ class _GroupListPageState extends State<GroupListPage> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
-                                Icon(
-                                  Icons.add,
-                                  size: 48,
+                                IconButton(
+                                  icon: Icon(
+                                    Icons.add,
+                                    size: 48,
+                                  ),
+                                  onPressed: () async {
+                                    final FirebaseApp _app = Firebase.app();
+                                    FirebaseDatabase database = FirebaseDatabase.instanceFor(app: _app, databaseURL:"https://team-randomizer-1516f-default-rtdb.europe-west1.firebasedatabase.app/");
+                                    DatabaseReference ref = database.ref("group");
+                                    // https://console.firebase.google.com/u/0/project/team-randomizer-1516f/database/team-randomizer-1516f-default-rtdb/data/~2F
+                                    // https://firebase.google.com/docs/database/flutter/read-and-write
+
+                                    await ref.set({
+                                      "title": "Craques da bola",
+                                      "local": "Campo de Areeiro"
+                                    });
+
+                                  },
                                 ),
                               ],
                             ),
