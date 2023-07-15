@@ -6,6 +6,7 @@ import 'package:team_randomizer/modules/game/presentation/group_creation/group_c
 import 'package:team_randomizer/modules/game/presentation/group_home//group_home_page.dart';
 import 'package:team_randomizer/modules/game/presentation/group_list/group_widget.dart';
 
+import '../../domain/models/game_date.dart';
 import '../../domain/models/group.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -19,11 +20,45 @@ class GroupListPage extends StatefulWidget {
 
 class _GroupListPageState extends State<GroupListPage> {
   GroupRepository gameRepository = GroupRepository();
+  List<Group> _groups = List.empty(growable: true);
+
+  void initState() {
+    final FirebaseApp _app = Firebase.app();
+    FirebaseDatabase database = FirebaseDatabase.instanceFor(
+      app: _app,
+      databaseURL: "https://team-randomizer-1516f-default-rtdb.europe-west1.firebasedatabase.app/",
+    );
+
+    database.ref("group").onValue.listen((event) {
+      List<Group> result = List.empty(growable: true);
+      event.snapshot.children.forEach((element) {
+        Map<Object?, Object?> group = (element.value as Map<Object?, Object?>);
+        String? startTime = group["startTime"] as String;
+        String? endTime = group["endTime"] as String;
+        int weekDay = (group["weekday"] as int);
+
+        result.add(
+          Group(
+            title: group["title"] as String? ?? "",
+            players: List.empty(),
+            startTime: TimeOfDay(hour:int.parse(startTime.split(":")[0]),minute: int.parse(startTime.split(":")[1])),
+            endTime: TimeOfDay(hour:int.parse(endTime.split(":")[0]),minute: int.parse(endTime.split(":")[1])),
+            local: group["local"] as String? ?? "",
+            image: "https://lh5.googleusercontent.com/p/AF1QipNczAUhbyQf2koTig0m41v7eShuv8MffbD6YCB8=w650-h486-k-no",
+            date: RecurrentDate(weekDay: weekDay),
+          ),
+        );
+      });
+
+      setState(() {
+        _groups = result;
+      });
+
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    List<Group> games = gameRepository.getGroupList();
-
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -42,22 +77,6 @@ class _GroupListPageState extends State<GroupListPage> {
                   ],
                 ),
               ),
-              TextButton(
-                  onPressed: () async {
-                    final FirebaseApp _app = Firebase.app();
-                    FirebaseDatabase database = FirebaseDatabase.instanceFor(
-                        app: _app,
-                        databaseURL: "https://team-randomizer-1516f-default-rtdb.europe-west1.firebasedatabase.app/");
-
-                    final ref = database.ref();
-                    final snapshot = await ref.child('group/-N_5VFG5GI2tjUUtdRQS').get();
-                    if (snapshot.exists) {
-                      print(snapshot.value);
-                    } else {
-                      print('No data available.');
-                    }
-                  },
-                  child: Text("Read value")),
               Expanded(
                 flex: 10,
                 child: GridView.builder(
@@ -66,17 +85,17 @@ class _GroupListPageState extends State<GroupListPage> {
                     crossAxisSpacing: 8,
                     mainAxisSpacing: 8,
                   ),
-                  itemCount: games.length + 1,
+                  itemCount: _groups.length + 1,
                   itemBuilder: (context, index) {
-                    if (index < games.length) {
-                      Group game = games[index];
+                    if (index < _groups.length) {
+                      Group group = _groups[index];
                       return GroupWidget(
-                        group: game,
-                        onClick: (game) {
+                        group: group,
+                        onClick: (group) {
                           Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (context) => GroupHomePage(
-                                group: game,
+                                group: group,
                               ),
                             ),
                           );
@@ -103,18 +122,11 @@ class _GroupListPageState extends State<GroupListPage> {
                                     size: 48,
                                   ),
                                   onPressed: () async {
-                                    Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (context) => GroupCreation(),
-                                    ));
-
-                                    /*DatabaseReference ref = getDatabase().ref();
-                                    // https://console.firebase.google.com/u/0/project/team-randomizer-1516f/database/team-randomizer-1516f-default-rtdb/data/~2F
-                                    // https://firebase.google.com/docs/database/flutter/read-and-write
-
-                                    await ref.child("group").push().set({
-                                      "title": "Craques da bola",
-                                      "local": "Campo de Areeiro 2"
-                                    });*/
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) => GroupCreation(),
+                                      ),
+                                    );
                                   },
                                 ),
                               ],

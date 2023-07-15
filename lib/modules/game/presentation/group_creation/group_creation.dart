@@ -107,10 +107,20 @@ class _GroupCreationState extends State<GroupCreation> {
                 DefineHourWidget(
                   time: _startTime,
                   label: "Start",
+                  onChange: (time) {
+                    setState(() {
+                      _startTime = time;
+                    });
+                  },
                 ),
                 DefineHourWidget(
                   time: _endTime,
                   label: "End",
+                  onChange: (time) {
+                    setState(() {
+                      _endTime = time;
+                    });
+                  },
                 ),
               ],
             )

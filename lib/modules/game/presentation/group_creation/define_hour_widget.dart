@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 class DefineHourWidget extends StatefulWidget {
   Time time;
   final String label;
-  DefineHourWidget({Key? key, required this.time, required this.label}) : super(key: key);
+  void Function(Time) onChange;
+
+  DefineHourWidget({Key? key, required this.time, required this.label, required this.onChange}) : super(key: key);
 
   @override
   State<DefineHourWidget> createState() => _DefineHourWidgetState();
@@ -25,11 +27,7 @@ class _DefineHourWidgetState extends State<DefineHourWidget> {
             value: widget.time,
             iosStylePicker: iosStyle,
             is24HrFormat: is24HrFormat,
-            onChange: (time) {
-              setState(() {
-                widget.time = time;
-              });
-            },
+            onChange: widget.onChange,
           ),
         );
       },
