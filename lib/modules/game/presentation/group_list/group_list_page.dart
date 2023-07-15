@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:team_randomizer/modules/core/data/database_utils.dart';
 import 'package:team_randomizer/modules/game/domain/repositories/group_repository.dart';
+import 'package:team_randomizer/modules/game/presentation/group_creation/group_creation.dart';
 import 'package:team_randomizer/modules/game/presentation/group_home//group_home_page.dart';
 import 'package:team_randomizer/modules/game/presentation/group_list/group_widget.dart';
 
@@ -40,6 +42,22 @@ class _GroupListPageState extends State<GroupListPage> {
                   ],
                 ),
               ),
+              TextButton(
+                  onPressed: () async {
+                    final FirebaseApp _app = Firebase.app();
+                    FirebaseDatabase database = FirebaseDatabase.instanceFor(
+                        app: _app,
+                        databaseURL: "https://team-randomizer-1516f-default-rtdb.europe-west1.firebasedatabase.app/");
+
+                    final ref = database.ref();
+                    final snapshot = await ref.child('group/-N_5VFG5GI2tjUUtdRQS').get();
+                    if (snapshot.exists) {
+                      print(snapshot.value);
+                    } else {
+                      print('No data available.');
+                    }
+                  },
+                  child: Text("Read value")),
               Expanded(
                 flex: 10,
                 child: GridView.builder(
@@ -85,17 +103,18 @@ class _GroupListPageState extends State<GroupListPage> {
                                     size: 48,
                                   ),
                                   onPressed: () async {
-                                    final FirebaseApp _app = Firebase.app();
-                                    FirebaseDatabase database = FirebaseDatabase.instanceFor(app: _app, databaseURL:"https://team-randomizer-1516f-default-rtdb.europe-west1.firebasedatabase.app/");
-                                    DatabaseReference ref = database.ref("group");
+                                    Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (context) => GroupCreation(),
+                                    ));
+
+                                    /*DatabaseReference ref = getDatabase().ref();
                                     // https://console.firebase.google.com/u/0/project/team-randomizer-1516f/database/team-randomizer-1516f-default-rtdb/data/~2F
                                     // https://firebase.google.com/docs/database/flutter/read-and-write
 
-                                    await ref.set({
+                                    await ref.child("group").push().set({
                                       "title": "Craques da bola",
-                                      "local": "Campo de Areeiro"
-                                    });
-
+                                      "local": "Campo de Areeiro 2"
+                                    });*/
                                   },
                                 ),
                               ],

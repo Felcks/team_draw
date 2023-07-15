@@ -50,7 +50,7 @@ class _GroupHomePageState extends State<GroupHomePage> {
                 child: Column(
                   children: [
                     SizedBox(height: 16,),
-                    SizedBox(width: 59, child: Divider(color: Colors.black, height: 1, )),
+                    SizedBox(width: 60, child: Divider(color: Colors.black, height: 1, )),
                     SizedBox(height: 8,),
                     Text(
                       widget.group.title,

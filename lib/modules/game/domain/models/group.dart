@@ -12,12 +12,13 @@ class Group {
   final List<Player> players;
   final GameDate date;
 
-  Group(
-      {required this.title,
-      required this.startTime,
-      required this.endTime,
-      required this.local,
-      required this.image,
-      required this.players,
-      required this.date});
+  Group({
+    required this.title,
+    required this.startTime,
+    required this.endTime,
+    required this.local,
+    required this.image,
+    required this.players,
+    required this.date,
+  });
 }
