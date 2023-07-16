@@ -9,10 +9,12 @@ import 'package:firebase_core/firebase_core.dart';
 
 import '../../../core/data/database_utils.dart';
 import '../../domain/models/group.dart';
+import '../../domain/models/player.dart';
 
 class GameListPage extends StatefulWidget {
   final Group group;
-  const GameListPage({Key? key, required this.group}) : super(key: key);
+  final List<Player> players;
+  const GameListPage({Key? key, required this.group, required this.players}) : super(key: key);
 
   @override
   State<GameListPage> createState() => _GameListPageState();
@@ -39,6 +41,7 @@ class _GameListPageState extends State<GameListPage> {
         Map<Object?, Object?> game = (element.value as Map<Object?, Object?>);
         result.add(
           Game(
+            id: element.key ?? "",
             groupId: (game["groupId"] as String),
             date: DateTime.fromMicrosecondsSinceEpoch(game["date"] as int),
             players: List.empty(),
@@ -118,13 +121,19 @@ class _GameListPageState extends State<GameListPage> {
                                     DatabaseReference ref = getDatabase().ref();
                                     ref.child("game").push().set({
                                       "date": DateTime.timestamp().millisecondsSinceEpoch,
-                                      "players": widget.group.players.map((e) =>
-                                        {
-                                          "playerId": e.name,
-                                          "status": "NOT_CONFIRMED",
-                                        }
-                                      ).toList(),
                                       "groupId": widget.group.id,
+                                    }).whenComplete(() async {
+
+                                      DatabaseReference ref = getDatabase().ref();
+                                      final games = await ref.child("game").get();
+                                      String newGameId = games.children.last.key ?? "";
+                                      widget.players.forEach((element) {
+                                        ref.child("game_player").push().set({
+                                          "playerId": element.id,
+                                          "gameId": newGameId,
+                                          "status": "NOT_CONFIRMED"
+                                        });
+                                      });
                                     });
                                   },
                                   icon: Icon(

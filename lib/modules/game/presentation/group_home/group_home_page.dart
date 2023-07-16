@@ -202,6 +202,7 @@ class _GroupHomePageState extends State<GroupHomePage> {
                       MaterialPageRoute(
                         builder: (context) => GameListPage(
                           group: widget.group,
+                          players: _players,
                         ),
                       ),
                     );
