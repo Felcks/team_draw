@@ -9,6 +9,7 @@ class GameRepository {
   List<Game> getGames() {
     return [
       Game(
+        groupId: "",
         date: DateTime.now(),
         players: playerRepository
             .getPlayers()

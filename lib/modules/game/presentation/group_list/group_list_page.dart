@@ -22,7 +22,10 @@ class _GroupListPageState extends State<GroupListPage> {
   GroupRepository gameRepository = GroupRepository();
   List<Group> _groups = List.empty(growable: true);
 
+  @override
   void initState() {
+    super.initState();
+
     final FirebaseApp _app = Firebase.app();
     FirebaseDatabase database = FirebaseDatabase.instanceFor(
       app: _app,
@@ -39,6 +42,7 @@ class _GroupListPageState extends State<GroupListPage> {
 
         result.add(
           Group(
+            id: element.key ?? "",
             title: group["title"] as String? ?? "",
             players: List.empty(),
             startTime: TimeOfDay(hour:int.parse(startTime.split(":")[0]),minute: int.parse(startTime.split(":")[1])),
@@ -53,7 +57,6 @@ class _GroupListPageState extends State<GroupListPage> {
       setState(() {
         _groups = result;
       });
-
     });
   }
 

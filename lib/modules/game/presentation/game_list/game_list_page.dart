@@ -1,11 +1,18 @@
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:team_randomizer/modules/game/domain/models/game.dart';
 import 'package:team_randomizer/modules/game/domain/repositories/game_repository.dart';
 import 'package:team_randomizer/modules/game/presentation/game_home/game_home_page.dart';
 import 'package:team_randomizer/modules/game/presentation/game_list/game_widget.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_core/firebase_core.dart';
+
+import '../../../core/data/database_utils.dart';
+import '../../domain/models/group.dart';
 
 class GameListPage extends StatefulWidget {
-  const GameListPage({Key? key}) : super(key: key);
+  final Group group;
+  const GameListPage({Key? key, required this.group}) : super(key: key);
 
   @override
   State<GameListPage> createState() => _GameListPageState();
@@ -14,9 +21,40 @@ class GameListPage extends StatefulWidget {
 class _GameListPageState extends State<GameListPage> {
   GameRepository gameRepository = GameRepository();
 
+  List<Game> _games = List.empty(growable: true);
+
+  @override
+  void initState() {
+    super.initState();
+
+    final FirebaseApp _app = Firebase.app();
+    FirebaseDatabase database = FirebaseDatabase.instanceFor(
+      app: _app,
+      databaseURL: "https://team-randomizer-1516f-default-rtdb.europe-west1.firebasedatabase.app/",
+    );
+
+    database.ref("game").onValue.listen((event) {
+      List<Game> result = List.empty(growable: true);
+      event.snapshot.children.forEach((element) {
+        Map<Object?, Object?> game = (element.value as Map<Object?, Object?>);
+        result.add(
+          Game(
+            groupId: (game["groupId"] as String),
+            date: DateTime.fromMicrosecondsSinceEpoch(game["date"] as int),
+            players: List.empty(),
+          ),
+        );
+      });
+
+      setState(() {
+        _games = result;
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    List<Game> games = gameRepository.getGames();
+    List<Game> games = _games;
 
     return Scaffold(
       body: SafeArea(
@@ -75,9 +113,24 @@ class _GameListPageState extends State<GameListPage> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
-                                Icon(
-                                  Icons.add,
-                                  size: 48,
+                                IconButton(
+                                  onPressed: () {
+                                    DatabaseReference ref = getDatabase().ref();
+                                    ref.child("game").push().set({
+                                      "date": DateTime.timestamp().millisecondsSinceEpoch,
+                                      "players": widget.group.players.map((e) =>
+                                        {
+                                          "playerId": e.name,
+                                          "status": "NOT_CONFIRMED",
+                                        }
+                                      ).toList(),
+                                      "groupId": widget.group.id,
+                                    });
+                                  },
+                                  icon: Icon(
+                                    Icons.add,
+                                    size: 48,
+                                  ),
                                 ),
                               ],
                             ),

@@ -1,10 +1,14 @@
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:team_randomizer/modules/core/data/database_utils.dart';
 import 'package:team_randomizer/modules/game/domain/models/group.dart';
 import 'package:team_randomizer/modules/game/domain/models/player.dart';
 import 'package:team_randomizer/modules/game/presentation/game_list/game_list_page.dart';
 import 'package:team_randomizer/modules/game/presentation/group_home/new_player_widget.dart';
 import 'package:intl/intl.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 class GroupHomePage extends StatefulWidget {
   final Group group;
@@ -16,6 +20,38 @@ class GroupHomePage extends StatefulWidget {
 }
 
 class _GroupHomePageState extends State<GroupHomePage> {
+  List<Player> _players = List.empty(growable: true);
+
+  @override
+  void initState() {
+    super.initState();
+
+    final FirebaseApp _app = Firebase.app();
+    FirebaseDatabase database = FirebaseDatabase.instanceFor(
+      app: _app,
+      databaseURL: "https://team-randomizer-1516f-default-rtdb.europe-west1.firebasedatabase.app/",
+    );
+
+    database.ref("player").onValue.listen((event) {
+      List<Player> result = List.empty(growable: true);
+      event.snapshot.children.where((element) => (element.value as Map<Object?, Object?>)["groupId"] == widget.group.id).forEach((element) {
+        Map<Object?, Object?> player = (element.value as Map<Object?, Object?>);
+        result.add(
+          Player(
+            groupId: (player["groupId"] as String),
+            id: element.key.toString(),
+            name: (player["name"] as String),
+            overall: (player["overall"] as int),
+          ),
+        );
+      });
+
+      setState(() {
+        _players = result;
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,14 +85,25 @@ class _GroupHomePageState extends State<GroupHomePage> {
               child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    SizedBox(height: 16,),
-                    SizedBox(width: 60, child: Divider(color: Colors.black, height: 1, )),
-                    SizedBox(height: 8,),
+                    SizedBox(
+                      height: 16,
+                    ),
+                    SizedBox(
+                        width: 60,
+                        child: Divider(
+                          color: Colors.black,
+                          height: 1,
+                        )),
+                    SizedBox(
+                      height: 8,
+                    ),
                     Text(
                       widget.group.title,
                       style: TextStyle(fontSize: 22, color: Colors.black, fontWeight: FontWeight.bold),
                     ),
-                    SizedBox(height: 8,),
+                    SizedBox(
+                      height: 8,
+                    ),
                     Padding(
                       //TODO ajustar esses layouts de detalhe do campo
                       padding: EdgeInsets.symmetric(horizontal: 16),
@@ -83,9 +130,7 @@ class _GroupHomePageState extends State<GroupHomePage> {
                             style: TextStyle(color: Colors.black),
                           ),
                           Text(
-                            widget.group.startTime.format(context) +
-                                " - " +
-                                widget.group.endTime.format(context),
+                            widget.group.startTime.format(context) + " - " + widget.group.endTime.format(context),
                             style: TextStyle(color: Colors.black),
                           ),
                           //TODO substituir com horario correto
@@ -102,9 +147,9 @@ class _GroupHomePageState extends State<GroupHomePage> {
                           ),
                           ClipRect(
                               child: Text(
-                                widget.group.local,
-                                style: TextStyle(color: Colors.black),
-                              )),
+                            widget.group.local,
+                            style: TextStyle(color: Colors.black),
+                          )),
                           //TODO substituir com horario
                         ],
                       ),
@@ -155,7 +200,9 @@ class _GroupHomePageState extends State<GroupHomePage> {
                   onTap: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (context) => GameListPage(),
+                        builder: (context) => GameListPage(
+                          group: widget.group,
+                        ),
                       ),
                     );
                   },
@@ -200,17 +247,60 @@ class _GroupHomePageState extends State<GroupHomePage> {
         Row(
           children: [
             Text(
-              "Jogadores frequentes",
+              "Jogadores",
               style: TextStyle(fontSize: 20),
             ),
           ],
         ),
+        SizedBox(
+          height: 8,
+        ),
         Column(
           children: List.generate(
-            widget.group.players.length,
+            _players.length + 1,
             (index) {
-              Player player = widget.group.players[index];
-              return NewPlayerWidget(player: player);
+              if (index < _players.length) {
+                Player player = _players[index];
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    NewPlayerWidget(player: player),
+                  ],
+                );
+              } else {
+                return Column(
+                  children: [
+                    SizedBox(
+                      height: 8,
+                    ),
+                    Container(
+                      decoration:
+                          BoxDecoration(borderRadius: BorderRadius.circular(16), color: Colors.grey.withOpacity(0.1)),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          IconButton(
+                            icon: Icon(
+                              Icons.add,
+                              size: 48,
+                            ),
+                            onPressed: () {
+                              DatabaseReference ref = getDatabase().ref();
+                              ref.child("player").push().set(
+                                {
+                                  "name": "Matheus Felipe",
+                                  "overall": 100,
+                                  "groupId": widget.group.id,
+                                },
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                );
+              }
             },
           ),
         )

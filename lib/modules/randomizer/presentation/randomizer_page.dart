@@ -139,14 +139,15 @@ class _RandomizerPageState extends State<RandomizerPage> {
                         controller: newPlayerTextFieldController,
                       )),
                       TextButton(
-                          onPressed: () {
-                            setState(() {
-                              Player player = Player(name: newPlayerTextFieldController.text, overall: 1);
-                              players.add(player);
-                              newPlayerTextFieldController.clear();
-                            });
-                          },
-                          child: Text("Adicionar"))
+                        onPressed: () {
+                          setState(() {
+                            Player player = Player(id: "", groupId: "", name: newPlayerTextFieldController.text, overall: 1);
+                            players.add(player);
+                            newPlayerTextFieldController.clear();
+                          });
+                        },
+                        child: Text("Adicionar"),
+                      )
                     ],
                   ),
                   Row(

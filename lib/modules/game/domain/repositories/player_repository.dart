@@ -4,16 +4,16 @@ class PlayerRepository {
 
   List<Player> getPlayers() {
     return [
-      Player(name: "Matheus", overall: 100),
-      Player(name: "Arthur", overall: 88),
-      Player(name: "José", overall: 33),
-      Player(name: "Felipe", overall: 22),
-      Player(name: "Guilherme", overall: 47),
-      Player(name: "Pedro Gomes", overall: 99),
-      Player(name: "Ezequiel", overall: 76),
-      Player(name: "Gustavo", overall: 55),
-      Player(name: "Wanderson", overall: 65),
-      Player(name: "Daniel", overall: 82),
+      Player(id: "", groupId: "", name: "Matheus", overall: 100),
+      Player(id: "", groupId: "", name: "Arthur", overall: 88),
+      Player(id: "", groupId: "", name: "José", overall: 33),
+      Player(id: "", groupId: "", name: "Felipe", overall: 22),
+      Player(id: "", groupId: "", name: "Guilherme", overall: 47),
+      Player(id: "", groupId: "", name: "Pedro Gomes", overall: 99),
+      Player(id: "", groupId: "", name: "Ezequiel", overall: 76),
+      Player(id: "", groupId: "", name: "Gustavo", overall: 55),
+      Player(id: "", groupId: "", name: "Wanderson", overall: 65),
+      Player(id: "", groupId: "", name: "Daniel", overall: 82),
     ];
   }
 }

@@ -162,6 +162,7 @@ class _GroupCreationState extends State<GroupCreation> {
               "local": _locationTextFieldController.text,
               "weekday": _weekDay.weekday,
               "image": "",
+              "players": [],
               "startTime": TimeOfDay(hour: _startTime.hour, minute: _startTime.minute).format(context),
               "endTime": TimeOfDay(hour: _endTime.hour, minute: _endTime.minute).format(context)
             });

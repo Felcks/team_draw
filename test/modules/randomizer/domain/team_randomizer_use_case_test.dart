@@ -12,7 +12,7 @@ void main() {
   });
 
   test("given 10 players and two teams, generate two teams with five players each", () {
-    List<Player> players = List.generate(10, (index) => Player(name: "Player $index", overall: index));
+    List<Player> players = List.generate(10, (index) => Player(id: "", groupId: "", name: "Player $index", overall: index));
     TeamRandomizerUseCaseParameters config = TeamRandomizerUseCaseParameters(teamsAmount: 2, playersInEachTeam: 5);
 
     List<Team> result = sut.invoke(players, config);
@@ -23,7 +23,7 @@ void main() {
   });
 
   test("given 10 players two teams and leftOverPlayers EXTRA_TEAM, generate two teams with five players each", () {
-    List<Player> players = List.generate(10, (index) => Player(name: "Player $index", overall: index));
+    List<Player> players = List.generate(10, (index) => Player(id: "", groupId: "", name: "Player $index", overall: index));
     TeamRandomizerUseCaseParameters config = TeamRandomizerUseCaseParameters(teamsAmount: 2, playersInEachTeam: 5, leftoverPlayersAction: LeftoverPlayersAction.EXTRA_TEAM);
 
     List<Team> result = sut.invoke(players, config);
@@ -34,7 +34,7 @@ void main() {
   });
 
   test("given 12 players two teams and leftOverPlayers EXTRA_TEAM, generate two teams with five players each and one extra team with 2", () {
-    List<Player> players = List.generate(12, (index) => Player(name: "Player $index", overall: index));
+    List<Player> players = List.generate(12, (index) => Player(id: "", groupId: "", name: "Player $index", overall: index));
     TeamRandomizerUseCaseParameters config = TeamRandomizerUseCaseParameters(teamsAmount: 2, playersInEachTeam: 5, leftoverPlayersAction: LeftoverPlayersAction.EXTRA_TEAM);
 
     List<Team> result = sut.invoke(players, config);
@@ -45,7 +45,7 @@ void main() {
   });
 
   test("given 10 players two teams and leftOverPlayers BENCH, generate two teams with five players each", () {
-    List<Player> players = List.generate(10, (index) => Player(name: "Player $index", overall: index));
+    List<Player> players = List.generate(10, (index) => Player(id: "", groupId: "", name: "Player $index", overall: index));
     TeamRandomizerUseCaseParameters config = TeamRandomizerUseCaseParameters(teamsAmount: 2, playersInEachTeam: 5, leftoverPlayersAction: LeftoverPlayersAction.BENCH);
 
     List<Team> result = sut.invoke(players, config);
@@ -56,7 +56,7 @@ void main() {
   });
 
   test("given 12 players two teams and leftOverPlayers BENCH, generate two teams with six players", () {
-    List<Player> players = List.generate(12, (index) => Player(name: "Player $index", overall: index));
+    List<Player> players = List.generate(12, (index) => Player(id: "", groupId: "", name: "Player $index", overall: index));
     TeamRandomizerUseCaseParameters config = TeamRandomizerUseCaseParameters(teamsAmount: 2, playersInEachTeam: 5, leftoverPlayersAction: LeftoverPlayersAction.BENCH);
 
     List<Team> result = sut.invoke(players, config);

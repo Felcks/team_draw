@@ -4,6 +4,7 @@ import 'package:team_randomizer/modules/game/domain/models/player.dart';
 import 'game_date.dart';
 
 class Group {
+  final String id;
   final String title;
   final TimeOfDay startTime;
   final TimeOfDay endTime;
@@ -13,6 +14,7 @@ class Group {
   final GameDate date;
 
   Group({
+    required this.id,
     required this.title,
     required this.startTime,
     required this.endTime,

@@ -95,7 +95,7 @@ class _PlayerWidgetState extends State<PlayerWidget> {
         child: IconButton(
           onPressed: () {
             setState(() {
-              this.widget.player = Player(name: this.widget.player.name, overall: star);
+              this.widget.player = Player(id: "", groupId: "", name: this.widget.player.name, overall: star);
               this.widget.changeStarCallback(this.widget.player);
             });
           },
@@ -111,7 +111,7 @@ class _PlayerWidgetState extends State<PlayerWidget> {
         child: IconButton(
           onPressed: () {
             setState(() {
-              this.widget.player = Player(name: this.widget.player.name, overall: star);
+              this.widget.player = Player(id: "", groupId: "", name: this.widget.player.name, overall: star);
               this.widget.changeStarCallback(this.widget.player);
             });
           },

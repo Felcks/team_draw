@@ -12,6 +12,7 @@ class GroupRepository {
 
   List<Group> _groupList = [
     Group(
+      id: "",
         title: "Craques da bola",
         players: PlayerRepository().getPlayers(),
         startTime: TimeOfDay(hour: 19, minute: 0),
@@ -21,6 +22,7 @@ class GroupRepository {
         date: RecurrentDate(weekDay: 4)
     ),
     Group(
+        id: "",
         title: "Futebol de Segunda",
         players: List.empty(),
         startTime: TimeOfDay(hour: 20, minute: 30),
