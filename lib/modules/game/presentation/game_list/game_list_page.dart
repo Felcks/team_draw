@@ -1,6 +1,7 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:team_randomizer/modules/game/domain/models/game.dart';
+import 'package:team_randomizer/modules/game/domain/models/game_date.dart';
 import 'package:team_randomizer/modules/game/domain/repositories/game_repository.dart';
 import 'package:team_randomizer/modules/game/presentation/game_home/game_home_page.dart';
 import 'package:team_randomizer/modules/game/presentation/game_list/game_widget.dart';
@@ -43,7 +44,7 @@ class _GameListPageState extends State<GameListPage> {
           Game(
             id: element.key ?? "",
             groupId: (game["groupId"] as String),
-            date: DateTime.fromMicrosecondsSinceEpoch(game["date"] as int),
+            date: DateTime.fromMillisecondsSinceEpoch(game["date"] as int),
             players: List.empty(),
           ),
         );
@@ -118,23 +119,31 @@ class _GameListPageState extends State<GameListPage> {
                               children: [
                                 IconButton(
                                   onPressed: () {
-                                    DatabaseReference ref = getDatabase().ref();
-                                    ref.child("game").push().set({
-                                      "date": DateTime.timestamp().millisecondsSinceEpoch,
-                                      "groupId": widget.group.id,
-                                    }).whenComplete(() async {
+                                    //Add logic to generate game
+                                    DateTime _currentTime = DateTime.now();
+                                    GameDate _groupGameDate = widget.group.date;
+                                    if(_groupGameDate is RecurrentDate) {
+                                      while(_currentTime.weekday != _groupGameDate.weekDay){
+                                        _currentTime = _currentTime.add(Duration(days: 1));
+                                      }
 
                                       DatabaseReference ref = getDatabase().ref();
-                                      final games = await ref.child("game").get();
-                                      String newGameId = games.children.last.key ?? "";
-                                      widget.players.forEach((element) {
-                                        ref.child("game_player").push().set({
-                                          "playerId": element.id,
-                                          "gameId": newGameId,
-                                          "status": "NOT_CONFIRMED"
+                                      ref.child("game").push().set({
+                                        "date": _currentTime.millisecondsSinceEpoch,
+                                        "groupId": widget.group.id,
+                                      }).whenComplete(() async {
+                                        DatabaseReference ref = getDatabase().ref();
+                                        final games = await ref.child("game").get();
+                                        String newGameId = games.children.last.key ?? "";
+                                        widget.players.forEach((element) {
+                                          ref.child("game_player").push().set({
+                                            "playerId": element.id,
+                                            "gameId": newGameId,
+                                            "status": "NOT_CONFIRMED"
+                                          });
                                         });
                                       });
-                                    });
+                                    }
                                   },
                                   icon: Icon(
                                     Icons.add,
