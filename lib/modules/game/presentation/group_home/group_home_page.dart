@@ -1,14 +1,13 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:team_randomizer/modules/core/data/database_utils.dart';
 import 'package:team_randomizer/modules/game/domain/models/group.dart';
 import 'package:team_randomizer/modules/game/domain/models/player.dart';
 import 'package:team_randomizer/modules/game/presentation/game_list/game_list_page.dart';
 import 'package:team_randomizer/modules/game/presentation/group_home/new_player_widget.dart';
 import 'package:intl/intl.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:team_randomizer/modules/game/presentation/player_creation/player_creation.dart';
 
 class GroupHomePage extends StatefulWidget {
   final Group group;
@@ -286,13 +285,12 @@ class _GroupHomePageState extends State<GroupHomePage> {
                               size: 48,
                             ),
                             onPressed: () {
-                              DatabaseReference ref = getDatabase().ref();
-                              ref.child("player").push().set(
-                                {
-                                  "name": "Matheus Felipe",
-                                  "overall": 100,
-                                  "groupId": widget.group.id,
-                                },
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => PlayerCreationPage(
+                                    group: widget.group,
+                                  ),
+                                ),
                               );
                             },
                           ),
