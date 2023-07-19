@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:team_randomizer/modules/game/domain/models/game_player.dart';
 import 'package:team_randomizer/modules/team_draw/domain/models/team_draw.dart';
 
 import '../../../game/domain/models/game.dart';
@@ -7,10 +8,10 @@ import '../../../game/domain/models/player.dart';
 import '../../../randomizer/domain/models/team.dart';
 
 class TeamDrawUseCaseParams {
-  Game game;
+  List<Player> players;
   int playersPerTeam;
 
-  TeamDrawUseCaseParams({required this.game, required this.playersPerTeam});
+  TeamDrawUseCaseParams({required this.players, required this.playersPerTeam});
 }
 
 abstract class TeamDrawUseCase {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:team_randomizer/modules/core/data/database_utils.dart';
 import 'package:team_randomizer/modules/game/domain/models/game.dart';
 import 'package:team_randomizer/modules/game/domain/models/game_player.dart';
 import 'package:team_randomizer/modules/game/domain/models/game_player_status.dart';
@@ -8,11 +9,10 @@ import '../../../team_draw/presentation/team_draw_page.dart';
 import '../../domain/models/player.dart';
 import '../group_home/new_player_widget.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:firebase_core/firebase_core.dart';
 
 class GameHomePage extends StatefulWidget {
-
   final Game game;
+
   const GameHomePage({Key? key, required this.game}) : super(key: key);
 
   @override
@@ -20,35 +20,23 @@ class GameHomePage extends StatefulWidget {
 }
 
 class _GameHomePageState extends State<GameHomePage> {
-
   int _selectedIndex = 0;
 
   List<GamePlayer> _players = List.empty(growable: true);
+  FirebaseDatabase database = getDatabase();
+  bool _listenToGamePlayersUpdate = false;
 
-  @override
-  void initState() {
-    super.initState();
-
-    final FirebaseApp _app = Firebase.app();
-    FirebaseDatabase database = FirebaseDatabase.instanceFor(
-      app: _app,
-      databaseURL: "https://team-randomizer-1516f-default-rtdb.europe-west1.firebasedatabase.app/",
-    );
-
-    //GET PLAYERS FROM player and filter
-    database
-        .ref("player")
-        .onValue
-        .listen((event) async {
-      List<DataSnapshot> databasePlayersOnThisGroup = event.snapshot.children.where((element) {
+  void listenToPlayersUpdate() {
+    database.ref("player").onValue.listen((allPlayers) async {
+      List<DataSnapshot> playersOnThisGroupSnapshot = allPlayers.snapshot.children.where((element) {
         Map<Object?, Object?> playerMap = element.value as Map<Object?, Object?>;
         return playerMap["groupId"] == widget.game.groupId;
       }).toList(growable: true);
 
-      List<Player> result = List.empty(growable: true);
-      databasePlayersOnThisGroup.forEach((element) {
+      List<Player> players = List.empty(growable: true);
+      playersOnThisGroupSnapshot.forEach((element) {
         Map<Object?, Object?> player = (element.value as Map<Object?, Object?>);
-        result.add(
+        players.add(
           Player(
             groupId: (player["groupId"] as String),
             id: element.key.toString(),
@@ -58,28 +46,69 @@ class _GameHomePageState extends State<GameHomePage> {
         );
       });
 
+      if (!_listenToGamePlayersUpdate) {
+        _listenToGamePlayersUpdate = true;
+        _players = players.map((e) => GamePlayer(player: e, status: GamePlayerStatus.NOT_CONFIRMED)).toList();
+        listenToGamePlayersUpdate();
+      }
+    });
+  }
 
-        DataSnapshot gamePlayer = await database.ref("game_player").get();
-        List<DataSnapshot> gamePlayersOnThisGame = gamePlayer.children.where((element) {
-          Map<Object?, Object?> gamePlayerMap = element.value as Map<Object?, Object?>;
-          return gamePlayerMap["gameId"] == widget.game.id;
-        }).toList(growable: true);
+  /*
+  void updatePlayersStatus(List<Player> players) async {
+    DataSnapshot gamePlayerSnapshot = await database.ref("game_player").get();
+    List<DataSnapshot> gamePlayersOnThisGame = gamePlayerSnapshot.children.where((element) {
+      Map<Object?, Object?> gamePlayerMap = element.value as Map<Object?, Object?>;
+      return gamePlayerMap["gameId"] == widget.game.id;
+    }).toList(growable: true);
 
-        List<GamePlayer> gamePlayers = result.map((player) {
-          DataSnapshot gamePlayerSnapshot = gamePlayersOnThisGame.firstWhere((element) => (element.value as Map<Object?, Object?>)["playerId"] == player.id);
+    List<GamePlayer> gamePlayers = players.map((player) {
+      DataSnapshot gamePlayerSnapshot = gamePlayersOnThisGame
+          .firstWhere((element) => (element.value as Map<Object?, Object?>)["playerId"] == player.id);
 
-          /*String gamePlayerDatabase = gamePlayersOnThisGame.firstWhere((element) => ((element.value as Map<Object?, Object?>)["playerId"] == player.id).value as (element as Map<Object?, Object?>)["status"]*/
-          GamePlayerStatus status = GamePlayerStatus.values.firstWhere((element) => element.name == (gamePlayerSnapshot.value as Map<Object?, Object?>)["status"], orElse: () => GamePlayerStatus.NOT_CONFIRMED);
+      GamePlayerStatus status = GamePlayerStatus.values.firstWhere(
+              (element) => element.name == (gamePlayerSnapshot.value as Map<Object?, Object?>)["status"],
+          orElse: () => GamePlayerStatus.NOT_CONFIRMED);
 
-          return GamePlayer(player: player, status: status);
-        }).toList();
+      return GamePlayer(player: player, status: status);
+    }).toList();
+
+    setState(() {
+      _players = gamePlayers;
+    });
+  }*/
+
+  void listenToGamePlayersUpdate() {
+    database.ref("game_player").onValue.listen((allGamePlayers) async {
+      DataSnapshot gamePlayerSnapshot = allGamePlayers.snapshot;
+      List<DataSnapshot> gamePlayersOnThisGame = gamePlayerSnapshot.children.where((element) {
+        Map<Object?, Object?> gamePlayerMap = element.value as Map<Object?, Object?>;
+        return gamePlayerMap["gameId"] == widget.game.id;
+      }).toList(growable: true);
+
+      List<GamePlayer> playersWithStatusUpdated = _players.map((player) {
+        DataSnapshot gamePlayerSnapshot = gamePlayersOnThisGame
+            .firstWhere((element) => (element.value as Map<Object?, Object?>)["playerId"] == player.player.id);
+
+        GamePlayerStatus status = GamePlayerStatus.values.firstWhere(
+            (element) => element.name == (gamePlayerSnapshot.value as Map<Object?, Object?>)["status"],
+            orElse: () => GamePlayerStatus.NOT_CONFIRMED);
+
+        return GamePlayer(player: player.player, status: status);
+      }).toList();
 
       setState(() {
-        _players = gamePlayers;
+        _players = playersWithStatusUpdated;
       });
-
-      /**/
     });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    listenToPlayersUpdate();
+    listenToGamePlayersUpdate();
   }
 
   @override
@@ -98,7 +127,11 @@ class _GameHomePageState extends State<GameHomePage> {
           BottomNavigationBarItem(icon: Icon(Icons.hourglass_bottom), label: 'Cronometro'),
         ],
       ),
-      body: (_selectedIndex == 0) ? playersListWidget() : (_selectedIndex == 1) ? TeamDrawPage(game: widget.game) : TimerPage(),
+      body: (_selectedIndex == 0)
+          ? playersListWidget()
+          : (_selectedIndex == 1)
+              ? TeamDrawPage(game: widget.game)
+              : TimerPage(),
     );
 
     return Scaffold(
@@ -136,8 +169,29 @@ class _GameHomePageState extends State<GameHomePage> {
                     child: Stack(
                       fit: StackFit.passthrough,
                       children: [
-                        Align(alignment: Alignment.topCenter, child: SizedBox(height: 85, child: NewPlayerWidget(player: gamePlayer.player))),
-                        Positioned(left: 20, top: 50, child: Text("(${gamePlayer.status.value})", style: TextStyle(fontSize: 12),),)
+                        Align(
+                            alignment: Alignment.topCenter,
+                            child: SizedBox(height: 85, child: NewPlayerWidget(player: gamePlayer.player))),
+                        Positioned.fill(
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 8.0),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: new BorderRadius.circular(8.0),
+                                shape: BoxShape.rectangle,
+                                border: Border.all(width: 2, color: getPlayerStatusColor(gamePlayer)),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Positioned(
+                          left: 15,
+                          top: 55,
+                          child: Text(
+                            "(${gamePlayer.status.value})",
+                            style: TextStyle(fontSize: 12),
+                          ),
+                        )
                       ],
                     ),
                   );
@@ -148,5 +202,18 @@ class _GameHomePageState extends State<GameHomePage> {
         ),
       ),
     );
+  }
+
+  Color getPlayerStatusColor(GamePlayer player) {
+    switch (player.status) {
+      case GamePlayerStatus.CANCELLED:
+        return Colors.red.withOpacity(.5);
+      case GamePlayerStatus.NOT_CONFIRMED:
+        return Colors.amber.withOpacity(.5);
+      case GamePlayerStatus.CONFIRMED:
+        return Colors.blue.withOpacity(.5);
+      case GamePlayerStatus.READY:
+        return Colors.green.withOpacity(.5);
+    }
   }
 }

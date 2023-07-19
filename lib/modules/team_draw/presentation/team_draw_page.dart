@@ -23,42 +23,29 @@ class TeamDrawPage extends StatefulWidget {
 }
 
 class _TeamDrawPageState extends State<TeamDrawPage> {
-  int _playersPerTeam = 1;
+  int _playersPerTeam = 5;
   TeamDrawUseCase _teamRandomizerUseCase = TeamDrawOverallUseCase();
   TeamDrawRepository teamDrawRepository = TeamDrawRepository();
 
   TeamDraw? _teamDraw = null;
 
-  List<GamePlayer> _players = List.empty(growable: true);
-
   List<GamePlayer> getPlayersReady() => _players.where((element) => element.status == GamePlayerStatus.READY).toList();
 
-  /*@override
-  void initState() {
-    super.initState();
+  List<GamePlayer> _players = List.empty(growable: true);
+  FirebaseDatabase database = getDatabase();
+  bool _listenToGamePlayersUpdate = false;
 
-    setState(() {
-      _teamDraw = teamDrawRepository.getTeamDraw();
-    });
-  }*/
-
-  @override
-  void initState() {
-    super.initState();
-
-    FirebaseDatabase database = getDatabase();
-
-    //GET PLAYERS FROM player and filter
-    database.ref("player").onValue.listen((event) async {
-      List<DataSnapshot> databasePlayersOnThisGroupSnapshot = event.snapshot.children.where((element) {
+  void listenToPlayersUpdate() {
+    database.ref("player").onValue.listen((allPlayers) async {
+      List<DataSnapshot> playersOnThisGroupSnapshot = allPlayers.snapshot.children.where((element) {
         Map<Object?, Object?> playerMap = element.value as Map<Object?, Object?>;
         return playerMap["groupId"] == widget.game.groupId;
       }).toList(growable: true);
 
-      List<Player> databasePlayersOnThisGroup = List.empty(growable: true);
-      databasePlayersOnThisGroupSnapshot.forEach((element) {
+      List<Player> players = List.empty(growable: true);
+      playersOnThisGroupSnapshot.forEach((element) {
         Map<Object?, Object?> player = (element.value as Map<Object?, Object?>);
-        databasePlayersOnThisGroup.add(
+        players.add(
           Player(
             groupId: (player["groupId"] as String),
             id: element.key.toString(),
@@ -68,32 +55,45 @@ class _TeamDrawPageState extends State<TeamDrawPage> {
         );
       });
 
-      DataSnapshot gamePlayersSnapshot = await database.ref("game_player").get();
-      List<DataSnapshot> gamePlayersOnThisGame = gamePlayersSnapshot.children.where((element) {
+      if (!_listenToGamePlayersUpdate) {
+        _listenToGamePlayersUpdate = true;
+        _players = players.map((e) => GamePlayer(player: e, status: GamePlayerStatus.NOT_CONFIRMED)).toList();
+        listenToGamePlayersUpdate();
+      }
+    });
+  }
+
+  void listenToGamePlayersUpdate() {
+    database.ref("game_player").onValue.listen((allGamePlayers) async {
+      DataSnapshot gamePlayerSnapshot = allGamePlayers.snapshot;
+      List<DataSnapshot> gamePlayersOnThisGame = gamePlayerSnapshot.children.where((element) {
         Map<Object?, Object?> gamePlayerMap = element.value as Map<Object?, Object?>;
         return gamePlayerMap["gameId"] == widget.game.id;
       }).toList(growable: true);
 
-      List<GamePlayer> gamePlayers = databasePlayersOnThisGroup.map((player) {
+      List<GamePlayer> playersWithStatusUpdated = _players.map((player) {
         DataSnapshot gamePlayerSnapshot = gamePlayersOnThisGame
-            .firstWhere((element) => (element.value as Map<Object?, Object?>)["playerId"] == player.id);
+            .firstWhere((element) => (element.value as Map<Object?, Object?>)["playerId"] == player.player.id);
 
-        /*String gamePlayerDatabase = gamePlayersOnThisGame.firstWhere((element) => ((element.value as Map<Object?, Object?>)["playerId"] == player.id).value as (element as Map<Object?, Object?>)["status"]*/
         GamePlayerStatus status = GamePlayerStatus.values.firstWhere(
-            (element) => element.name == (gamePlayerSnapshot.value as Map<Object?, Object?>)["status"],
+                (element) => element.name == (gamePlayerSnapshot.value as Map<Object?, Object?>)["status"],
             orElse: () => GamePlayerStatus.NOT_CONFIRMED);
 
-        return GamePlayer(player: player, status: status);
+        return GamePlayer(player: player.player, status: status);
       }).toList();
 
       setState(() {
-        _players = gamePlayers;
+        _players = playersWithStatusUpdated;
       });
-
-      /**/
     });
+  }
 
-    _playersPerTeam = (_players.where((element) => element.status == GamePlayerStatus.READY).length / 2).toInt();
+  @override
+  void initState() {
+    super.initState();
+
+    listenToPlayersUpdate();
+    listenToGamePlayersUpdate();
   }
 
   @override
@@ -206,7 +206,8 @@ class _TeamDrawPageState extends State<TeamDrawPage> {
                       IconButton(
                           onPressed: () {
                             setState(() {
-                              _playersPerTeam -= 1;
+                              if(_playersPerTeam > 0)
+                                _playersPerTeam -= 1;
                             });
                           },
                           icon: Icon(Icons.remove_circle)),
@@ -246,7 +247,7 @@ class _TeamDrawPageState extends State<TeamDrawPage> {
   }
 
   int teamsAmount() {
-    if (getPlayersReady().length == 0)
+    if (getPlayersReady().length == 0 || _playersPerTeam <= 0)
       return 0;
     else
       return (getPlayersReady().length / _playersPerTeam).toInt();
@@ -274,7 +275,7 @@ class _TeamDrawPageState extends State<TeamDrawPage> {
           setState(
             () {
               _teamDraw = _teamRandomizerUseCase
-                  .invoke(TeamDrawUseCaseParams(game: widget.game, playersPerTeam: _playersPerTeam));
+                  .invoke(TeamDrawUseCaseParams(players: _players.map((e) => e.player).toList(), playersPerTeam: _playersPerTeam));
               teamDrawRepository.setTeamDraw(_teamDraw);
             },
           );

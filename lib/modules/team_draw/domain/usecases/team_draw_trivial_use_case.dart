@@ -9,7 +9,7 @@ class TeamDrawTrivialUseCase extends TeamDrawUseCase {
 
   @override
   TeamDraw invoke(TeamDrawUseCaseParams params) {
-    List<Player> players = params.game.getReadyPlayers();
+    List<Player> players = params.players;
     int teamsGenerated = (players.length / params.playersPerTeam).toInt();
 
     for (int i = 0; i < 100; i++) {
@@ -22,6 +22,6 @@ class TeamDrawTrivialUseCase extends TeamDrawUseCase {
     }
 
     List<Team> teams = generateTeams(players, teamsGenerated, params.playersPerTeam);
-    return TeamDraw(game: params.game, createdAt: DateTime.now(), teams: teams);
+    return TeamDraw(players: params.players, createdAt: DateTime.now(), teams: teams);
   }
 }

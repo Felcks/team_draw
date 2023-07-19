@@ -8,7 +8,7 @@ import 'team_draw_use_case.dart';
 class TeamDrawOverallUseCase extends TeamDrawUseCase {
   @override
   TeamDraw invoke(TeamDrawUseCaseParams params) {
-    List<Player> players = params.game.getReadyPlayers();
+    List<Player> players = params.players;
     int teamsToBeGenerated = (players.length / params.playersPerTeam).toInt();
     List<Team> teams = generateTeams(players, teamsToBeGenerated, params.playersPerTeam);
     double lowerStandardDerivation = calculateStandardDerivation(teams);
@@ -30,7 +30,7 @@ class TeamDrawOverallUseCase extends TeamDrawUseCase {
       }
     }
 
-    return TeamDraw(game: params.game, createdAt: DateTime.now(), teams: bestTeams);
+    return TeamDraw(players: params.players, createdAt: DateTime.now(), teams: bestTeams);
   }
 
   double calculateStandardDerivation(List<Team> teams) {

@@ -58,7 +58,6 @@ class _PlayerCreationPageState extends State<PlayerCreationPage> {
                         border: Border.all(
                           width: 1,
                           color: Colors.grey.withOpacity(1),
-
                         ),
                       ),
                       child: Padding(
