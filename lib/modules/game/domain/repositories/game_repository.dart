@@ -14,7 +14,7 @@ class GameRepository {
         date: DateTime.now(),
         players: playerRepository
             .getPlayers()
-            .map((e) => GamePlayer(player: e, status: GamePlayerStatus.READY))
+            .map((e) => GamePlayer(id: "", player: e, status: GamePlayerStatus.READY))
             .toList(),
       ),
     ];

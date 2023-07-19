@@ -48,7 +48,7 @@ class _GameHomePageState extends State<GameHomePage> {
 
       if (!_listenToGamePlayersUpdate) {
         _listenToGamePlayersUpdate = true;
-        _players = players.map((e) => GamePlayer(player: e, status: GamePlayerStatus.NOT_CONFIRMED)).toList();
+        _players = players.map((e) => GamePlayer(id: "", player: e, status: GamePlayerStatus.NOT_CONFIRMED)).toList();
         listenToGamePlayersUpdate();
       }
     });
@@ -94,7 +94,7 @@ class _GameHomePageState extends State<GameHomePage> {
             (element) => element.name == (gamePlayerSnapshot.value as Map<Object?, Object?>)["status"],
             orElse: () => GamePlayerStatus.NOT_CONFIRMED);
 
-        return GamePlayer(player: player.player, status: status);
+        return GamePlayer(id: gamePlayerSnapshot.key ?? "", player: player.player, status: status);
       }).toList();
 
       setState(() {
@@ -140,6 +140,7 @@ class _GameHomePageState extends State<GameHomePage> {
   }
 
   Widget playersListWidget() {
+    GamePlayerStatus selectedGamePlayerStatus = GamePlayerStatus.NOT_CONFIRMED;
     return SafeArea(
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 16),
@@ -170,8 +171,12 @@ class _GameHomePageState extends State<GameHomePage> {
                       fit: StackFit.passthrough,
                       children: [
                         Align(
-                            alignment: Alignment.topCenter,
-                            child: SizedBox(height: 85, child: NewPlayerWidget(player: gamePlayer.player))),
+                          alignment: Alignment.topCenter,
+                          child: SizedBox(
+                            height: 85,
+                            child: NewPlayerWidget(player: gamePlayer.player),
+                          ),
+                        ),
                         Positioned.fill(
                           child: Padding(
                             padding: const EdgeInsets.only(top: 8.0),
@@ -182,6 +187,41 @@ class _GameHomePageState extends State<GameHomePage> {
                                 border: Border.all(width: 2, color: getPlayerStatusColor(gamePlayer)),
                               ),
                             ),
+                          ),
+                        ),
+                        Positioned(
+                          left: 120,
+                          top: 40,
+                          child: PopupMenuButton<GamePlayerStatus>(
+                            initialValue: selectedGamePlayerStatus,
+                            // Callback that sets the selected popup menu item.
+                            onSelected: (GamePlayerStatus item) {
+                              setState(() {
+                                selectedGamePlayerStatus = item;
+                                DatabaseReference ref = getDatabase().ref();
+                                ref.child("game_player/${gamePlayer.id}").update({
+                                  "status": item.name
+                                });
+                              });
+                            },
+                            itemBuilder: (BuildContext context) => <PopupMenuEntry<GamePlayerStatus>>[
+                              const PopupMenuItem<GamePlayerStatus>(
+                                value: GamePlayerStatus.NOT_CONFIRMED,
+                                child: Text('Não Confirmado'),
+                              ),
+                              const PopupMenuItem<GamePlayerStatus>(
+                                value: GamePlayerStatus.CANCELLED,
+                                child: Text('Cancelado'),
+                              ),
+                              const PopupMenuItem<GamePlayerStatus>(
+                                value: GamePlayerStatus.CONFIRMED,
+                                child: Text('Confirmado'),
+                              ),
+                              const PopupMenuItem<GamePlayerStatus>(
+                                value: GamePlayerStatus.READY,
+                                child: Text('Pronto'),
+                              ),
+                            ],
                           ),
                         ),
                         Positioned(

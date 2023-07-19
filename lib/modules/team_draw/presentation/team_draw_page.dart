@@ -57,7 +57,7 @@ class _TeamDrawPageState extends State<TeamDrawPage> {
 
       if (!_listenToGamePlayersUpdate) {
         _listenToGamePlayersUpdate = true;
-        _players = players.map((e) => GamePlayer(player: e, status: GamePlayerStatus.NOT_CONFIRMED)).toList();
+        _players = players.map((e) => GamePlayer(id: "", player: e, status: GamePlayerStatus.NOT_CONFIRMED)).toList();
         listenToGamePlayersUpdate();
       }
     });
@@ -79,7 +79,7 @@ class _TeamDrawPageState extends State<TeamDrawPage> {
                 (element) => element.name == (gamePlayerSnapshot.value as Map<Object?, Object?>)["status"],
             orElse: () => GamePlayerStatus.NOT_CONFIRMED);
 
-        return GamePlayer(player: player.player, status: status);
+        return GamePlayer(id: gamePlayerSnapshot.key ?? "", player: player.player, status: status);
       }).toList();
 
       setState(() {

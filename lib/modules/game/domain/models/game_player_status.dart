@@ -1,5 +1,5 @@
 enum GamePlayerStatus {
-  CANCELLED("Não vem"),
+  CANCELLED("Cancelado"),
   NOT_CONFIRMED("Não confirmou"),
   CONFIRMED("Confirmado"),
   READY("Pronto");
