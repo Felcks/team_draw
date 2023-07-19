@@ -33,7 +33,9 @@ class _GroupHomePageState extends State<GroupHomePage> {
 
     database.ref("player").onValue.listen((event) {
       List<Player> result = List.empty(growable: true);
-      event.snapshot.children.where((element) => (element.value as Map<Object?, Object?>)["groupId"] == widget.group.id).forEach((element) {
+      event.snapshot.children
+          .where((element) => (element.value as Map<Object?, Object?>)["groupId"] == widget.group.id)
+          .forEach((element) {
         Map<Object?, Object?> player = (element.value as Map<Object?, Object?>);
         result.add(
           Player(
@@ -264,7 +266,19 @@ class _GroupHomePageState extends State<GroupHomePage> {
                 return Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    NewPlayerWidget(player: player),
+                    InkWell(
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => PlayerCreationPage(
+                              group: widget.group,
+                              player: player,
+                            ),
+                          ),
+                        );
+                      },
+                      child: NewPlayerWidget(player: player),
+                    ),
                   ],
                 );
               } else {

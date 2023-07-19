@@ -7,11 +7,13 @@ import 'package:team_randomizer/modules/game/presentation/group_creation/define_
 
 import '../../../core/data/database_utils.dart';
 import '../../domain/models/group.dart';
+import '../../domain/models/player.dart';
 
 class PlayerCreationPage extends StatefulWidget {
   final Group group;
+  Player? player = null;
 
-  const PlayerCreationPage({Key? key, required this.group}) : super(key: key);
+  PlayerCreationPage({Key? key, required this.group, this.player}) : super(key: key);
 
   @override
   State<PlayerCreationPage> createState() => _PlayerCreationPageState();
@@ -20,6 +22,16 @@ class PlayerCreationPage extends StatefulWidget {
 class _PlayerCreationPageState extends State<PlayerCreationPage> {
   TextEditingController _nameTextFieldController = TextEditingController();
   double _overall = 50;
+
+  @override
+  void initState() {
+    if (widget.player != null) {
+      _overall = widget.player!.overall.toDouble();
+      _nameTextFieldController.text = widget.player!.name;
+    }
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +62,9 @@ class _PlayerCreationPageState extends State<PlayerCreationPage> {
                 child: Column(
                   children: [
                     _textField(_nameTextFieldController, "Nome"),
-                    SizedBox(height: 16,),
+                    SizedBox(
+                      height: 16,
+                    ),
                     Container(
                       decoration: BoxDecoration(
                         borderRadius: new BorderRadius.circular(8.0),
@@ -123,13 +137,18 @@ class _PlayerCreationPageState extends State<PlayerCreationPage> {
           child: Text("Ok"),
           onPressed: () {
             DatabaseReference ref = getDatabase().ref();
-            ref.child("player").push().set(
-              {
+            if (widget.player == null) {
+              ref.child("player").push().set({
                 "name": _nameTextFieldController.text,
                 "overall": _overall.toInt(),
                 "groupId": widget.group.id,
-              },
-            );
+              });
+            } else {
+              ref.child("player/${widget.player!.id}").update({
+                "name": _nameTextFieldController.text,
+                "overall": _overall.toInt(),
+              });
+            }
             Navigator.pop(context);
           },
         )

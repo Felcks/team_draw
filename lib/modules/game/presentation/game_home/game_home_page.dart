@@ -87,8 +87,24 @@ class _GameHomePageState extends State<GameHomePage> {
       }).toList(growable: true);
 
       List<GamePlayer> playersWithStatusUpdated = _players.map((player) {
-        DataSnapshot gamePlayerSnapshot = gamePlayersOnThisGame
-            .firstWhere((element) => (element.value as Map<Object?, Object?>)["playerId"] == player.player.id);
+        bool gamePlayerNotFound = false;
+        DataSnapshot gamePlayerSnapshot = gamePlayersOnThisGame.firstWhere(
+            (element) => (element.value as Map<Object?, Object?>)["playerId"] == player.player.id, orElse: () {
+          gamePlayerNotFound = true;
+          return gamePlayersOnThisGame.first;
+        });
+
+        if(gamePlayerNotFound) {
+          DatabaseReference ref = getDatabase().ref();
+          print(player.player.id);
+          ref.child("game_player").push().set({
+            "playerId": player.player.id,
+            "gameId": widget.game.id,
+            "status": "NOT_CONFIRMED"
+          });
+
+          return GamePlayer(id: "", player: player.player, status: GamePlayerStatus.NOT_CONFIRMED);
+        }
 
         GamePlayerStatus status = GamePlayerStatus.values.firstWhere(
             (element) => element.name == (gamePlayerSnapshot.value as Map<Object?, Object?>)["status"],
@@ -108,7 +124,6 @@ class _GameHomePageState extends State<GameHomePage> {
     super.initState();
 
     listenToPlayersUpdate();
-    listenToGamePlayersUpdate();
   }
 
   @override
@@ -199,9 +214,7 @@ class _GameHomePageState extends State<GameHomePage> {
                               setState(() {
                                 selectedGamePlayerStatus = item;
                                 DatabaseReference ref = getDatabase().ref();
-                                ref.child("game_player/${gamePlayer.id}").update({
-                                  "status": item.name
-                                });
+                                ref.child("game_player/${gamePlayer.id}").update({"status": item.name});
                               });
                             },
                             itemBuilder: (BuildContext context) => <PopupMenuEntry<GamePlayerStatus>>[
