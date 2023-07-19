@@ -1,4 +1,6 @@
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:team_randomizer/modules/core/data/database_utils.dart';
 import 'package:team_randomizer/modules/game/domain/models/game_player_status.dart';
 import 'package:team_randomizer/modules/team_draw/domain/models/team_draw.dart';
 import 'package:team_randomizer/modules/team_draw/domain/repositories/team_draw_repository.dart';
@@ -27,14 +29,71 @@ class _TeamDrawPageState extends State<TeamDrawPage> {
 
   TeamDraw? _teamDraw = null;
 
-  @override
+  List<GamePlayer> _players = List.empty(growable: true);
+
+  List<GamePlayer> getPlayersReady() => _players.where((element) => element.status == GamePlayerStatus.READY).toList();
+
+  /*@override
   void initState() {
     super.initState();
-    _playersPerTeam =
-        (widget.game.players.where((element) => element.status == GamePlayerStatus.READY).length / 2).toInt();
+
     setState(() {
       _teamDraw = teamDrawRepository.getTeamDraw();
     });
+  }*/
+
+  @override
+  void initState() {
+    super.initState();
+
+    FirebaseDatabase database = getDatabase();
+
+    //GET PLAYERS FROM player and filter
+    database.ref("player").onValue.listen((event) async {
+      List<DataSnapshot> databasePlayersOnThisGroupSnapshot = event.snapshot.children.where((element) {
+        Map<Object?, Object?> playerMap = element.value as Map<Object?, Object?>;
+        return playerMap["groupId"] == widget.game.groupId;
+      }).toList(growable: true);
+
+      List<Player> databasePlayersOnThisGroup = List.empty(growable: true);
+      databasePlayersOnThisGroupSnapshot.forEach((element) {
+        Map<Object?, Object?> player = (element.value as Map<Object?, Object?>);
+        databasePlayersOnThisGroup.add(
+          Player(
+            groupId: (player["groupId"] as String),
+            id: element.key.toString(),
+            name: (player["name"] as String),
+            overall: (player["overall"] as int),
+          ),
+        );
+      });
+
+      DataSnapshot gamePlayersSnapshot = await database.ref("game_player").get();
+      List<DataSnapshot> gamePlayersOnThisGame = gamePlayersSnapshot.children.where((element) {
+        Map<Object?, Object?> gamePlayerMap = element.value as Map<Object?, Object?>;
+        return gamePlayerMap["gameId"] == widget.game.id;
+      }).toList(growable: true);
+
+      List<GamePlayer> gamePlayers = databasePlayersOnThisGroup.map((player) {
+        DataSnapshot gamePlayerSnapshot = gamePlayersOnThisGame
+            .firstWhere((element) => (element.value as Map<Object?, Object?>)["playerId"] == player.id);
+
+        /*String gamePlayerDatabase = gamePlayersOnThisGame.firstWhere((element) => ((element.value as Map<Object?, Object?>)["playerId"] == player.id).value as (element as Map<Object?, Object?>)["status"]*/
+        GamePlayerStatus status = GamePlayerStatus.values.firstWhere(
+            (element) => element.name == (gamePlayerSnapshot.value as Map<Object?, Object?>)["status"],
+            orElse: () => GamePlayerStatus.NOT_CONFIRMED);
+
+        return GamePlayer(player: player, status: status);
+      }).toList();
+
+      setState(() {
+        _players = gamePlayers;
+      });
+
+      /**/
+    });
+
+    _playersPerTeam = (_players.where((element) => element.status == GamePlayerStatus.READY).length / 2).toInt();
   }
 
   @override
@@ -76,8 +135,12 @@ class _TeamDrawPageState extends State<TeamDrawPage> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(team.teamName, style: TextStyle(fontSize: 20),),
-                          Text("Overall - ${(team.players.map((e) => e.overall).reduce((value, element) => value + element) / team.players.length).toInt()}")
+                          Text(
+                            team.teamName,
+                            style: TextStyle(fontSize: 20),
+                          ),
+                          Text(
+                              "Overall - ${(team.players.map((e) => e.overall).reduce((value, element) => value + element) / team.players.length).toInt()}")
                         ],
                       ),
                       Column(
@@ -124,7 +187,7 @@ class _TeamDrawPageState extends State<TeamDrawPage> {
                   style: _getConfigTextStyle(),
                 ),
                 Text(
-                  "${widget.game.players.where((element) => element.status == GamePlayerStatus.READY).length}",
+                  "${_players.where((element) => element.status == GamePlayerStatus.READY).length}",
                   style: _getConfigTextStyle(),
                 )
               ],
@@ -171,7 +234,7 @@ class _TeamDrawPageState extends State<TeamDrawPage> {
                   style: _getConfigTextStyle(),
                 ),
                 Text(
-                  "${(widget.game.players.where((element) => element.status == GamePlayerStatus.READY).length / _playersPerTeam).toInt()}",
+                  "${teamsAmount()}",
                   style: _getConfigTextStyle(),
                 ),
               ],
@@ -180,6 +243,13 @@ class _TeamDrawPageState extends State<TeamDrawPage> {
         ),
       ),
     );
+  }
+
+  int teamsAmount() {
+    if (getPlayersReady().length == 0)
+      return 0;
+    else
+      return (getPlayersReady().length / _playersPerTeam).toInt();
   }
 
   TextStyle _getConfigTextStyle() {

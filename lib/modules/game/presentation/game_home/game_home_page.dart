@@ -69,7 +69,7 @@ class _GameHomePageState extends State<GameHomePage> {
           DataSnapshot gamePlayerSnapshot = gamePlayersOnThisGame.firstWhere((element) => (element.value as Map<Object?, Object?>)["playerId"] == player.id);
 
           /*String gamePlayerDatabase = gamePlayersOnThisGame.firstWhere((element) => ((element.value as Map<Object?, Object?>)["playerId"] == player.id).value as (element as Map<Object?, Object?>)["status"]*/
-          GamePlayerStatus status = GamePlayerStatus.values.firstWhere((element) => element.name == (gamePlayerSnapshot.value as Map<Object?, Object?>)["status"]);
+          GamePlayerStatus status = GamePlayerStatus.values.firstWhere((element) => element.name == (gamePlayerSnapshot.value as Map<Object?, Object?>)["status"], orElse: () => GamePlayerStatus.NOT_CONFIRMED);
 
           return GamePlayer(player: player, status: status);
         }).toList();
