@@ -275,7 +275,7 @@ class _TeamDrawPageState extends State<TeamDrawPage> {
           setState(
             () {
               _teamDraw = _teamRandomizerUseCase
-                  .invoke(TeamDrawUseCaseParams(players: _players.map((e) => e.player).toList(), playersPerTeam: _playersPerTeam));
+                  .invoke(TeamDrawUseCaseParams(players: getPlayersReady().map((e) => e.player).toList(), playersPerTeam: _playersPerTeam));
               teamDrawRepository.setTeamDraw(_teamDraw);
             },
           );
