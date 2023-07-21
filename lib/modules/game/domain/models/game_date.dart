@@ -1,22 +1,7 @@
-sealed class GameDate {
-  DateTime getNextDate();
-}
-
-class OneTimeDate extends GameDate {
-  final DateTime date;
-
-  OneTimeDate({required this.date});
-
-  @override
-  DateTime getNextDate() {
-    return date;
-  }
-}
-
-class RecurrentDate extends GameDate {
+class GameDate {
   final int weekDay;
 
-  RecurrentDate({required this.weekDay});
+  GameDate({required this.weekDay});
 
   @override
   DateTime getNextDate() {

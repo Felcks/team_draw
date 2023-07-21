@@ -3,9 +3,13 @@ import 'package:day_night_time_picker/lib/state/time.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:team_randomizer/modules/game/domain/models/game_date.dart';
 import 'package:team_randomizer/modules/game/presentation/group_creation/define_hour_widget.dart';
+import 'package:team_randomizer/modules/group/domain/repositories/group_repository.dart';
+import 'package:uuid/uuid.dart';
 
 import '../../../core/data/database_utils.dart';
+import '../../domain/models/group.dart';
 
 class GroupCreation extends StatefulWidget {
   const GroupCreation({Key? key}) : super(key: key);
@@ -22,6 +26,9 @@ class _GroupCreationState extends State<GroupCreation> {
   Time _startTime = Time(hour: 18, minute: 00, second: 00);
   Time _endTime = Time(hour: 19, minute: 00, second: 00);
 
+
+  GroupRepository groupRepository = GroupRepositoryImpl();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,8 +40,14 @@ class _GroupCreationState extends State<GroupCreation> {
               height: 16,
             ),
             Container(
-              width: MediaQuery.of(context).size.width * 0.8,
-              height: MediaQuery.of(context).size.width * 0.5,
+              width: MediaQuery
+                  .of(context)
+                  .size
+                  .width * 0.8,
+              height: MediaQuery
+                  .of(context)
+                  .size
+                  .width * 0.5,
               decoration: new BoxDecoration(
                 color: Colors.grey.withOpacity(0.1),
                 shape: BoxShape.rectangle,
@@ -70,7 +83,7 @@ class _GroupCreationState extends State<GroupCreation> {
                 },
                 child: Container(
                   decoration:
-                      BoxDecoration(color: Colors.grey.withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
+                  BoxDecoration(color: Colors.grey.withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
                   child: SizedBox(
                     height: 60,
                     child: Padding(
@@ -156,7 +169,17 @@ class _GroupCreationState extends State<GroupCreation> {
         TextButton(
           child: Text("Ok"),
           onPressed: () {
-            DatabaseReference ref = getDatabase().ref();
+            Group group = Group(id: Uuid().v4(),
+                title: _titleTextFieldController.text,
+                startTime: TimeOfDay(hour: _startTime.hour, minute: _startTime.minute),
+                endTime: TimeOfDay(hour: _endTime.hour, minute: _endTime.minute),
+                local:  _locationTextFieldController.text,
+                image: "",
+                date: GameDate(weekDay: _weekDay.weekday),
+            );
+            groupRepository.createGroup(group);
+
+            /*DatabaseReference ref = getDatabase().ref();
             ref.child("group").push().set({
               "title": _titleTextFieldController.text,
               "local": _locationTextFieldController.text,
@@ -166,6 +189,7 @@ class _GroupCreationState extends State<GroupCreation> {
               "startTime": TimeOfDay(hour: _startTime.hour, minute: _startTime.minute).format(context),
               "endTime": TimeOfDay(hour: _endTime.hour, minute: _endTime.minute).format(context)
             });
+            */
             Navigator.pop(context);
           },
         )
@@ -197,8 +221,14 @@ class _GroupCreationState extends State<GroupCreation> {
         return StatefulBuilder(
           builder: (BuildContext context, void Function(void Function()) setModalState) {
             return Container(
-              height: MediaQuery.of(context).size.height * 0.7,
-              width: MediaQuery.of(context).size.width,
+              height: MediaQuery
+                  .of(context)
+                  .size
+                  .height * 0.7,
+              width: MediaQuery
+                  .of(context)
+                  .size
+                  .width,
               decoration: BoxDecoration(
                 borderRadius: new BorderRadius.only(
                   topLeft: Radius.circular(32),
@@ -246,7 +276,7 @@ class _GroupCreationState extends State<GroupCreation> {
                         child: Column(
                           children: List.generate(
                             DateTime.daysPerWeek,
-                            (index) {
+                                (index) {
                               return Padding(
                                 padding: EdgeInsets.symmetric(vertical: 12, horizontal: 0),
                                 child: Column(

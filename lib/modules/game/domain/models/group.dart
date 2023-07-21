@@ -10,7 +10,6 @@ class Group {
   final TimeOfDay endTime;
   final String local;
   final String image;
-  final List<Player> players;
   final GameDate date;
 
   Group({
@@ -20,7 +19,6 @@ class Group {
     required this.endTime,
     required this.local,
     required this.image,
-    required this.players,
     required this.date,
   });
 }

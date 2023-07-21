@@ -1,15 +1,13 @@
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:team_randomizer/modules/core/data/database_utils.dart';
-import 'package:team_randomizer/modules/game/domain/repositories/group_repository.dart';
 import 'package:team_randomizer/modules/game/presentation/group_creation/group_creation.dart';
 import 'package:team_randomizer/modules/game/presentation/group_home//group_home_page.dart';
 import 'package:team_randomizer/modules/game/presentation/group_list/group_widget.dart';
+import 'package:team_randomizer/modules/group/domain/repositories/group_repository.dart';
 
 import '../../domain/models/game_date.dart';
 import '../../domain/models/group.dart';
-import 'package:firebase_database/firebase_database.dart';
-import 'package:firebase_core/firebase_core.dart';
 
 class GroupListPage extends StatefulWidget {
   const GroupListPage({Key? key}) : super(key: key);
@@ -19,43 +17,20 @@ class GroupListPage extends StatefulWidget {
 }
 
 class _GroupListPageState extends State<GroupListPage> {
-  GroupRepository gameRepository = GroupRepository();
   List<Group> _groups = List.empty(growable: true);
+
+  GroupRepositoryImpl repositoryImpl = GroupRepositoryImpl();
+
+  Function() _unsubscriber = () {};
 
   @override
   void initState() {
     super.initState();
 
-    final FirebaseApp _app = Firebase.app();
-    FirebaseDatabase database = FirebaseDatabase.instanceFor(
-      app: _app,
-      databaseURL: "https://team-randomizer-1516f-default-rtdb.europe-west1.firebasedatabase.app/",
-    );
-
-    database.ref("group").onValue.listen((event) {
-      List<Group> result = List.empty(growable: true);
-      event.snapshot.children.forEach((element) {
-        Map<Object?, Object?> group = (element.value as Map<Object?, Object?>);
-        String? startTime = group["startTime"] as String;
-        String? endTime = group["endTime"] as String;
-        int weekDay = (group["weekday"] as int);
-
-        result.add(
-          Group(
-            id: element.key ?? "",
-            title: group["title"] as String? ?? "",
-            players: List.empty(),
-            startTime: TimeOfDay(hour:int.parse(startTime.split(":")[0]),minute: int.parse(startTime.split(":")[1])),
-            endTime: TimeOfDay(hour:int.parse(endTime.split(":")[0]),minute: int.parse(endTime.split(":")[1])),
-            local: group["local"] as String? ?? "",
-            image: "https://lh5.googleusercontent.com/p/AF1QipNczAUhbyQf2koTig0m41v7eShuv8MffbD6YCB8=w650-h486-k-no",
-            date: RecurrentDate(weekDay: weekDay),
-          ),
-        );
-      });
-
+    _unsubscriber = repositoryImpl.listenGroups((list) {
       setState(() {
-        _groups = result;
+        print(list);
+        _groups = list;
       });
     });
   }
@@ -97,9 +72,10 @@ class _GroupListPageState extends State<GroupListPage> {
                         onClick: (group) {
                           Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (context) => GroupHomePage(
-                                group: group,
-                              ),
+                              builder: (context) =>
+                                  GroupHomePage(
+                                    group: group,
+                                  ),
                             ),
                           );
                         },

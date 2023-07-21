@@ -122,28 +122,26 @@ class _GameListPageState extends State<GameListPage> {
                                     //Add logic to generate game
                                     DateTime _currentTime = DateTime.now();
                                     GameDate _groupGameDate = widget.group.date;
-                                    if(_groupGameDate is RecurrentDate) {
-                                      while(_currentTime.weekday != _groupGameDate.weekDay){
-                                        _currentTime = _currentTime.add(Duration(days: 1));
-                                      }
+                                    while(_currentTime.weekday != _groupGameDate.weekDay){
+                                      _currentTime = _currentTime.add(Duration(days: 1));
+                                    }
 
+                                    DatabaseReference ref = getDatabase().ref();
+                                    ref.child("game").push().set({
+                                      "date": _currentTime.millisecondsSinceEpoch,
+                                      "groupId": widget.group.id,
+                                    }).whenComplete(() async {
                                       DatabaseReference ref = getDatabase().ref();
-                                      ref.child("game").push().set({
-                                        "date": _currentTime.millisecondsSinceEpoch,
-                                        "groupId": widget.group.id,
-                                      }).whenComplete(() async {
-                                        DatabaseReference ref = getDatabase().ref();
-                                        final games = await ref.child("game").get();
-                                        String newGameId = games.children.last.key ?? "";
-                                        widget.players.forEach((element) {
-                                          ref.child("game_player").push().set({
-                                            "playerId": element.id,
-                                            "gameId": newGameId,
-                                            "status": "NOT_CONFIRMED"
-                                          });
+                                      final games = await ref.child("game").get();
+                                      String newGameId = games.children.last.key ?? "";
+                                      widget.players.forEach((element) {
+                                        ref.child("game_player").push().set({
+                                          "playerId": element.id,
+                                          "gameId": newGameId,
+                                          "status": "NOT_CONFIRMED"
                                         });
                                       });
-                                    }
+                                    });
                                   },
                                   icon: Icon(
                                     Icons.add,
