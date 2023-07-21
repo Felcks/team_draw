@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
-import '../../domain/models/group.dart';
+import '../../../game/domain/models/group.dart';
 
 class GroupWidget extends StatelessWidget {
   final Group group;

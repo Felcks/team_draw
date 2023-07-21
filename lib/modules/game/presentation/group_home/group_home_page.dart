@@ -8,6 +8,7 @@ import 'package:team_randomizer/modules/game/presentation/group_home/new_player_
 import 'package:intl/intl.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:team_randomizer/modules/game/presentation/player_creation/player_creation.dart';
+import 'package:team_randomizer/modules/player/domain/player_repository.dart';
 
 class GroupHomePage extends StatefulWidget {
   final Group group;
@@ -21,11 +22,19 @@ class GroupHomePage extends StatefulWidget {
 class _GroupHomePageState extends State<GroupHomePage> {
   List<Player> _players = List.empty(growable: true);
 
+  PlayerRepositoryImpl playerRepository = PlayerRepositoryImpl();
+
   @override
   void initState() {
     super.initState();
 
-    final FirebaseApp _app = Firebase.app();
+    playerRepository.listenPlayers((list) {
+      setState(() {
+        _players = list;
+      });
+    });
+
+    /*final FirebaseApp _app = Firebase.app();
     FirebaseDatabase database = FirebaseDatabase.instanceFor(
       app: _app,
       databaseURL: "https://team-randomizer-1516f-default-rtdb.europe-west1.firebasedatabase.app/",
@@ -50,7 +59,7 @@ class _GroupHomePageState extends State<GroupHomePage> {
       setState(() {
         _players = result;
       });
-    });
+    });*/
   }
 
   @override

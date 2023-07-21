@@ -4,8 +4,10 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:team_randomizer/modules/game/presentation/group_creation/define_hour_widget.dart';
+import 'package:uuid/uuid.dart';
 
 import '../../../core/data/database_utils.dart';
+import '../../../player/domain/player_repository.dart';
 import '../../domain/models/group.dart';
 import '../../domain/models/player.dart';
 
@@ -22,6 +24,8 @@ class PlayerCreationPage extends StatefulWidget {
 class _PlayerCreationPageState extends State<PlayerCreationPage> {
   TextEditingController _nameTextFieldController = TextEditingController();
   double _overall = 50;
+
+  PlayerRepositoryImpl playerRepository = PlayerRepositoryImpl();
 
   @override
   void initState() {
@@ -136,7 +140,27 @@ class _PlayerCreationPageState extends State<PlayerCreationPage> {
         TextButton(
           child: Text("Ok"),
           onPressed: () {
-            DatabaseReference ref = getDatabase().ref();
+            if (widget.player == null) {
+              Player player = Player(
+                id: Uuid().v4(),
+                groupId: widget.group.id,
+                name: _nameTextFieldController.text,
+                overall: _overall.toInt(),
+              );
+
+              playerRepository.createPlayer(player);
+            } else {
+              Player player = Player(
+                id: widget.player!.id,
+                groupId: widget.group.id,
+                name: _nameTextFieldController.text,
+                overall: _overall.toInt(),
+              );
+
+              playerRepository.editPlayer(player);
+            }
+
+            /*DatabaseReference ref = getDatabase().ref();
             if (widget.player == null) {
               ref.child("player").push().set({
                 "name": _nameTextFieldController.text,
@@ -148,7 +172,8 @@ class _PlayerCreationPageState extends State<PlayerCreationPage> {
                 "name": _nameTextFieldController.text,
                 "overall": _overall.toInt(),
               });
-            }
+            }*/
+
             Navigator.pop(context);
           },
         )

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:team_randomizer/modules/game/presentation/group_list/group_list_page.dart';
+import 'package:team_randomizer/modules/group/presentation/group_list/group_list_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
