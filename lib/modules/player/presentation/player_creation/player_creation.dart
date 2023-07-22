@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../game/domain/models/group.dart';
+import '../../../game/domain/models/player.dart';
 import '../../../player/domain/player_repository.dart';
-import '../../domain/models/group.dart';
-import '../../domain/models/player.dart';
 
 class PlayerCreationPage extends StatefulWidget {
   final Group group;

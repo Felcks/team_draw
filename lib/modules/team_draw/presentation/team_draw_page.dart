@@ -10,7 +10,7 @@ import 'package:team_randomizer/modules/team_draw/domain/usecases/team_draw_use_
 import '../../game/domain/models/game.dart';
 import '../../game/domain/models/game_player.dart';
 import '../../game/domain/models/player.dart';
-import '../../game/presentation/group_home/new_player_widget.dart';
+import '../../player/presentation/new_player_widget.dart';
 import '../../randomizer/domain/models/team.dart';
 
 class TeamDrawPage extends StatefulWidget {

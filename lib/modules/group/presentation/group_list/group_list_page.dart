@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:team_randomizer/modules/game/presentation/group_creation/group_creation.dart';
-import 'package:team_randomizer/modules/game/presentation/group_home//group_home_page.dart';
+import 'package:team_randomizer/modules/group/presentation/group_creation/group_creation.dart';
+import 'package:team_randomizer/modules/group/presentation/group_home/group_home_page.dart';
 import 'package:team_randomizer/modules/group/presentation/group_list/group_widget.dart';
 import 'package:team_randomizer/modules/group/domain/repositories/group_repository.dart';
 

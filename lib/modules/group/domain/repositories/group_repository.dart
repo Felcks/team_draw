@@ -1,11 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:day_night_time_picker/day_night_time_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:team_randomizer/modules/game/domain/models/game_date.dart';
 import 'package:team_randomizer/modules/game/domain/models/group.dart';
 import 'package:team_randomizer/modules/group/data/group_dto.dart';
-import 'package:uuid/uuid.dart';
 
 import '../../../core/utils.dart';
 
@@ -20,7 +17,7 @@ abstract class GroupRepository {
 }
 
 class GroupRepositoryImpl extends GroupRepository {
-  FirebaseFirestore db = FirebaseFirestore.instance;
+  FirebaseFirestore _db = FirebaseFirestore.instance;
 
   @override
   Future<void> createGroup(Group group) async {
@@ -34,7 +31,7 @@ class GroupRepositoryImpl extends GroupRepository {
       weekDay: group.date.weekDay,
     );
 
-    db
+    _db
         .collection("groups")
         .add(dto.toJson())
         .then((DocumentReference doc) => print('DocumentSnapshot added with ID: ${doc.id}'));
@@ -47,7 +44,7 @@ class GroupRepositoryImpl extends GroupRepository {
 
   @override
   void Function() listenGroups(onValue(List<Group> list)) {
-    final subscription = db.collection("groups").snapshots().listen((event) {
+    final subscription = _db.collection("groups").snapshots().listen((event) {
     final result = event.docs.map((doc) {
           GroupDTO groupDTO = GroupDTO.fromJson(doc.data());
           return Group(

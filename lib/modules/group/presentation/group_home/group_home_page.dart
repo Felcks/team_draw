@@ -4,11 +4,11 @@ import 'package:flutter/widgets.dart';
 import 'package:team_randomizer/modules/game/domain/models/group.dart';
 import 'package:team_randomizer/modules/game/domain/models/player.dart';
 import 'package:team_randomizer/modules/game/presentation/game_list/game_list_page.dart';
-import 'package:team_randomizer/modules/game/presentation/group_home/new_player_widget.dart';
+import 'package:team_randomizer/modules/player/presentation/new_player_widget.dart';
 import 'package:intl/intl.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:team_randomizer/modules/game/presentation/player_creation/player_creation.dart';
 import 'package:team_randomizer/modules/player/domain/player_repository.dart';
+
+import '../../../player/presentation/player_creation/player_creation.dart';
 
 class GroupHomePage extends StatefulWidget {
   final Group group;
@@ -22,44 +22,17 @@ class GroupHomePage extends StatefulWidget {
 class _GroupHomePageState extends State<GroupHomePage> {
   List<Player> _players = List.empty(growable: true);
 
-  PlayerRepositoryImpl playerRepository = PlayerRepositoryImpl();
+  PlayerRepositoryImpl _playerRepository = PlayerRepositoryImpl();
 
   @override
   void initState() {
     super.initState();
 
-    playerRepository.listenPlayers((list) {
+    _playerRepository.listenPlayers((list) {
       setState(() {
         _players = list;
       });
     });
-
-    /*final FirebaseApp _app = Firebase.app();
-    FirebaseDatabase database = FirebaseDatabase.instanceFor(
-      app: _app,
-      databaseURL: "https://team-randomizer-1516f-default-rtdb.europe-west1.firebasedatabase.app/",
-    );
-
-    database.ref("player").onValue.listen((event) {
-      List<Player> result = List.empty(growable: true);
-      event.snapshot.children
-          .where((element) => (element.value as Map<Object?, Object?>)["groupId"] == widget.group.id)
-          .forEach((element) {
-        Map<Object?, Object?> player = (element.value as Map<Object?, Object?>);
-        result.add(
-          Player(
-            groupId: (player["groupId"] as String),
-            id: element.key.toString(),
-            name: (player["name"] as String),
-            overall: (player["overall"] as int),
-          ),
-        );
-      });
-
-      setState(() {
-        _players = result;
-      });
-    });*/
   }
 
   @override
@@ -124,7 +97,7 @@ class _GroupHomePageState extends State<GroupHomePage> {
                             style: TextStyle(color: Colors.black),
                           ),
                           Text(
-                            formatNextDate(widget.group.date.getNextDate()),
+                            _formatNextDate(widget.group.date.getNextDate()),
                             style: TextStyle(color: Colors.black),
                           ),
                           //TODO substituir com data correta do jogo
@@ -176,7 +149,7 @@ class _GroupHomePageState extends State<GroupHomePage> {
                     ),
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 16),
-                      child: frequentPlayers(),
+                      child: _groupPlayersWidget(),
                     ),
                     SizedBox(
                       height: 16,
@@ -189,10 +162,6 @@ class _GroupHomePageState extends State<GroupHomePage> {
         ],
       ),
     );
-  }
-
-  String formatNextDate(DateTime value) {
-    return DateFormat('EEEE (dd/MM)').format(value);
   }
 
   //TODO transform in a configurable options
@@ -251,7 +220,7 @@ class _GroupHomePageState extends State<GroupHomePage> {
     );
   }
 
-  Widget frequentPlayers() {
+  Widget _groupPlayersWidget() {
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
@@ -328,5 +297,9 @@ class _GroupHomePageState extends State<GroupHomePage> {
         )
       ],
     );
+  }
+
+  String _formatNextDate(DateTime value) {
+    return DateFormat('EEEE (dd/MM)').format(value);
   }
 }

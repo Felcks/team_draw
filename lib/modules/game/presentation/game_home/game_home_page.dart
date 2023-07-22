@@ -7,7 +7,7 @@ import 'package:team_randomizer/modules/game/domain/models/game_player_status.da
 import '../../../stopwatch/presentation/timer_page.dart';
 import '../../../team_draw/presentation/team_draw_page.dart';
 import '../../domain/models/player.dart';
-import '../group_home/new_player_widget.dart';
+import '../../../player/presentation/new_player_widget.dart';
 import 'package:firebase_database/firebase_database.dart';
 
 class GameHomePage extends StatefulWidget {

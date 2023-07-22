@@ -11,7 +11,7 @@ abstract class PlayerRepository {
 }
 
 class PlayerRepositoryImpl extends PlayerRepository {
-  FirebaseFirestore db = FirebaseFirestore.instance;
+  FirebaseFirestore _db = FirebaseFirestore.instance;
 
   @override
   void createPlayer(Player player) {
@@ -22,7 +22,7 @@ class PlayerRepositoryImpl extends PlayerRepository {
       overall: player.overall,
     );
 
-    db
+    _db
         .collection("players")
         .add(dto.toJson())
         .then((DocumentReference doc) => print('DocumentSnapshot added with ID: ${doc.id}'));
@@ -37,16 +37,16 @@ class PlayerRepositoryImpl extends PlayerRepository {
       overall: player.overall,
     );
 
-    db.collection("players").where("id", isEqualTo: dto.id).get().then(
+    _db.collection("players").where("id", isEqualTo: dto.id).get().then(
       (value) {
-        db.collection("players").doc(value.docs.first.id).update(dto.toJson());
+        _db.collection("players").doc(value.docs.first.id).update(dto.toJson());
       },
     );
   }
 
   @override
   void Function() listenPlayers(onValue(List<Player> list)) {
-    final subscription = db.collection("players").snapshots().listen((event) {
+    final subscription = _db.collection("players").snapshots().listen((event) {
       final result = event.docs.map(
         (doc) {
           PlayerDTO dto = PlayerDTO.fromJson(doc.data());
