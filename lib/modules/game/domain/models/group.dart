@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:team_randomizer/modules/game/domain/models/player.dart';
 
 import 'game_date.dart';
 
