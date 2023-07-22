@@ -1,12 +1,6 @@
-import 'package:day_night_time_picker/lib/daynight_timepicker.dart';
-import 'package:day_night_time_picker/lib/state/time.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:team_randomizer/modules/game/presentation/group_creation/define_hour_widget.dart';
 import 'package:uuid/uuid.dart';
 
-import '../../../core/data/database_utils.dart';
 import '../../../player/domain/player_repository.dart';
 import '../../domain/models/group.dart';
 import '../../domain/models/player.dart';
@@ -47,15 +41,7 @@ class _PlayerCreationPageState extends State<PlayerCreationPage> {
             SizedBox(
               height: 16,
             ),
-            Container(
-              width: MediaQuery.of(context).size.width * 0.8,
-              height: MediaQuery.of(context).size.width * 0.5,
-              decoration: new BoxDecoration(
-                color: Colors.grey.withOpacity(0.1),
-                shape: BoxShape.rectangle,
-                borderRadius: BorderRadius.circular(64),
-              ),
-            ),
+            _photoWidget(),
             SizedBox(
               height: 32,
             ),
@@ -65,42 +51,11 @@ class _PlayerCreationPageState extends State<PlayerCreationPage> {
                 padding: EdgeInsets.symmetric(horizontal: 8),
                 child: Column(
                   children: [
-                    _textField(_nameTextFieldController, "Nome"),
+                    _nameTextField(),
                     SizedBox(
                       height: 16,
                     ),
-                    Container(
-                      decoration: BoxDecoration(
-                        borderRadius: new BorderRadius.circular(8.0),
-                        shape: BoxShape.rectangle,
-                        border: Border.all(
-                          width: 1,
-                          color: Colors.grey.withOpacity(1),
-                        ),
-                      ),
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(vertical: 16),
-                        child: Column(
-                          children: [
-                            Text(
-                              "Overall",
-                              style: TextStyle(fontSize: 20),
-                            ),
-                            Slider(
-                              value: _overall,
-                              min: 0,
-                              max: 100,
-                              onChanged: (double value) {
-                                setState(() {
-                                  _overall = value;
-                                });
-                              },
-                            ),
-                            Text(_overall.toInt().toString()),
-                          ],
-                        ),
-                      ),
-                    ),
+                    _overallWidget()
                   ],
                 ),
               ),
@@ -131,7 +86,7 @@ class _PlayerCreationPageState extends State<PlayerCreationPage> {
             Padding(
               padding: const EdgeInsets.only(top: 14.0),
               child: Text(
-                "Adicionar Player",
+                (widget.player == null) ? "Adicionar Jogador" : "Editar Jogador",
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
             ),
@@ -160,20 +115,6 @@ class _PlayerCreationPageState extends State<PlayerCreationPage> {
               playerRepository.editPlayer(player);
             }
 
-            /*DatabaseReference ref = getDatabase().ref();
-            if (widget.player == null) {
-              ref.child("player").push().set({
-                "name": _nameTextFieldController.text,
-                "overall": _overall.toInt(),
-                "groupId": widget.group.id,
-              });
-            } else {
-              ref.child("player/${widget.player!.id}").update({
-                "name": _nameTextFieldController.text,
-                "overall": _overall.toInt(),
-              });
-            }*/
-
             Navigator.pop(context);
           },
         )
@@ -181,18 +122,66 @@ class _PlayerCreationPageState extends State<PlayerCreationPage> {
     );
   }
 
-  Widget _textField(TextEditingController controller, String label) {
+  Widget _nameTextField() {
     return TextField(
-      controller: controller,
+      controller: _nameTextFieldController,
       decoration: InputDecoration(
-          label: Text(label),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(6),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderSide: const BorderSide(width: 1, color: Colors.grey),
-            borderRadius: BorderRadius.circular(6),
-          )),
+        label: Text("Nome"),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(6),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderSide: const BorderSide(width: 1, color: Colors.grey),
+          borderRadius: BorderRadius.circular(6),
+        ),
+      ),
+    );
+  }
+
+  Widget _overallWidget() {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: new BorderRadius.circular(8.0),
+        shape: BoxShape.rectangle,
+        border: Border.all(
+          width: 1,
+          color: Colors.grey.withOpacity(1),
+        ),
+      ),
+      child: Padding(
+        padding: EdgeInsets.symmetric(vertical: 16),
+        child: Column(
+          children: [
+            Text(
+              "Overall",
+              style: TextStyle(fontSize: 20),
+            ),
+            Slider(
+              value: _overall,
+              min: 0,
+              max: 100,
+              onChanged: (double value) {
+                setState(() {
+                  _overall = value;
+                });
+              },
+            ),
+            Text(_overall.toInt().toString()),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _photoWidget() {
+    return Container(
+      width: MediaQuery.of(context).size.width * 0.8,
+      height: MediaQuery.of(context).size.width * 0.5,
+      decoration: new BoxDecoration(
+        color: Colors.grey.withOpacity(0.1),
+        shape: BoxShape.rectangle,
+        borderRadius: BorderRadius.circular(64),
+      ),
     );
   }
 }
