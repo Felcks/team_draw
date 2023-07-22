@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:team_randomizer/modules/match/domain/models/match.dart';
 import 'package:team_randomizer/modules/match/domain/repositories/match_repository.dart';
 import 'package:team_randomizer/modules/match/domain/usecases/generate_next_match_use_case.dart';
+import 'package:team_randomizer/modules/match/presentation/match_home/match_home.dart';
 import 'package:team_randomizer/modules/match/presentation/match_list/match_widget.dart';
 
 import '../../../game/domain/models/group.dart';
@@ -36,8 +37,6 @@ class _MatchListPageState extends State<MatchListPage> {
 
   @override
   Widget build(BuildContext context) {
-    List<Match> matches = _matches;
-
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -64,20 +63,20 @@ class _MatchListPageState extends State<MatchListPage> {
                     crossAxisSpacing: 8,
                     mainAxisSpacing: 8,
                   ),
-                  itemCount: matches.length + 1,
+                  itemCount: _matches.length + 1,
                   itemBuilder: (context, index) {
-                    if (index < matches.length) {
-                      Match match = matches[index];
+                    if (index < _matches.length) {
+                      Match match = _matches[index];
                       return MatchWidget(
                         match: match,
                         onClick: (match) {
-                          /*Navigator.of(context).push(
+                          Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (context) => GameHomePage(
-                                game: game,
+                              builder: (context) => MatchHomePage(
+                                match: match,
                               ),
                             ),
-                          );*/
+                          );
                         },
                       );
                     } else {
