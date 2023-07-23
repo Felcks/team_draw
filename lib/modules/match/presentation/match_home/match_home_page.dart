@@ -4,6 +4,7 @@ import 'package:team_randomizer/modules/match/domain/models/match_player.dart';
 import 'package:team_randomizer/modules/match/domain/models/match_player_status.dart';
 import 'package:team_randomizer/modules/match/domain/repositories/match_player_repository.dart';
 import 'package:team_randomizer/modules/player/domain/player_repository.dart';
+import 'package:team_randomizer/modules/team/presentation/new_team_draw_page.dart';
 
 import '../../../player/presentation/new_player_widget.dart';
 import '../../../stopwatch/presentation/timer_page.dart';
@@ -24,7 +25,6 @@ class _MatchHomePageState extends State<MatchHomePage> {
   PlayerRepository playerRepository = PlayerRepositoryImpl();
   MatchPlayerRepository _matchPlayerRepository = MatchPlayerRepositoryImpl();
   bool _listeningPlayersChange = false;
-
 
   Function() _matchPlayerUpdateUnregister = () {};
   Function() _playerUpdateUnregister = () {};
@@ -84,7 +84,7 @@ class _MatchHomePageState extends State<MatchHomePage> {
       body: (_selectedIndex == 0)
           ? playersListWidget()
           : (_selectedIndex == 1)
-              ? TimerPage() //TeamDrawPage(game: widget.match)
+              ? NewTeamDrawPage(match: widget.match) //TeamDrawPage(game: widget.match)
               : TimerPage(),
     );
   }
