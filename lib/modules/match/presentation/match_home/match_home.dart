@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:team_randomizer/modules/core/data/database_utils.dart';
-import 'package:team_randomizer/modules/game/domain/models/game_player.dart';
-import 'package:team_randomizer/modules/game/domain/models/game_player_status.dart';
 import 'package:team_randomizer/modules/match/domain/models/match.dart';
 import 'package:team_randomizer/modules/match/domain/models/match_player.dart';
 import 'package:team_randomizer/modules/match/domain/models/match_player_status.dart';
-import 'package:team_randomizer/modules/match/domain/repositories/match_repository.dart';
+import 'package:team_randomizer/modules/match/domain/repositories/match_player_repository.dart';
 import 'package:team_randomizer/modules/player/domain/player_repository.dart';
 
-import '../../../stopwatch/presentation/timer_page.dart';
 import '../../../player/presentation/new_player_widget.dart';
+import '../../../stopwatch/presentation/timer_page.dart';
 
 class MatchHomePage extends StatefulWidget {
   final Match match;
@@ -25,15 +22,35 @@ class _MatchHomePageState extends State<MatchHomePage> {
 
   List<MatchPlayer> _matchPlayers = List.empty(growable: true);
   PlayerRepository playerRepository = PlayerRepositoryImpl();
+  MatchPlayerRepository _matchPlayerRepository = MatchPlayerRepositoryImpl();
+  bool _listeningPlayersChange = false;
 
   @override
   void initState() {
     super.initState();
 
-    playerRepository.listenPlayers((list) {
+    _matchPlayerRepository.listenMatches((list) {
       setState(() {
-        _matchPlayers = list.map((e) => MatchPlayer(id: "", player: e, status: MatchPlayerStatus.NOT_CONFIRMED)).toList();
+        _matchPlayers = list;
+        if (!_listeningPlayersChange) {
+          _listeningPlayersChange = true;
+          listenToPlayersChange();
+        }
       });
+    });
+  }
+
+  void listenToPlayersChange() {
+    playerRepository.listenPlayers((list) {
+      list.forEach((element) {
+        //adding status to a player that wasn't there
+        List<String> playersIdOnMatchPlayers = _matchPlayers.map((e) => e.player.id).toList();
+        if (playersIdOnMatchPlayers.contains(element.id) == false) {
+          _matchPlayerRepository.createMatchPlayer(
+              MatchPlayer(matchId: widget.match.id, player: element, status: MatchPlayerStatus.NOT_CONFIRMED));
+        }
+      });
+      //
     });
   }
 
@@ -62,7 +79,7 @@ class _MatchHomePageState extends State<MatchHomePage> {
   }
 
   Widget playersListWidget() {
-    GamePlayerStatus selectedGamePlayerStatus = GamePlayerStatus.NOT_CONFIRMED;
+    MatchPlayerStatus selectedMatchPlayerStatus = MatchPlayerStatus.NOT_CONFIRMED;
     return SafeArea(
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 16),
@@ -114,31 +131,33 @@ class _MatchHomePageState extends State<MatchHomePage> {
                         Positioned(
                           left: 120,
                           top: 40,
-                          child: PopupMenuButton<GamePlayerStatus>(
-                            initialValue: selectedGamePlayerStatus,
+                          child: PopupMenuButton<MatchPlayerStatus>(
+                            initialValue: selectedMatchPlayerStatus,
                             // Callback that sets the selected popup menu item.
-                            onSelected: (GamePlayerStatus item) {
+                            onSelected: (MatchPlayerStatus item) {
                               setState(() {
-                                /*selectedGamePlayerStatus = item;
-                                DatabaseReference ref = getDatabase().ref();
-                                ref.child("game_player/${gamePlayer.id}").update({"status": item.name});*/
+                                selectedMatchPlayerStatus = item;
+                                _matchPlayerRepository.editMatchPlayer(MatchPlayer(
+                                    matchId: gamePlayer.matchId,
+                                    player: gamePlayer.player,
+                                    status: selectedMatchPlayerStatus));
                               });
                             },
-                            itemBuilder: (BuildContext context) => <PopupMenuEntry<GamePlayerStatus>>[
-                              const PopupMenuItem<GamePlayerStatus>(
-                                value: GamePlayerStatus.NOT_CONFIRMED,
+                            itemBuilder: (BuildContext context) => <PopupMenuEntry<MatchPlayerStatus>>[
+                              const PopupMenuItem<MatchPlayerStatus>(
+                                value: MatchPlayerStatus.NOT_CONFIRMED,
                                 child: Text('Não Confirmado'),
                               ),
-                              const PopupMenuItem<GamePlayerStatus>(
-                                value: GamePlayerStatus.CANCELLED,
+                              const PopupMenuItem<MatchPlayerStatus>(
+                                value: MatchPlayerStatus.CANCELLED,
                                 child: Text('Cancelado'),
                               ),
-                              const PopupMenuItem<GamePlayerStatus>(
-                                value: GamePlayerStatus.CONFIRMED,
+                              const PopupMenuItem<MatchPlayerStatus>(
+                                value: MatchPlayerStatus.CONFIRMED,
                                 child: Text('Confirmado'),
                               ),
-                              const PopupMenuItem<GamePlayerStatus>(
-                                value: GamePlayerStatus.READY,
+                              const PopupMenuItem<MatchPlayerStatus>(
+                                value: MatchPlayerStatus.READY,
                                 child: Text('Pronto'),
                               ),
                             ],

@@ -8,6 +8,8 @@ abstract class PlayerRepository {
   void editPlayer(Player player);
 
   void Function() listenPlayers(onValue(List<Player> list));
+
+  Future<List<Player>> getPlayers();
 }
 
 class PlayerRepositoryImpl extends PlayerRepository {
@@ -38,7 +40,7 @@ class PlayerRepositoryImpl extends PlayerRepository {
     );
 
     _db.collection("players").where("id", isEqualTo: dto.id).get().then(
-      (value) {
+          (value) {
         _db.collection("players").doc(value.docs.first.id).update(dto.toJson());
       },
     );
@@ -48,7 +50,7 @@ class PlayerRepositoryImpl extends PlayerRepository {
   void Function() listenPlayers(onValue(List<Player> list)) {
     final subscription = _db.collection("players").snapshots().listen((event) {
       final result = event.docs.map(
-        (doc) {
+            (doc) {
           PlayerDTO dto = PlayerDTO.fromJson(doc.data());
           return Player(
             id: dto.id,
@@ -64,4 +66,19 @@ class PlayerRepositoryImpl extends PlayerRepository {
 
     return () => subscription.cancel();
   }
+
+  @override
+  Future<List<Player>> getPlayers() async {
+    final value = await _db.collection("players").get();
+    return value.docs.map((doc) {
+      PlayerDTO dto = PlayerDTO.fromJson(doc.data());
+      return Player(
+        id: dto.id,
+        groupId: dto.groupId,
+        name: dto.name,
+        overall: dto.overall,
+      );
+    }).toList();
+  }
+
 }
