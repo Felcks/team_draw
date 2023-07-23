@@ -23,15 +23,23 @@ class _GroupHomePageState extends State<GroupHomePage> {
 
   PlayerRepositoryImpl _playerRepository = PlayerRepositoryImpl();
 
+  Function() _playerUpdateUnregister = () {};
+
   @override
   void initState() {
     super.initState();
 
-    _playerRepository.listenPlayers((list) {
+    _playerUpdateUnregister = _playerRepository.listenPlayers((list) {
       setState(() {
         _players = list;
       });
     });
+  }
+
+  @override
+  void dispose() {
+    _playerUpdateUnregister.call();
+    super.dispose();
   }
 
   @override

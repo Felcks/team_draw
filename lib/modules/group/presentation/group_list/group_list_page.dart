@@ -18,18 +18,24 @@ class _GroupListPageState extends State<GroupListPage> {
 
   GroupRepositoryImpl repositoryImpl = GroupRepositoryImpl();
 
-  Function() _unsubscriber = () {};
+  Function() _groupListUnregister = () {};
 
   @override
   void initState() {
     super.initState();
 
-    _unsubscriber = repositoryImpl.listenGroups((list) {
+    _groupListUnregister = repositoryImpl.listenGroups((list) {
       setState(() {
         print(list);
         _groups = list;
       });
     });
+  }
+
+  @override
+  void dispose() {
+    _groupListUnregister.call();
+    super.dispose();
   }
 
   @override

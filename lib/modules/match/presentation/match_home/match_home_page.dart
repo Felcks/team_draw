@@ -25,11 +25,15 @@ class _MatchHomePageState extends State<MatchHomePage> {
   MatchPlayerRepository _matchPlayerRepository = MatchPlayerRepositoryImpl();
   bool _listeningPlayersChange = false;
 
+
+  Function() _matchPlayerUpdateUnregister = () {};
+  Function() _playerUpdateUnregister = () {};
+
   @override
   void initState() {
     super.initState();
 
-    _matchPlayerRepository.listenMatches((list) {
+    _matchPlayerUpdateUnregister = _matchPlayerRepository.listenMatches((list) {
       setState(() {
         _matchPlayers = list;
         if (!_listeningPlayersChange) {
@@ -40,8 +44,15 @@ class _MatchHomePageState extends State<MatchHomePage> {
     });
   }
 
+  @override
+  void dispose() {
+    _matchPlayerUpdateUnregister.call();
+    _playerUpdateUnregister.call();
+    super.dispose();
+  }
+
   void listenToPlayersChange() {
-    playerRepository.listenPlayers((list) {
+    _playerUpdateUnregister = playerRepository.listenPlayers((list) {
       list.forEach((element) {
         //adding status to a player that wasn't there
         List<String> playersIdOnMatchPlayers = _matchPlayers.map((e) => e.player.id).toList();

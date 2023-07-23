@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:team_randomizer/modules/match/domain/models/match.dart';
 import 'package:team_randomizer/modules/match/domain/repositories/match_repository.dart';
 import 'package:team_randomizer/modules/match/domain/usecases/generate_next_match_use_case.dart';
-import 'package:team_randomizer/modules/match/presentation/match_home/match_home.dart';
+import 'package:team_randomizer/modules/match/presentation/match_home/match_home_page.dart';
 import 'package:team_randomizer/modules/match/presentation/match_list/match_widget.dart';
 
 import '../../../game/domain/models/group.dart';
@@ -22,17 +22,23 @@ class _MatchListPageState extends State<MatchListPage> {
 
   List<Match> _matches = List.empty(growable: true);
 
-  Function() _unsubscriber = () {};
+  Function() _matchUpdateUnregister = () {};
 
   @override
   void initState() {
     super.initState();
 
-    _unsubscriber = matchRepository.listenMatches((list) {
+    _matchUpdateUnregister = matchRepository.listenMatches((list) {
       setState(() {
         _matches = list;
       });
     });
+  }
+
+  @override
+  void dispose() {
+    _matchUpdateUnregister.call();
+    super.dispose();
   }
 
   @override
