@@ -12,6 +12,8 @@ abstract class TeamPlayerRepository {
 
   void editTeamPlayer(TeamPlayer input);
 
+  void deleteTeamPlayer(TeamPlayer input);
+
   void Function() listenTeamPlayers(onValue(List<TeamPlayer> list));
 }
 
@@ -36,6 +38,15 @@ class TeamPlayerRepositoryImpl extends TeamPlayerRepository {
         _db.collection("team_player").doc(value.docs.first.id).update(dto.toJson());
       },
     );
+  }
+
+  @override
+  void deleteTeamPlayer(TeamPlayer input) {
+    TeamPlayerDTO dto = TeamPlayerDTO(playerId: input.player.id, teamId: input.team.id);
+
+    _db.collection("team_player").where("teamId", isEqualTo: dto.teamId).where("playerId", isEqualTo: dto.playerId).get().then((value) {
+      _db.collection("team_player").doc(value.docs.first.id).delete();
+    });
   }
 
   @override

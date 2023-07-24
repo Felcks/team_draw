@@ -33,7 +33,7 @@ class _NewTeamDrawPageState extends State<NewTeamDrawPage> {
   Function() _matchPlayerUpdateUnregister = () {};
   Function() _teamPlayersUpdateUnregister = () {};
 
-  int _playersPerTeam = 5;
+  int _playersPerTeam = 1;
 
   //TODO: Create Widgets to show the teams (copy from old team_draw)
   //TODO: New usecase to randomize teams with new classes
@@ -48,7 +48,10 @@ class _NewTeamDrawPageState extends State<NewTeamDrawPage> {
   @override
   void initState() {
     super.initState();
+    listenToUpdates();
+  }
 
+  void listenToUpdates() {
     _matchPlayerUpdateUnregister = _matchPlayerRepository.listenMatches((list) {
       setState(() {
         _matchPlayers = list;
@@ -73,12 +76,7 @@ class _NewTeamDrawPageState extends State<NewTeamDrawPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: drawHome(),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          executeTeamDraw();
-        },
-        label: Text("Gerar times"),
-      ),
+      floatingActionButton: getFloatActionButton(),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
@@ -107,7 +105,17 @@ class _NewTeamDrawPageState extends State<NewTeamDrawPage> {
   }
 
   void cleanSortedTeams() {
+    _teamPlayersUpdateUnregister.call();
+    _matchPlayerUpdateUnregister.call();
 
+    _sortedTeams.forEach((sortedTeam) {
+      sortedTeam.players.forEach((element) {
+        teamPlayerRepository.deleteTeamPlayer(TeamPlayer(team: sortedTeam.team, player: element));
+      });
+      _teamRepository.deleteTeam(sortedTeam.team);
+    });
+
+    listenToUpdates();
   }
 
   Widget _showTeamsWidget() {
@@ -254,7 +262,7 @@ class _NewTeamDrawPageState extends State<NewTeamDrawPage> {
     } else {
       return FloatingActionButton.extended(
         onPressed: () {
-
+          cleanSortedTeams();
           executeTeamDraw();
         },
         label: Text("Refazer times"),

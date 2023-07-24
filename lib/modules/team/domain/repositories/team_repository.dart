@@ -8,6 +8,8 @@ abstract class TeamRepository {
 
   void editTeam(Team input);
 
+  void deleteTeam(Team input);
+
   void Function() listenTeams(onValue(List<Team> list));
 
   Future<List<Team>> getTeams();
@@ -40,6 +42,18 @@ class TeamRepositoryImpl extends TeamRepository {
         .collection("teams")
         .add(dto.toJson())
         .then((DocumentReference doc) => print('DocumentSnapshot added with ID: ${doc.id}'));
+  }
+
+  @override
+  void deleteTeam(Team input) {
+    TeamDTO dto = TeamDTO(
+      id: input.id,
+      name: input.name,
+    );
+
+    _db.collection("teams").where("id", isEqualTo: dto.id).get().then((value) {
+      _db.collection("teams").doc(value.docs.first.id).delete();
+    });
   }
 
   @override
