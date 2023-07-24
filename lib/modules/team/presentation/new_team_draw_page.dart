@@ -6,12 +6,15 @@ import 'package:team_randomizer/modules/team/domain/models/team_player.dart';
 import 'package:team_randomizer/modules/team/domain/repositories/team_player_repository.dart';
 import 'package:team_randomizer/modules/match/domain/models/match.dart';
 import 'package:team_randomizer/modules/team/domain/repositories/team_repository.dart';
+import 'package:team_randomizer/modules/team/domain/usecases/get_generated_teams.dart';
 import 'package:team_randomizer/modules/team_draw/domain/usecases/team_draw_overall_use_case.dart';
 import 'package:team_randomizer/modules/team_draw/domain/usecases/team_draw_use_case.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../game/domain/models/player.dart';
 import '../../match/domain/models/match_player.dart';
 import '../../match/domain/repositories/match_player_repository.dart';
+import '../../player/presentation/new_player_widget.dart';
 import '../../team_draw/domain/models/team_draw.dart';
 
 class NewTeamDrawPage extends StatefulWidget {
@@ -38,13 +41,14 @@ class _NewTeamDrawPageState extends State<NewTeamDrawPage> {
 
   TeamDrawUseCase _teamDrawUseCase = TeamDrawOverallUseCase();
 
-
   //TODO: Create Widgets to show the teams (copy from old team_draw)
   //TODO: New usecase to randomize teams with new classes
   //TODO: Move Player to right package
   //TODO: Erase old code (team_draw, game, group, old views, old use cases)
   //TODO: Make stopwatch decreasing time
   //TODO: Allow change team configuration (side by side with matches, but 1/4 of size, search icon)
+
+  GetGeneratedTeamsUseCase _generatedTeamsUseCase = GetGeneratedTeamsUseCaseImpl();
 
   @override
   void initState() {
@@ -56,24 +60,9 @@ class _NewTeamDrawPageState extends State<NewTeamDrawPage> {
       });
     });
 
-    _teamPlayersUpdateUnregister = teamPlayerRepository.listenTeamPlayers((list) {
-      //Move this logic to a use case
-      List<GeneratedTeam> generatedTeams = List.empty(growable: true);
-
-      list.forEach((element) {
-        List<String> generatedTeamsIds = generatedTeams.map((e) => e.team.id).toList();
-        if (generatedTeamsIds.contains(element) == false) {
-          generatedTeams.add(GeneratedTeam(team: element.team, player: [element.player]));
-        } else {
-          generatedTeams
-              .firstWhere((generatedTeam) => generatedTeam.team.id == element.team.id)
-              .player
-              .add(element.player);
-        }
-      });
-
+    _teamPlayersUpdateUnregister = _generatedTeamsUseCase.invoke((list) {
       setState(() {
-        _generatedTeams = generatedTeams;
+        _generatedTeams = list;
       });
     });
   }
@@ -90,19 +79,20 @@ class _NewTeamDrawPageState extends State<NewTeamDrawPage> {
     return Scaffold(
       body: drawHome(),
       floatingActionButton: FloatingActionButton.extended(
-          onPressed: () {
-            TeamDraw teamDraw = _teamDrawUseCase.invoke(TeamDrawUseCaseParams(
-                players: getPlayersReady().map((e) => e.player).toList(), playersPerTeam: _playersPerTeam));
-            teamDraw.teams.forEach((team) {
-              Team newTeam = Team(id: Uuid().v4(), name: team.teamName);
-              _teamRepository.createTeam(newTeam);
+        onPressed: () {
+          TeamDraw teamDraw = _teamDrawUseCase.invoke(TeamDrawUseCaseParams(
+              players: getPlayersReady().map((e) => e.player).toList(), playersPerTeam: _playersPerTeam));
+          teamDraw.teams.forEach((team) {
+            Team newTeam = Team(id: Uuid().v4(), name: team.teamName);
+            _teamRepository.createTeam(newTeam);
 
-              team.players.forEach((element) {
-                teamPlayerRepository.createTeamPlayer(TeamPlayer(team: newTeam, player: element));
-              });
+            team.players.forEach((element) {
+              teamPlayerRepository.createTeamPlayer(TeamPlayer(team: newTeam, player: element));
             });
-          },
-          label: Text("Gerar times")),
+          });
+        },
+        label: Text("Gerar times"),
+      ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
@@ -110,9 +100,57 @@ class _NewTeamDrawPageState extends State<NewTeamDrawPage> {
   Widget drawHome() {
     if (_generatedTeams.isEmpty) {
       return _configurationWidget();
+    } else {
+      return _showTeamsWidget();
     }
+  }
 
-    return Column(children: List.generate(_generatedTeams.length, (index) => Text(_generatedTeams[index].team.name)));
+  Widget _showTeamsWidget() {
+    return SafeArea(
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        child: SingleChildScrollView(
+          child: Column(
+            children: List.generate(
+              _generatedTeams.length,
+              (index) {
+                GeneratedTeam generatedTeam = _generatedTeams[index];
+                return Padding(
+                  padding: EdgeInsets.symmetric(vertical: 8),
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            generatedTeam.team.name,
+                            style: TextStyle(fontSize: 20),
+                          ),
+                          Text(
+                            "Overall - ${(generatedTeam.players.map((e) => e.overall).reduce((value, element) => value + element) / generatedTeam.players.length).toInt()}",
+                          )
+                        ],
+                      ),
+                      Column(
+                        children: List.generate(
+                          generatedTeam.players.length,
+                          (index) {
+                            Player player = generatedTeam.players[index];
+                            return NewPlayerWidget(
+                              player: player,
+                            );
+                          },
+                        ),
+                      )
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   Widget _configurationWidget() {

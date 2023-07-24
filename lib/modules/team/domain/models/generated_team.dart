@@ -6,7 +6,7 @@ import '../../../game/domain/models/player.dart';
 class GeneratedTeam {
 
   final Team team;
-  final List<Player> player;
+  final List<Player> players;
 
-  GeneratedTeam({required this.team, required this.player});
+  GeneratedTeam({required this.team, required this.players});
 }
