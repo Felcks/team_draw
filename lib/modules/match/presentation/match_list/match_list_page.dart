@@ -5,7 +5,7 @@ import 'package:team_randomizer/modules/match/domain/usecases/generate_next_matc
 import 'package:team_randomizer/modules/match/presentation/match_home/match_home_page.dart';
 import 'package:team_randomizer/modules/match/presentation/match_list/match_widget.dart';
 
-import '../../../game/domain/models/group.dart';
+import '../../../group/domain/models/group.dart';
 
 class MatchListPage extends StatefulWidget {
   final Group group;

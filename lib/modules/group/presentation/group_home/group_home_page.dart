@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:team_randomizer/modules/game/domain/models/group.dart';
-import 'package:team_randomizer/modules/game/domain/models/player.dart';
+import 'package:team_randomizer/modules/group/domain/models/group.dart';
+import 'package:team_randomizer/modules/player/domain/player.dart';
 import 'package:team_randomizer/modules/match/presentation/match_list/match_list_page.dart';
 import 'package:team_randomizer/modules/player/presentation/new_player_widget.dart';
 import 'package:intl/intl.dart';

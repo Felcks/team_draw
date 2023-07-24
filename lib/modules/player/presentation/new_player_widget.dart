@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../game/domain/models/player.dart';
+import '../domain/player.dart';
 
 class NewPlayerWidget extends StatelessWidget {
   final Player player;

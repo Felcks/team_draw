@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:team_randomizer/modules/player/domain/player_repository.dart';
 import 'package:team_randomizer/modules/team/domain/repositories/team_repository.dart';
 
-import '../../../game/domain/models/player.dart';
+import '../../../player/domain/player.dart';
 import '../../data/models/team_player_dto.dart';
 import '../models/team.dart';
 import '../models/team_player.dart';

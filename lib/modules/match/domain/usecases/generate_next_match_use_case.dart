@@ -2,8 +2,8 @@ import 'package:team_randomizer/modules/match/domain/repositories/match_reposito
 import 'package:team_randomizer/modules/match/domain/models/match.dart';
 import 'package:uuid/uuid.dart';
 
-import '../../../game/domain/models/game_date.dart';
-import '../../../game/domain/models/group.dart';
+import '../models/game_date.dart';
+import '../../../group/domain/models/group.dart';
 
 abstract class GenerateNextMatchUseCase {
   void invoke(Group group, DateTime lastMatchDate);

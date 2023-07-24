@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:team_randomizer/modules/game/domain/models/player.dart';
+import 'package:team_randomizer/modules/player/domain/player.dart';
 import 'package:team_randomizer/modules/player/data/player_dto.dart';
 
 abstract class PlayerRepository {

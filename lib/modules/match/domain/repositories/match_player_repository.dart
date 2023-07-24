@@ -4,7 +4,7 @@ import 'package:team_randomizer/modules/match/domain/models/match_player.dart';
 import 'package:team_randomizer/modules/match/domain/models/match_player_status.dart';
 import 'package:team_randomizer/modules/player/domain/player_repository.dart';
 
-import '../../../game/domain/models/player.dart';
+import '../../../player/domain/player.dart';
 
 abstract class MatchPlayerRepository {
   void createMatchPlayer(MatchPlayer input);

@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:team_randomizer/modules/game/domain/models/game_date.dart';
-import 'package:team_randomizer/modules/game/domain/models/group.dart';
+import 'package:team_randomizer/modules/match/domain/models/game_date.dart';
+import 'package:team_randomizer/modules/group/domain/models/group.dart';
 import 'package:team_randomizer/modules/group/data/group_dto.dart';
 
 import '../../../core/utils.dart';

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'game_date.dart';
+import '../../../match/domain/models/game_date.dart';
 
 class Group {
   final String id;

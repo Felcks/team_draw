@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:team_randomizer/modules/game/domain/models/player.dart';
+import 'package:team_randomizer/modules/player/domain/player.dart';
 import 'package:team_randomizer/modules/randomizer/domain/models/team.dart';
 
 abstract class TeamRandomizerUseCase {

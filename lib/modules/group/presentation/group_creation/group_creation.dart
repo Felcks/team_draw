@@ -1,12 +1,12 @@
 import 'package:day_night_time_picker/lib/state/time.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:team_randomizer/modules/game/domain/models/game_date.dart';
+import 'package:team_randomizer/modules/match/domain/models/game_date.dart';
 import 'package:team_randomizer/modules/group/domain/repositories/group_repository.dart';
 import 'package:team_randomizer/modules/group/presentation/group_creation/define_hour_widget.dart';
 import 'package:uuid/uuid.dart';
 
-import '../../../game/domain/models/group.dart';
+import '../../domain/models/group.dart';
 
 class GroupCreation extends StatefulWidget {
   const GroupCreation({Key? key}) : super(key: key);

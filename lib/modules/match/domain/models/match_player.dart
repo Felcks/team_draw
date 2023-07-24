@@ -1,4 +1,4 @@
-import 'package:team_randomizer/modules/game/domain/models/player.dart';
+import 'package:team_randomizer/modules/player/domain/player.dart';
 import 'package:team_randomizer/modules/match/domain/models/match_player_status.dart';
 
 class MatchPlayer {

@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
-import '../../game/domain/models/player.dart';
+import '../../player/domain/player.dart';
 
 
 class PlayerWidget extends StatefulWidget {

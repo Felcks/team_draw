@@ -1,6 +1,6 @@
-import 'dart:math';
+/*import 'dart:math';
 
-import '../../../game/domain/models/player.dart';
+import '../../../player/domain/player.dart';
 import '../../../randomizer/domain/models/team.dart';
 import '../models/team_draw.dart';
 import 'team_draw_use_case.dart';
@@ -24,4 +24,4 @@ class TeamDrawTrivialUseCase extends TeamDrawUseCase {
     List<Team> teams = generateTeams(players, teamsGenerated, params.playersPerTeam);
     return TeamDraw(players: params.players, createdAt: DateTime.now(), teams: teams);
   }
-}
+}*/

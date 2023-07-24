@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:team_randomizer/modules/randomizer/presentation/player_widget.dart';
 
-import '../../game/domain/models/player.dart';
+import '../../player/domain/player.dart';
 
 class FootballGamePage extends StatefulWidget {
   const FootballGamePage({Key? key}) : super(key: key);

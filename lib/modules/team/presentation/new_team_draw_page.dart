@@ -8,7 +8,7 @@ import 'package:team_randomizer/modules/team/domain/repositories/team_repository
 import 'package:team_randomizer/modules/team/domain/usecases/get_generated_teams.dart';
 import 'package:team_randomizer/modules/team/domain/usecases/team_draw_by_overall_use_case.dart';
 import 'package:team_randomizer/modules/team/domain/usecases/team_draw_use_case.dart';
-import '../../game/domain/models/player.dart';
+import '../../player/domain/player.dart';
 import '../../match/domain/models/match_player.dart';
 import '../../match/domain/repositories/match_player_repository.dart';
 import '../../player/presentation/new_player_widget.dart';

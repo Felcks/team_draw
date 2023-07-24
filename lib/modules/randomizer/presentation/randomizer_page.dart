@@ -4,7 +4,7 @@ import 'package:team_randomizer/modules/randomizer/domain/models/team.dart';
 import 'package:team_randomizer/modules/randomizer/domain/usecases/team_randomizer_use_case.dart';
 import 'package:team_randomizer/modules/randomizer/presentation/player_widget.dart';
 
-import '../../game/domain/models/player.dart';
+import '../../player/domain/player.dart';
 import '../domain/usecases/team_randomizer_using_stars_use_case.dart';
 
 class RandomizerPage extends StatefulWidget {

@@ -4,7 +4,7 @@ import 'package:team_randomizer/modules/group/presentation/group_home/group_home
 import 'package:team_randomizer/modules/group/presentation/group_list/group_widget.dart';
 import 'package:team_randomizer/modules/group/domain/repositories/group_repository.dart';
 
-import '../../../game/domain/models/group.dart';
+import '../../domain/models/group.dart';
 
 class GroupListPage extends StatefulWidget {
   const GroupListPage({Key? key}) : super(key: key);
