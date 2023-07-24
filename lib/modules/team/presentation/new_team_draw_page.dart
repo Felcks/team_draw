@@ -1,21 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:team_randomizer/modules/match/domain/models/match_player_status.dart';
 import 'package:team_randomizer/modules/team/domain/models/generated_team.dart';
-import 'package:team_randomizer/modules/team/domain/models/team.dart';
 import 'package:team_randomizer/modules/team/domain/models/team_player.dart';
 import 'package:team_randomizer/modules/team/domain/repositories/team_player_repository.dart';
 import 'package:team_randomizer/modules/match/domain/models/match.dart';
 import 'package:team_randomizer/modules/team/domain/repositories/team_repository.dart';
 import 'package:team_randomizer/modules/team/domain/usecases/get_generated_teams.dart';
-import 'package:team_randomizer/modules/team_draw/domain/usecases/team_draw_overall_use_case.dart';
-import 'package:team_randomizer/modules/team_draw/domain/usecases/team_draw_use_case.dart';
-import 'package:uuid/uuid.dart';
-
+import 'package:team_randomizer/modules/team/domain/usecases/team_draw_by_overall_use_case.dart';
+import 'package:team_randomizer/modules/team/domain/usecases/team_draw_use_case.dart';
 import '../../game/domain/models/player.dart';
 import '../../match/domain/models/match_player.dart';
 import '../../match/domain/repositories/match_player_repository.dart';
 import '../../player/presentation/new_player_widget.dart';
-import '../../team_draw/domain/models/team_draw.dart';
 
 class NewTeamDrawPage extends StatefulWidget {
   final Match match;
@@ -32,14 +28,12 @@ class _NewTeamDrawPageState extends State<NewTeamDrawPage> {
   MatchPlayerRepository _matchPlayerRepository = MatchPlayerRepositoryImpl();
 
   List<MatchPlayer> _matchPlayers = List.empty(growable: true);
-  List<GeneratedTeam> _generatedTeams = List.empty(growable: true);
+  List<SortedTeam> _sortedTeams = List.empty(growable: true);
 
   Function() _matchPlayerUpdateUnregister = () {};
   Function() _teamPlayersUpdateUnregister = () {};
 
   int _playersPerTeam = 5;
-
-  TeamDrawUseCase _teamDrawUseCase = TeamDrawOverallUseCase();
 
   //TODO: Create Widgets to show the teams (copy from old team_draw)
   //TODO: New usecase to randomize teams with new classes
@@ -49,6 +43,7 @@ class _NewTeamDrawPageState extends State<NewTeamDrawPage> {
   //TODO: Allow change team configuration (side by side with matches, but 1/4 of size, search icon)
 
   GetGeneratedTeamsUseCase _generatedTeamsUseCase = GetGeneratedTeamsUseCaseImpl();
+  TeamDrawUseCase _teamDrawUseCase = TeamDrawByOverallUseCase();
 
   @override
   void initState() {
@@ -62,7 +57,7 @@ class _NewTeamDrawPageState extends State<NewTeamDrawPage> {
 
     _teamPlayersUpdateUnregister = _generatedTeamsUseCase.invoke((list) {
       setState(() {
-        _generatedTeams = list;
+        _sortedTeams = list;
       });
     });
   }
@@ -80,16 +75,7 @@ class _NewTeamDrawPageState extends State<NewTeamDrawPage> {
       body: drawHome(),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
-          TeamDraw teamDraw = _teamDrawUseCase.invoke(TeamDrawUseCaseParams(
-              players: getPlayersReady().map((e) => e.player).toList(), playersPerTeam: _playersPerTeam));
-          teamDraw.teams.forEach((team) {
-            Team newTeam = Team(id: Uuid().v4(), name: team.teamName);
-            _teamRepository.createTeam(newTeam);
-
-            team.players.forEach((element) {
-              teamPlayerRepository.createTeamPlayer(TeamPlayer(team: newTeam, player: element));
-            });
-          });
+          executeTeamDraw();
         },
         label: Text("Gerar times"),
       ),
@@ -98,11 +84,30 @@ class _NewTeamDrawPageState extends State<NewTeamDrawPage> {
   }
 
   Widget drawHome() {
-    if (_generatedTeams.isEmpty) {
+    if (_sortedTeams.isEmpty) {
       return _configurationWidget();
     } else {
       return _showTeamsWidget();
     }
+  }
+
+  void executeTeamDraw() {
+    _sortedTeams = _teamDrawUseCase.invoke(getPlayersReady().map((e) => e.player).toList(), _playersPerTeam);
+    saveSortedTeams();
+  }
+
+  void saveSortedTeams() {
+    _sortedTeams.forEach((sortedTeam) {
+      _teamRepository.createTeam(sortedTeam.team);
+
+      sortedTeam.players.forEach((player) {
+        teamPlayerRepository.createTeamPlayer(TeamPlayer(team: sortedTeam.team, player: player));
+      });
+    });
+  }
+
+  void cleanSortedTeams() {
+
   }
 
   Widget _showTeamsWidget() {
@@ -112,9 +117,9 @@ class _NewTeamDrawPageState extends State<NewTeamDrawPage> {
         child: SingleChildScrollView(
           child: Column(
             children: List.generate(
-              _generatedTeams.length,
+              _sortedTeams.length,
               (index) {
-                GeneratedTeam generatedTeam = _generatedTeams[index];
+                SortedTeam generatedTeam = _sortedTeams[index];
                 return Padding(
                   padding: EdgeInsets.symmetric(vertical: 8),
                   child: Column(
@@ -235,6 +240,26 @@ class _NewTeamDrawPageState extends State<NewTeamDrawPage> {
 
   TextStyle _getConfigTextStyle() {
     return TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.grey.shade600);
+  }
+
+  FloatingActionButton getFloatActionButton()
+  {
+    if(_sortedTeams.isEmpty) {
+      return FloatingActionButton.extended(
+        onPressed: () {
+          executeTeamDraw();
+        },
+        label: Text("Gerar times"),
+      );
+    } else {
+      return FloatingActionButton.extended(
+        onPressed: () {
+
+          executeTeamDraw();
+        },
+        label: Text("Refazer times"),
+      );
+    }
   }
 
   List<MatchPlayer> getPlayersReady() {
