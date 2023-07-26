@@ -40,19 +40,24 @@ class _GroupListPageState extends State<GroupListPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Padding(
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+
+        ),
+        body: Padding(
           padding: EdgeInsets.symmetric(horizontal: 16),
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Expanded(
                 flex: 1,
                 child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       "Grupos",
-                      style: TextStyle(fontSize: 22),
+                      style: TextStyle(fontSize: 24, fontWeight: FontWeight.normal),
                       textAlign: TextAlign.start,
                     ),
                   ],

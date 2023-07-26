@@ -36,7 +36,6 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
   intl: ^0.18.1
-  firebase_database:
   day_night_time_picker:
   cloud_firestore:
   freezed_annotation: ^2.4.1
@@ -76,6 +75,39 @@ flutter:
   - assets/dice.png
   - assets/pop.png
   - assets/playing-card.png
+
+  fonts:
+    - family: Fulbo
+      fonts:
+        - asset: assets/FulboArgenta-7B9G4.otf
+    - family: FulboTano
+      fonts:
+        - asset: assets/FulboTano-d9ABZ.otf
+    - family: Crudex
+      fonts:
+        - asset: assets/Crudex-4BDYB.ttf
+    - family: Varane
+      fonts:
+        - asset: assets/VaraneFreePersonalUsed-DO8q0.otf
+    - family: Sanford
+      fonts:
+        - asset: assets/Sanfordregiondemo-WyGrG.otf
+    - family: Ranked
+      fonts:
+        - asset: assets/RankedSports-4BMrB.ttf
+    - family: Catenaccio
+      fonts:
+        - asset: assets/Catenaccio-2O0av.otf
+    - family: Mirava
+      fonts:
+        - asset: assets/MiravaRegularPersonalUseOnl-gxaeR.otf
+    - family: Ponymaker
+      fonts:
+        - asset: assets/Ponymaker-nzAg.ttf
+    - family: Haunted
+      fonts:
+        - asset: assets/CfHauntedHouseRegular-K3DX.ttf
+
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

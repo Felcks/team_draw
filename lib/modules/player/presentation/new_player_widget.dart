@@ -24,16 +24,20 @@ class NewPlayerWidget extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                player.name,
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              Column(
+                children: [
+                  Text(
+                    player.name,
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                ],
               ),
               Column(
                 children: [
                   Text("Overall Rating", style: TextStyle(fontSize: 12)),
                   Text(
                     player.overall.toString(),
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   )
                 ],
               )
