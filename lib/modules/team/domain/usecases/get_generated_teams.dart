@@ -15,7 +15,7 @@ class GetGeneratedTeamsUseCaseImpl extends GetGeneratedTeamsUseCase {
 
       list.forEach((element) {
         List<String> generatedTeamsIds = generatedTeams.map((e) => e.team.id).toList();
-        if (generatedTeamsIds.contains(element) == false) {
+        if (generatedTeamsIds.contains(element.team.id) == false) {
           generatedTeams.add(SortedTeam(team: element.team, players: [element.player]));
         } else {
           generatedTeams

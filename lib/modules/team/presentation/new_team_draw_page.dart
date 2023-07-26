@@ -60,6 +60,7 @@ class _NewTeamDrawPageState extends State<NewTeamDrawPage> {
 
     _teamPlayersUpdateUnregister = _generatedTeamsUseCase.invoke((list) {
       setState(() {
+        print("aaa $list");
         _sortedTeams = list;
       });
     });
@@ -83,7 +84,9 @@ class _NewTeamDrawPageState extends State<NewTeamDrawPage> {
 
   Widget drawHome() {
     if (_sortedTeams.isEmpty) {
-      return _configurationWidget();
+      return Center(
+        child: Text("Nenhum time sorteado"),
+      );
     } else {
       return _showTeamsWidget();
     }
@@ -91,6 +94,7 @@ class _NewTeamDrawPageState extends State<NewTeamDrawPage> {
 
   void executeTeamDraw() {
     _sortedTeams = _teamDrawUseCase.invoke(getPlayersReady().map((e) => e.player).toList(), _playersPerTeam);
+    print("sorted tems 2 $_sortedTeams");
     saveSortedTeams();
   }
 
@@ -119,6 +123,7 @@ class _NewTeamDrawPageState extends State<NewTeamDrawPage> {
   }
 
   Widget _showTeamsWidget() {
+    print("generated teams $_sortedTeams");
     return SafeArea(
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
@@ -166,7 +171,7 @@ class _NewTeamDrawPageState extends State<NewTeamDrawPage> {
     );
   }
 
-  Widget _configurationWidget() {
+  Widget _configurationWidget(void Function(void Function()) setModalState) {
     return SafeArea(
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
@@ -206,7 +211,7 @@ class _NewTeamDrawPageState extends State<NewTeamDrawPage> {
                     children: [
                       IconButton(
                           onPressed: () {
-                            setState(() {
+                            setModalState(() {
                               if (_playersPerTeam > 0) _playersPerTeam -= 1;
                             });
                           },
@@ -217,7 +222,7 @@ class _NewTeamDrawPageState extends State<NewTeamDrawPage> {
                       ),
                       IconButton(
                           onPressed: () {
-                            setState(() {
+                            setModalState(() {
                               _playersPerTeam += 1;
                             });
                           },
@@ -240,6 +245,11 @@ class _NewTeamDrawPageState extends State<NewTeamDrawPage> {
                 ),
               ],
             ),
+            SizedBox(height: 32,),
+            Center(child: ElevatedButton(onPressed: () {
+              cleanSortedTeams();
+              executeTeamDraw();
+            }, child: Text("Sortear")))
           ],
         ),
       ),
@@ -250,20 +260,21 @@ class _NewTeamDrawPageState extends State<NewTeamDrawPage> {
     return TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.grey.shade600);
   }
 
-  FloatingActionButton getFloatActionButton()
-  {
-    if(_sortedTeams.isEmpty) {
+  FloatingActionButton getFloatActionButton() {
+    if (_sortedTeams.isEmpty) {
       return FloatingActionButton.extended(
         onPressed: () {
-          executeTeamDraw();
+          _showConfiguration();
+          //executeTeamDraw();
         },
         label: Text("Gerar times"),
       );
     } else {
       return FloatingActionButton.extended(
         onPressed: () {
-          cleanSortedTeams();
-          executeTeamDraw();
+          _showConfiguration();
+          //cleanSortedTeams();
+          //executeTeamDraw();
         },
         label: Text("Refazer times"),
       );
@@ -279,5 +290,71 @@ class _NewTeamDrawPageState extends State<NewTeamDrawPage> {
       return 0;
     else
       return (getPlayersReady().length / _playersPerTeam).toInt();
+  }
+
+  void _showConfiguration() {
+    showModalBottomSheet<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (BuildContext context, void Function(void Function()) setModalState) {
+            return Container(
+              height: MediaQuery.of(context).size.height * .42,
+              width: MediaQuery.of(context).size.width,
+              decoration: BoxDecoration(
+                borderRadius: new BorderRadius.only(
+                  topLeft: Radius.circular(32),
+                  topRight: Radius.circular(32),
+                ),
+                shape: BoxShape.rectangle,
+                color: Colors.white,
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  SizedBox(
+                    height: 16,
+                  ),
+                  SizedBox(
+                    width: 32,
+                    child: Divider(
+                      color: Colors.black,
+                      height: 1,
+                    ),
+                  ),
+                  SizedBox(
+                    height: 8,
+                  ),
+                  Text(
+                    "Sorteio",
+                    style: TextStyle(fontSize: 22, color: Colors.black, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(
+                    height: 8,
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: new BorderRadius.all(
+                          Radius.circular(8),
+                        ),
+                        shape: BoxShape.rectangle,
+                        color: Colors.grey.withOpacity(0),
+                      ),
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 8.0),
+                        child: _configurationWidget(setModalState),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 }

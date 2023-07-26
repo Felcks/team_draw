@@ -10,6 +10,7 @@ class TeamDrawByOverallUseCase extends TeamDrawUseCase {
   @override
   List<SortedTeam> invoke(List<Player> players, int playersPerTeam) {
     int amountOfTeamsToGenerate = (players.length / playersPerTeam).toInt();
+    print("Amount of teams to generated $amountOfTeamsToGenerate");
     List<SortedTeam> bestSortedTeams = generateTeams(players, amountOfTeamsToGenerate, playersPerTeam);
     double lowerStandardDerivation = calculateStandardDerivation(bestSortedTeams);
 
@@ -29,6 +30,7 @@ class TeamDrawByOverallUseCase extends TeamDrawUseCase {
       }
     }
 
+    print("bestSortedTeams $bestSortedTeams");
     return bestSortedTeams;
   }
 
