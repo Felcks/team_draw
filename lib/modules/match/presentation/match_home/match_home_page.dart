@@ -33,7 +33,7 @@ class _MatchHomePageState extends State<MatchHomePage> {
   void initState() {
     super.initState();
 
-    _matchPlayerUpdateUnregister = _matchPlayerRepository.listenMatches((list) {
+    _matchPlayerUpdateUnregister = _matchPlayerRepository.listenMatchPlayers(widget.match.id, (list) {
       setState(() {
         _matchPlayers = list;
         if (!_listeningPlayersChange) {

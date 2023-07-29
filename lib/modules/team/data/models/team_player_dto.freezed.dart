@@ -22,6 +22,7 @@ TeamPlayerDTO _$TeamPlayerDTOFromJson(Map<String, dynamic> json) {
 mixin _$TeamPlayerDTO {
   String get teamId => throw _privateConstructorUsedError;
   String get playerId => throw _privateConstructorUsedError;
+  String get matchId => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -35,7 +36,7 @@ abstract class $TeamPlayerDTOCopyWith<$Res> {
           TeamPlayerDTO value, $Res Function(TeamPlayerDTO) then) =
       _$TeamPlayerDTOCopyWithImpl<$Res, TeamPlayerDTO>;
   @useResult
-  $Res call({String teamId, String playerId});
+  $Res call({String teamId, String playerId, String matchId});
 }
 
 /// @nodoc
@@ -53,6 +54,7 @@ class _$TeamPlayerDTOCopyWithImpl<$Res, $Val extends TeamPlayerDTO>
   $Res call({
     Object? teamId = null,
     Object? playerId = null,
+    Object? matchId = null,
   }) {
     return _then(_value.copyWith(
       teamId: null == teamId
@@ -62,6 +64,10 @@ class _$TeamPlayerDTOCopyWithImpl<$Res, $Val extends TeamPlayerDTO>
       playerId: null == playerId
           ? _value.playerId
           : playerId // ignore: cast_nullable_to_non_nullable
+              as String,
+      matchId: null == matchId
+          ? _value.matchId
+          : matchId // ignore: cast_nullable_to_non_nullable
               as String,
     ) as $Val);
   }
@@ -75,7 +81,7 @@ abstract class _$$_TeamPlayerDTOCopyWith<$Res>
       __$$_TeamPlayerDTOCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String teamId, String playerId});
+  $Res call({String teamId, String playerId, String matchId});
 }
 
 /// @nodoc
@@ -91,6 +97,7 @@ class __$$_TeamPlayerDTOCopyWithImpl<$Res>
   $Res call({
     Object? teamId = null,
     Object? playerId = null,
+    Object? matchId = null,
   }) {
     return _then(_$_TeamPlayerDTO(
       teamId: null == teamId
@@ -101,6 +108,10 @@ class __$$_TeamPlayerDTOCopyWithImpl<$Res>
           ? _value.playerId
           : playerId // ignore: cast_nullable_to_non_nullable
               as String,
+      matchId: null == matchId
+          ? _value.matchId
+          : matchId // ignore: cast_nullable_to_non_nullable
+              as String,
     ));
   }
 }
@@ -108,7 +119,8 @@ class __$$_TeamPlayerDTOCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$_TeamPlayerDTO implements _TeamPlayerDTO {
-  const _$_TeamPlayerDTO({required this.teamId, required this.playerId});
+  const _$_TeamPlayerDTO(
+      {required this.teamId, required this.playerId, required this.matchId});
 
   factory _$_TeamPlayerDTO.fromJson(Map<String, dynamic> json) =>
       _$$_TeamPlayerDTOFromJson(json);
@@ -117,10 +129,12 @@ class _$_TeamPlayerDTO implements _TeamPlayerDTO {
   final String teamId;
   @override
   final String playerId;
+  @override
+  final String matchId;
 
   @override
   String toString() {
-    return 'TeamPlayerDTO(teamId: $teamId, playerId: $playerId)';
+    return 'TeamPlayerDTO(teamId: $teamId, playerId: $playerId, matchId: $matchId)';
   }
 
   @override
@@ -130,12 +144,13 @@ class _$_TeamPlayerDTO implements _TeamPlayerDTO {
             other is _$_TeamPlayerDTO &&
             (identical(other.teamId, teamId) || other.teamId == teamId) &&
             (identical(other.playerId, playerId) ||
-                other.playerId == playerId));
+                other.playerId == playerId) &&
+            (identical(other.matchId, matchId) || other.matchId == matchId));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, teamId, playerId);
+  int get hashCode => Object.hash(runtimeType, teamId, playerId, matchId);
 
   @JsonKey(ignore: true)
   @override
@@ -154,7 +169,8 @@ class _$_TeamPlayerDTO implements _TeamPlayerDTO {
 abstract class _TeamPlayerDTO implements TeamPlayerDTO {
   const factory _TeamPlayerDTO(
       {required final String teamId,
-      required final String playerId}) = _$_TeamPlayerDTO;
+      required final String playerId,
+      required final String matchId}) = _$_TeamPlayerDTO;
 
   factory _TeamPlayerDTO.fromJson(Map<String, dynamic> json) =
       _$_TeamPlayerDTO.fromJson;
@@ -163,6 +179,8 @@ abstract class _TeamPlayerDTO implements TeamPlayerDTO {
   String get teamId;
   @override
   String get playerId;
+  @override
+  String get matchId;
   @override
   @JsonKey(ignore: true)
   _$$_TeamPlayerDTOCopyWith<_$_TeamPlayerDTO> get copyWith =>

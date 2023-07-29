@@ -9,6 +9,7 @@ class TeamPlayerDTO with _$TeamPlayerDTO {
   const factory TeamPlayerDTO({
     required String teamId,
     required String playerId,
+    required String matchId,
   }) =  _TeamPlayerDTO;
 
   factory TeamPlayerDTO.fromJson(Map<String, Object?> json)

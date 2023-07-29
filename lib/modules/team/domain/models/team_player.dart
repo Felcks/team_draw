@@ -5,6 +5,7 @@ class TeamPlayer {
 
   final Team team;
   final Player player;
+  final String matchId;
 
-  TeamPlayer({required this.team, required this.player});
+  TeamPlayer({required this.team, required this.player, required this.matchId});
 }

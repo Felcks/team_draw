@@ -14,7 +14,7 @@ abstract class TeamPlayerRepository {
 
   void deleteTeamPlayer(TeamPlayer input);
 
-  void Function() listenTeamPlayers(onValue(List<TeamPlayer> list));
+  void Function() listenTeamPlayers(String matchId, onValue(List<TeamPlayer> list));
 }
 
 class TeamPlayerRepositoryImpl extends TeamPlayerRepository {
@@ -25,14 +25,14 @@ class TeamPlayerRepositoryImpl extends TeamPlayerRepository {
 
   @override
   void createTeamPlayer(TeamPlayer input) {
-    TeamPlayerDTO dto = TeamPlayerDTO(playerId: input.player.id, teamId: input.team.id);
+    TeamPlayerDTO dto = TeamPlayerDTO(playerId: input.player.id, teamId: input.team.id, matchId: input.matchId);
 
     _db.collection("team_player").add(dto.toJson()).then((value) => print("DocumentId ${value.id}"));
   }
 
   @override
   void editTeamPlayer(TeamPlayer input) {
-    TeamPlayerDTO dto = TeamPlayerDTO(playerId: input.player.id, teamId: input.team.id);
+    TeamPlayerDTO dto = TeamPlayerDTO(playerId: input.player.id, teamId: input.team.id, matchId: input.matchId);
     _db.collection("team_player").where("playerId", isEqualTo: dto.playerId).where("teamId", isEqualTo: dto.teamId).get().then(
           (value) {
         _db.collection("team_player").doc(value.docs.first.id).update(dto.toJson());
@@ -42,7 +42,7 @@ class TeamPlayerRepositoryImpl extends TeamPlayerRepository {
 
   @override
   void deleteTeamPlayer(TeamPlayer input) {
-    TeamPlayerDTO dto = TeamPlayerDTO(playerId: input.player.id, teamId: input.team.id);
+    TeamPlayerDTO dto = TeamPlayerDTO(playerId: input.player.id, teamId: input.team.id, matchId: input.matchId);
 
     _db.collection("team_player").where("teamId", isEqualTo: dto.teamId).where("playerId", isEqualTo: dto.playerId).get().then((value) {
       _db.collection("team_player").doc(value.docs.first.id).delete();
@@ -50,8 +50,9 @@ class TeamPlayerRepositoryImpl extends TeamPlayerRepository {
   }
 
   @override
-  void Function() listenTeamPlayers(Function(List<TeamPlayer> list) onValue) {
-    final subscription = _db.collection("team_player").snapshots().listen((event) async {
+  void Function() listenTeamPlayers(String matchId, Function(List<TeamPlayer> list) onValue) {
+    print("matchId $matchId");
+    final subscription = _db.collection("team_player").where("matchId", isEqualTo: matchId).snapshots().listen((event) async {
       final players = await playerRepository.getPlayers();
       final teams = await teamRepository.getTeams();
       final result = event.docs.map(
@@ -66,6 +67,7 @@ class TeamPlayerRepositoryImpl extends TeamPlayerRepository {
           return TeamPlayer(
             player: player,
             team: team,
+            matchId: dto.matchId,
           );
         },
       );

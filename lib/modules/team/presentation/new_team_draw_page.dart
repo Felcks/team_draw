@@ -52,15 +52,14 @@ class _NewTeamDrawPageState extends State<NewTeamDrawPage> {
   }
 
   void listenToUpdates() {
-    _matchPlayerUpdateUnregister = _matchPlayerRepository.listenMatches((list) {
+    _matchPlayerUpdateUnregister = _matchPlayerRepository.listenMatchPlayers(widget.match.id, (list) {
       setState(() {
         _matchPlayers = list;
       });
     });
 
-    _teamPlayersUpdateUnregister = _generatedTeamsUseCase.invoke((list) {
+    _teamPlayersUpdateUnregister = _generatedTeamsUseCase.invoke(widget.match.id, (list) {
       setState(() {
-        print("aaa $list");
         _sortedTeams = list;
       });
     });
@@ -103,7 +102,7 @@ class _NewTeamDrawPageState extends State<NewTeamDrawPage> {
       _teamRepository.createTeam(sortedTeam.team);
 
       sortedTeam.players.forEach((player) {
-        teamPlayerRepository.createTeamPlayer(TeamPlayer(team: sortedTeam.team, player: player));
+        teamPlayerRepository.createTeamPlayer(TeamPlayer(team: sortedTeam.team, player: player, matchId: widget.match.id));
       });
     });
   }
@@ -114,7 +113,7 @@ class _NewTeamDrawPageState extends State<NewTeamDrawPage> {
 
     _sortedTeams.forEach((sortedTeam) {
       sortedTeam.players.forEach((element) {
-        teamPlayerRepository.deleteTeamPlayer(TeamPlayer(team: sortedTeam.team, player: element));
+        teamPlayerRepository.deleteTeamPlayer(TeamPlayer(team: sortedTeam.team, player: element, matchId: widget.match.id));
       });
       _teamRepository.deleteTeam(sortedTeam.team);
     });
