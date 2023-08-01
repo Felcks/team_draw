@@ -51,7 +51,6 @@ class TeamPlayerRepositoryImpl extends TeamPlayerRepository {
 
   @override
   void Function() listenTeamPlayers(String matchId, Function(List<TeamPlayer> list) onValue) {
-    print("matchId $matchId");
     final subscription = _db.collection("team_player").where("matchId", isEqualTo: matchId).snapshots().listen((event) async {
       final players = await playerRepository.getPlayers();
       final teams = await teamRepository.getTeams();

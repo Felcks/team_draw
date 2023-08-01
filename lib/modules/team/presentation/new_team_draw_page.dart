@@ -93,7 +93,6 @@ class _NewTeamDrawPageState extends State<NewTeamDrawPage> {
 
   void executeTeamDraw() {
     _sortedTeams = _teamDrawUseCase.invoke(getPlayersReady().map((e) => e.player).toList(), _playersPerTeam);
-    print("sorted tems 2 $_sortedTeams");
     saveSortedTeams();
   }
 
@@ -122,7 +121,6 @@ class _NewTeamDrawPageState extends State<NewTeamDrawPage> {
   }
 
   Widget _showTeamsWidget() {
-    print("generated teams $_sortedTeams");
     return SafeArea(
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),

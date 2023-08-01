@@ -10,7 +10,6 @@ class TeamDrawByOverallUseCase extends TeamDrawUseCase {
   @override
   List<SortedTeam> invoke(List<Player> players, int playersPerTeam) {
     int amountOfTeamsToGenerate = (players.length / playersPerTeam).toInt();
-    print("Amount of teams to generated $amountOfTeamsToGenerate");
     List<SortedTeam> bestSortedTeams = generateTeams(players, amountOfTeamsToGenerate, playersPerTeam);
     double lowerStandardDerivation = calculateStandardDerivation(bestSortedTeams);
 
@@ -30,18 +29,24 @@ class TeamDrawByOverallUseCase extends TeamDrawUseCase {
       }
     }
 
-    print("bestSortedTeams $bestSortedTeams");
     return bestSortedTeams;
   }
 
   List<SortedTeam> generateTeams(List<Player> players, int teamsGenerated, int playersPerTeam) {
-    return List.generate(
+    List<SortedTeam> result = List.generate(
       teamsGenerated,
       (index) => SortedTeam(
         team: Team(id: Uuid().v4(), name: "Time ${index + 1}"),
         players: players.sublist(index * playersPerTeam, index * playersPerTeam + playersPerTeam),
       ),
     );
+
+    if(players.length > playersPerTeam * teamsGenerated) {
+      SortedTeam benchTeam = SortedTeam(team: Team(id: Uuid().v4(), name: "Time ${teamsGenerated + 1}"), players: players.sublist(playersPerTeam * teamsGenerated));
+      result.add(benchTeam);
+    }
+
+    return result;
   }
 
   double calculateStandardDerivation(List<SortedTeam> teams) {
