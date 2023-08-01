@@ -31,28 +31,30 @@ class _DefineHourWidgetState extends State<DefineHourWidget> {
           ),
         );
       },
-      child: SizedBox(
-        width: MediaQuery.of(context).size.width / 3,
-        height: 150,
-        child: Container(
-          decoration: BoxDecoration(
-              shape: BoxShape.rectangle,
-              borderRadius: BorderRadius.all(
-                Radius.circular(32),
+      child: Card(
+        child: SizedBox(
+          width: MediaQuery.of(context).size.width / 3,
+          height: 150,
+          child: Container(
+            decoration: BoxDecoration(
+                shape: BoxShape.rectangle,
+                borderRadius: BorderRadius.all(
+                  Radius.circular(16),
+                ),
+                color: Colors.grey.withOpacity(0.1)
+            ),
+            child: Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  SizedBox(),
+                  Text(widget.label),
+                  Text(widget.time.format(context), style: TextStyle(fontSize: 24),),
+                  SizedBox(),
+                  SizedBox()
+                ],
               ),
-              color: Colors.grey.withOpacity(0.1)
-          ),
-          child: Padding(
-            padding: EdgeInsets.all(8.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                SizedBox(),
-                Text(widget.label),
-                Text(widget.time.format(context), style: TextStyle(fontSize: 36),),
-                SizedBox(),
-                SizedBox()
-              ],
             ),
           ),
         ),

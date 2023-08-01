@@ -6,6 +6,7 @@ import 'package:team_randomizer/modules/group/domain/repositories/group_reposito
 import 'package:team_randomizer/modules/group/presentation/group_creation/define_hour_widget.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../core/utils.dart';
 import '../../domain/models/group.dart';
 
 class GroupCreation extends StatefulWidget {
@@ -35,13 +36,17 @@ class _GroupCreationState extends State<GroupCreation> {
             SizedBox(
               height: 16,
             ),
-            Container(
-              width: MediaQuery.of(context).size.width * 0.8,
-              height: MediaQuery.of(context).size.width * 0.5,
-              decoration: new BoxDecoration(
-                color: Colors.grey.withOpacity(0.1),
-                shape: BoxShape.rectangle,
-                borderRadius: BorderRadius.circular(64),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal:32, vertical: 16),
+              child: ClipRRect(
+                borderRadius: BorderRadius.all(Radius.circular(16)),
+                child: AspectRatio(
+                  aspectRatio: 16 / 9,
+                  child: Image.network(
+                    "https://lh5.googleusercontent.com/p/AF1QipNczAUhbyQf2koTig0m41v7eShuv8MffbD6YCB8=w650-h486-k-no",
+                    fit: BoxFit.fill,
+                  ),
+                ),
               ),
             ),
             SizedBox(
@@ -50,7 +55,7 @@ class _GroupCreationState extends State<GroupCreation> {
             Container(
               color: Colors.white.withOpacity(0.1),
               child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8),
+                padding: EdgeInsets.symmetric(horizontal: 16),
                 child: Column(
                   children: [
                     _textField(_titleTextFieldController, "Nome"),
@@ -66,14 +71,12 @@ class _GroupCreationState extends State<GroupCreation> {
               height: 32,
             ),
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 8),
+              padding: EdgeInsets.symmetric(horizontal: 16),
               child: InkWell(
                 onTap: () {
                   _showWeekDaysModal();
                 },
-                child: Container(
-                  decoration:
-                      BoxDecoration(color: Colors.grey.withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
+                child: Card(
                   child: SizedBox(
                     height: 60,
                     child: Padding(
@@ -109,7 +112,7 @@ class _GroupCreationState extends State<GroupCreation> {
               children: [
                 DefineHourWidget(
                   time: _startTime,
-                  label: "Start",
+                  label: "Início",
                   onChange: (time) {
                     setState(() {
                       _startTime = time;
@@ -118,7 +121,7 @@ class _GroupCreationState extends State<GroupCreation> {
                 ),
                 DefineHourWidget(
                   time: _endTime,
-                  label: "End",
+                  label: "Fim",
                   onChange: (time) {
                     setState(() {
                       _endTime = time;
@@ -138,40 +141,48 @@ class _GroupCreationState extends State<GroupCreation> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        TextButton(
-          child: Text("Cancelar"),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(top: 14.0),
-              child: Text(
-                "Novo Grupo",
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
+        SizedBox(
+          height: 56,
+          child: TextButton(
+            child: Text(
+              "Cancelar",
+              style: TextStyle(fontWeight: FontWeight.normal, fontSize: 20),
             ),
-          ],
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
         ),
-        TextButton(
-          child: Text("Ok"),
-          onPressed: () {
-            Group group = Group(
-              id: Uuid().v4(),
-              title: _titleTextFieldController.text,
-              startTime: TimeOfDay(hour: _startTime.hour, minute: _startTime.minute),
-              endTime: TimeOfDay(hour: _endTime.hour, minute: _endTime.minute),
-              local: _locationTextFieldController.text,
-              image: "",
-              date: GameDate(weekDay: _weekDay.weekday),
-            );
-            _groupRepository.createGroup(group);
-
-            Navigator.pop(context);
-          },
+        SizedBox(
+          height: 56,
+          child: Center(
+            child: Text(
+              "Novo Grupo",
+              style: TextStyle(fontWeight: FontWeight.normal, fontSize: 20),
+            ),
+          ),
+        ),
+        SizedBox(
+          height: 56,
+          child: TextButton(
+            child: Text(
+              "OK",
+              style: TextStyle(fontWeight: FontWeight.normal, fontSize: 20),
+            ),
+            onPressed: () {
+              Group group = Group(
+                id: Uuid().v4(),
+                title: _titleTextFieldController.text,
+                startTime: TimeOfDay(hour: _startTime.hour, minute: _startTime.minute),
+                endTime: TimeOfDay(hour: _endTime.hour, minute: _endTime.minute),
+                local: _locationTextFieldController.text,
+                image: "",
+                date: GameDate(weekDay: _weekDay.weekday),
+              );
+              _groupRepository.createGroup(group);
+              Navigator.pop(context);
+            },
+          ),
         )
       ],
     );
@@ -197,71 +208,62 @@ class _GroupCreationState extends State<GroupCreation> {
 
     showModalBottomSheet<void>(
       context: context,
+      isScrollControlled: (isTablet(context)) ? true : false,
       builder: (BuildContext context) {
         return StatefulBuilder(
           builder: (BuildContext context, void Function(void Function()) setModalState) {
-            return Container(
-              height: MediaQuery.of(context).size.height * 0.7,
-              width: MediaQuery.of(context).size.width,
-              decoration: BoxDecoration(
-                borderRadius: new BorderRadius.only(
-                  topLeft: Radius.circular(32),
-                  topRight: Radius.circular(32),
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                SizedBox(
+                  height: 16,
                 ),
-                shape: BoxShape.rectangle,
-                color: Colors.white,
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  SizedBox(
-                    height: 16,
+                SizedBox(
+                  width: 32,
+                  child: Divider(
+                    color: Colors.black,
+                    height: 1,
                   ),
-                  SizedBox(
-                    width: 32,
-                    child: Divider(
-                      color: Colors.black,
-                      height: 1,
-                    ),
-                  ),
-                  SizedBox(
-                    height: 8,
-                  ),
-                  Text(
-                    "Dia da semana",
-                    style: TextStyle(fontSize: 22, color: Colors.black, fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(
-                    height: 32,
-                  ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: new BorderRadius.all(
-                          Radius.circular(8),
-                        ),
-                        shape: BoxShape.rectangle,
-                        color: Colors.grey.withOpacity(0.1),
+                ),
+                SizedBox(
+                  height: 8,
+                ),
+                Text(
+                  "Dia da semana",
+                  style: TextStyle(fontSize: 22, color: Colors.black, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(
+                  height: 32,
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: new BorderRadius.all(
+                        Radius.circular(8),
                       ),
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 8.0),
-                        child: Column(
-                          children: List.generate(
-                            DateTime.daysPerWeek,
-                            (index) {
-                              return Padding(
-                                padding: EdgeInsets.symmetric(vertical: 12, horizontal: 0),
-                                child: Column(
-                                  children: [
-                                    InkWell(
-                                      onTap: () {
-                                        setState(() {
-                                          _weekDay = DateTime(2018).add(Duration(days: index));
-                                        });
-                                        Navigator.pop(context);
-                                      },
+                      shape: BoxShape.rectangle,
+                      color: Colors.grey.withOpacity(0.1),
+                    ),
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 8.0),
+                      child: Column(
+                        children: List.generate(
+                          DateTime.daysPerWeek,
+                          (index) {
+                            return Padding(
+                              padding: EdgeInsets.symmetric(vertical: 4, horizontal: 0),
+                              child: Column(
+                                children: [
+                                  InkWell(
+                                    onTap: () {
+                                      setState(() {
+                                        _weekDay = DateTime(2018).add(Duration(days: index));
+                                      });
+                                      Navigator.pop(context);
+                                    },
+                                    child: Padding(
+                                      padding: EdgeInsets.all(8),
                                       child: Row(
                                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                         children: [
@@ -273,17 +275,17 @@ class _GroupCreationState extends State<GroupCreation> {
                                         ],
                                       ),
                                     ),
-                                  ],
-                                ),
-                              );
-                            },
-                          ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
                         ),
                       ),
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             );
           },
         );

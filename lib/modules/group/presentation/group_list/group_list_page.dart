@@ -42,28 +42,20 @@ class _GroupListPageState extends State<GroupListPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Center(child: Text("Grupos", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),)),
+        title: Center(
+            child: Text(
+          "Grupos",
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+        )),
       ),
       body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 16),
+        padding: EdgeInsets.symmetric(horizontal: 8),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            /*Expanded(
-              flex: 1,
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Text(
-                    "Grupos",
-                    style: TextStyle(fontSize: 40, fontWeight: FontWeight.normal),
-                    textAlign: TextAlign.start,
-                  ),
-                ],
-              ),
-            ),*/
-            SizedBox(height: 16,),
+            SizedBox(
+              height: 16,
+            ),
             Expanded(
               flex: 10,
               child: _groupList(),
@@ -78,8 +70,8 @@ class _GroupListPageState extends State<GroupListPage> {
     return GridView.builder(
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
-        crossAxisSpacing: 8,
-        mainAxisSpacing: 8,
+        crossAxisSpacing: 2,
+        mainAxisSpacing: 4,
       ),
       itemCount: _groups.length + 1,
       itemBuilder: (context, index) {
@@ -105,37 +97,33 @@ class _GroupListPageState extends State<GroupListPage> {
   }
 
   Widget _createGroupWidget() {
-    return Stack(
-      children: [
-        Container(
-          decoration: BoxDecoration(
-            borderRadius: new BorderRadius.circular(32.0),
-            shape: BoxShape.rectangle,
-            color: Colors.grey.withOpacity(0.1),
+    return InkWell(
+      onTap: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => GroupCreation(),
           ),
-        ),
-        Align(
-          alignment: Alignment.centerLeft,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              IconButton(
-                icon: Icon(
+        );
+      },
+      child: Card(
+        child: Stack(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: new BorderRadius.circular(16.0),
+                shape: BoxShape.rectangle,
+                color: Colors.grey.withOpacity(0.1),
+              ),
+              child: Center(
+                child: Icon(
                   Icons.add,
                   size: 48,
                 ),
-                onPressed: () async {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => GroupCreation(),
-                    ),
-                  );
-                },
               ),
-            ],
-          ),
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 }
