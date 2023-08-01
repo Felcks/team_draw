@@ -11,37 +11,38 @@ class NewPlayerWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.only(top: 8),
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: new BorderRadius.all(
-            Radius.circular(12)
+      child: Card(
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: new BorderRadius.all(
+              Radius.circular(12)
+            ),
+            shape: BoxShape.rectangle,
           ),
-          shape: BoxShape.rectangle,
-          color: Colors.grey.withOpacity(0.1),
-        ),
-        child: Padding(
-          padding: EdgeInsets.all(16),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                children: [
-                  Text(
-                    player.name,
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                ],
-              ),
-              Column(
-                children: [
-                  Text("Overall Rating", style: TextStyle(fontSize: 12)),
-                  Text(
-                    player.overall.toString(),
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  )
-                ],
-              )
-            ],
+          child: Padding(
+            padding: EdgeInsets.all(16),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  children: [
+                    Text(
+                      player.name,
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+                Column(
+                  children: [
+                    Text("Overall Rating", style: TextStyle(fontSize: 12)),
+                    Text(
+                      player.overall.toString(),
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    )
+                  ],
+                )
+              ],
+            ),
           ),
         ),
       ),

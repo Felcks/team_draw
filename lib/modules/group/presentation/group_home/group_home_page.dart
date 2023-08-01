@@ -44,25 +44,35 @@ class _GroupHomePageState extends State<GroupHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    double startOfCard = ((MediaQuery.of(context).size.width * 9) / 16) * 0.9;
     return Scaffold(
       body: Stack(
         children: [
           Align(
             alignment: Alignment.topCenter,
-            child: SizedBox(
-              height: 400,
+            child: AspectRatio(
+              aspectRatio: 16 / 9,
               child: Image.network(
                 widget.group.image,
-                height: 400,
-                fit: BoxFit.fitHeight,
+                fit: BoxFit.cover,
               ),
             ),
           ),
           Positioned(
-            top: 300,
+              left: 16,
+              top: 32,
+              child: IconButton(
+                iconSize: 32,
+                icon: Icon(Icons.arrow_back),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              )),
+          Positioned(
+            top: startOfCard,
             left: 0,
             width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height - 300,
+            height: MediaQuery.of(context).size.height - startOfCard,
             child: Container(
               decoration: BoxDecoration(
                 borderRadius: new BorderRadius.only(
@@ -70,7 +80,7 @@ class _GroupHomePageState extends State<GroupHomePage> {
                   topRight: Radius.circular(32),
                 ),
                 shape: BoxShape.rectangle,
-                color: Colors.white,
+                color: Theme.of(context).colorScheme.surface,
               ),
               child: SingleChildScrollView(
                 child: Column(
@@ -89,23 +99,22 @@ class _GroupHomePageState extends State<GroupHomePage> {
                     ),
                     Text(
                       widget.group.title,
-                      style: TextStyle(fontSize: 22, color: Colors.black, fontWeight: FontWeight.bold),
+                      style: TextStyle(fontSize: 30, color: Colors.black, fontWeight: FontWeight.bold),
                     ),
                     SizedBox(
                       height: 8,
                     ),
                     Padding(
-                      //TODO ajustar esses layouts de detalhe do campo
                       padding: EdgeInsets.symmetric(horizontal: 16),
                       child: Row(
                         children: [
                           Text(
                             "Próxima data: ",
-                            style: TextStyle(color: Colors.black),
+                            style: TextStyle(color: Colors.black, fontSize: 18),
                           ),
                           Text(
                             _formatNextDate(widget.group.date.getNextDate()),
-                            style: TextStyle(color: Colors.black),
+                            style: TextStyle(color: Colors.black, fontSize: 18),
                           ),
                           //TODO substituir com data correta do jogo
                         ],
@@ -117,13 +126,12 @@ class _GroupHomePageState extends State<GroupHomePage> {
                         children: [
                           Text(
                             "Horário: ",
-                            style: TextStyle(color: Colors.black),
+                            style: TextStyle(color: Colors.black, fontSize: 18),
                           ),
                           Text(
                             widget.group.startTime.format(context) + " - " + widget.group.endTime.format(context),
-                            style: TextStyle(color: Colors.black),
+                            style: TextStyle(color: Colors.black, fontSize: 18),
                           ),
-                          //TODO substituir com horario correto
                         ],
                       ),
                     ),
@@ -133,14 +141,14 @@ class _GroupHomePageState extends State<GroupHomePage> {
                         children: [
                           Text(
                             "Local: ",
-                            style: TextStyle(color: Colors.black),
+                            style: TextStyle(color: Colors.black, fontSize: 18),
                           ),
                           ClipRect(
-                              child: Text(
-                            widget.group.local,
-                            style: TextStyle(color: Colors.black),
-                          )),
-                          //TODO substituir com horario
+                            child: Text(
+                              widget.group.local,
+                              style: TextStyle(color: Colors.black, fontSize: 18),
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -183,41 +191,41 @@ class _GroupHomePageState extends State<GroupHomePage> {
             children: [
               Expanded(
                 child: InkWell(
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => MatchListPage(
-                          group: widget.group,
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => MatchListPage(
+                            group: widget.group,
+                          ),
                         ),
-                      ),
-                    );
-                  },
-                  child: Stack(
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          borderRadius: new BorderRadius.circular(32.0),
-                          shape: BoxShape.rectangle,
-                          color: Colors.grey.withOpacity(0.1),
-                        ),
-                      ),
-                      //Align(alignment: Alignment.center,)
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            Image.asset("assets/football-field.png"),
-                            Text(
-                              "Partidas",
-                              style: TextStyle(fontSize: 24),
+                      );
+                    },
+                    child: Card(
+                      child: Stack(
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                              borderRadius: new BorderRadius.circular(16.0),
+                              shape: BoxShape.rectangle,
                             ),
-                          ],
-                        ),
+                          ),
+                          //Align(alignment: Alignment.center,)
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                Image.asset("assets/football-field.png"),
+                                Text(
+                                  "Partidas",
+                                  style: TextStyle(fontSize: 24),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                ),
+                    )),
               )
             ],
           ),
@@ -271,28 +279,29 @@ class _GroupHomePageState extends State<GroupHomePage> {
                     SizedBox(
                       height: 8,
                     ),
-                    Container(
-                      decoration:
-                          BoxDecoration(borderRadius: BorderRadius.circular(16), color: Colors.grey.withOpacity(0.1)),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          IconButton(
-                            icon: Icon(
-                              Icons.add,
-                              size: 48,
-                            ),
-                            onPressed: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) => PlayerCreationPage(
-                                    group: widget.group,
+                    Card(
+                      child: Container(
+                        decoration: BoxDecoration(borderRadius: BorderRadius.circular(16)),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            IconButton(
+                              icon: Icon(
+                                Icons.add,
+                                size: 48,
+                              ),
+                              onPressed: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) => PlayerCreationPage(
+                                      group: widget.group,
+                                    ),
                                   ),
-                                ),
-                              );
-                            },
-                          ),
-                        ],
+                                );
+                              },
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ],
