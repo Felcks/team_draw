@@ -36,33 +36,40 @@ class _PlayerCreationPageState extends State<PlayerCreationPage> {
     return Scaffold(
       body: SafeArea(
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             _header(),
             SizedBox(
               height: 16,
             ),
-            _photoWidget(),
-            SizedBox(
+            /*_photoWidget(),
+            /SizedBox(
               height: 32,
-            ),
-            Container(
-              color: Colors.white.withOpacity(0.1),
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8),
-                child: Column(
-                  children: [
-                    _nameTextField(),
-                    SizedBox(
-                      height: 16,
+            ),*/
+            Expanded(
+              flex: 9,
+              child: Center(
+                child: Container(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        _nameTextField(),
+                        SizedBox(
+                          height: 16,
+                        ),
+                        _overallWidget()
+                      ],
                     ),
-                    _overallWidget()
-                  ],
+                  ),
                 ),
               ),
             ),
-            SizedBox(
-              height: 32,
-            ),
+            Expanded(
+              flex: 1,
+              child: Container(),
+            )
           ],
         ),
       ),
@@ -174,13 +181,19 @@ class _PlayerCreationPageState extends State<PlayerCreationPage> {
   }
 
   Widget _photoWidget() {
-    return Container(
-      width: MediaQuery.of(context).size.width * 0.8,
-      height: MediaQuery.of(context).size.width * 0.5,
-      decoration: new BoxDecoration(
-        color: Colors.grey.withOpacity(0.1),
-        shape: BoxShape.rectangle,
-        borderRadius: BorderRadius.circular(64),
+    return SizedBox(
+      height: MediaQuery.of(context).size.height / 3,
+      child: AspectRatio(
+        aspectRatio: 3 / 4,
+        child: Card(
+          child: ClipRRect(
+            borderRadius: BorderRadius.all(Radius.circular(16)),
+            child: Image.network(
+              "https://i2-prod.chroniclelive.co.uk/incoming/article21727252.ece/ALTERNATES/s1227b/0_FernandezJPG.jpg",
+              fit: BoxFit.cover,
+            ),
+          ),
+        ),
       ),
     );
   }
