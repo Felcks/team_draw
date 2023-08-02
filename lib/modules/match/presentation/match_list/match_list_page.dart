@@ -9,6 +9,7 @@ import '../../../group/domain/models/group.dart';
 
 class MatchListPage extends StatefulWidget {
   final Group group;
+
   const MatchListPage({Key? key, required this.group}) : super(key: key);
 
   @override
@@ -16,7 +17,6 @@ class MatchListPage extends StatefulWidget {
 }
 
 class _MatchListPageState extends State<MatchListPage> {
-
   MatchRepository matchRepository = MatchRepositoryImpl();
   GenerateNextMatchUseCase _generateNextMatchUseCase = GenerateNextMatchUseCaseImpl();
 
@@ -30,6 +30,7 @@ class _MatchListPageState extends State<MatchListPage> {
 
     _matchUpdateUnregister = matchRepository.listenMatches((list) {
       setState(() {
+        list.sort((a, b) => b.date.compareTo(a.date));
         _matches = list;
       });
     });
@@ -44,23 +45,17 @@ class _MatchListPageState extends State<MatchListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          "Partidas",
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+        ),
+      ),
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 16),
           child: Column(
             children: [
-              Expanded(
-                flex: 1,
-                child: Row(
-                  children: [
-                    Text(
-                      "Partidas",
-                      style: TextStyle(fontSize: 22),
-                      textAlign: TextAlign.start,
-                    ),
-                  ],
-                ),
-              ),
               Expanded(
                 flex: 10,
                 child: GridView.builder(
@@ -86,33 +81,27 @@ class _MatchListPageState extends State<MatchListPage> {
                         },
                       );
                     } else {
-                      return Stack(
-                        children: [
-                          Container(
-                            decoration: BoxDecoration(
-                              borderRadius: new BorderRadius.circular(32.0),
-                              shape: BoxShape.rectangle,
-                              color: Colors.grey.withOpacity(0.1),
-                            ),
+                      return Card(
+                        child: InkWell(
+                          onTap: () {
+                            bool result = _generateNextMatchUseCase.invoke(
+                                widget.group, _matches.firstOrNull?.date ?? DateTime.now());
+
+                            if (result == false)
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(SnackBar(content: Text("Já existe partida em andamento")));
+                          },
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.add,
+                                size: 48,
+                              ),
+                              Text("Gerar partida")
+                            ],
                           ),
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                IconButton(
-                                  onPressed: () {
-                                    _generateNextMatchUseCase.invoke(widget.group, _matches.lastOrNull?.date ?? DateTime.now());
-                                  },
-                                  icon: Icon(
-                                    Icons.add,
-                                    size: 48,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
+                        ),
                       );
                     }
                   },

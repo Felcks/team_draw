@@ -190,18 +190,18 @@ class _GroupHomePageState extends State<GroupHomePage> {
           child: Row(
             children: [
               Expanded(
-                child: InkWell(
+                child: Card(
+                  child: InkWell(
                     onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => MatchListPage(
-                            group: widget.group,
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => MatchListPage(
+                              group: widget.group,
+                            ),
                           ),
-                        ),
-                      );
-                    },
-                    child: Card(
-                      child: Stack(
+                        );
+                      },
+                    child: Stack(
                         children: [
                           Container(
                             decoration: BoxDecoration(
@@ -225,7 +225,8 @@ class _GroupHomePageState extends State<GroupHomePage> {
                           ),
                         ],
                       ),
-                    )),
+                  ),
+                ),
               )
             ],
           ),
