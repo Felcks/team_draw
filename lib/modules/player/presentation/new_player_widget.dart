@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../match/domain/models/match_player.dart';
+import '../../match/domain/models/match_player_status.dart';
 import '../domain/player.dart';
 
 class NewPlayerWidget extends StatelessWidget {
@@ -47,5 +49,18 @@ class NewPlayerWidget extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Color getPlayerStatusColor(MatchPlayer player) {
+    switch (player.status) {
+      case MatchPlayerStatus.CANCELLED:
+        return Colors.red.withOpacity(.5);
+      case MatchPlayerStatus.NOT_CONFIRMED:
+        return Colors.amber.withOpacity(.5);
+      case MatchPlayerStatus.CONFIRMED:
+        return Colors.blue.withOpacity(.5);
+      case MatchPlayerStatus.READY:
+        return Colors.green.withOpacity(.5);
+    }
   }
 }

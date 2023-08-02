@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:team_randomizer/modules/match/domain/models/match.dart';
 import 'package:team_randomizer/modules/match/domain/models/match_player.dart';
 import 'package:team_randomizer/modules/match/domain/models/match_player_status.dart';
 import 'package:team_randomizer/modules/match/domain/repositories/match_player_repository.dart';
 import 'package:team_randomizer/modules/player/domain/player_repository.dart';
+import 'package:team_randomizer/modules/player/presentation/match_player_widget.dart';
 import 'package:team_randomizer/modules/team/presentation/new_team_draw_page.dart';
 
 import '../../../player/presentation/new_player_widget.dart';
@@ -68,6 +70,12 @@ class _MatchHomePageState extends State<MatchHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          "Partida ${DateFormat("EEEE (dd/MM)").format(widget.match.date)}",
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+        ),
+      ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: (int index) {
@@ -98,17 +106,6 @@ class _MatchHomePageState extends State<MatchHomePage> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Expanded(
-              flex: 1,
-              child: Row(
-                children: [
-                  Text(
-                    "Jogadores",
-                    style: TextStyle(fontSize: 22),
-                  ),
-                ],
-              ),
-            ),
-            Expanded(
               flex: 10,
               child: ListView.builder(
                 padding: EdgeInsets.zero,
@@ -124,10 +121,15 @@ class _MatchHomePageState extends State<MatchHomePage> {
                           alignment: Alignment.topCenter,
                           child: SizedBox(
                             height: 85,
-                            child: NewPlayerWidget(player: gamePlayer.player),
+                            child: MatchPlayerWidget(
+                              matchPlayer: gamePlayer,
+                              onMatchPlayerStatusUpdate: (player) {
+                                _matchPlayerRepository.editMatchPlayer(player);
+                              },
+                            ),
                           ),
                         ),
-                        Positioned.fill(
+                        /*Positioned.fill(
                           child: Padding(
                             padding: const EdgeInsets.only(top: 8.0),
                             child: Container(
@@ -138,8 +140,8 @@ class _MatchHomePageState extends State<MatchHomePage> {
                               ),
                             ),
                           ),
-                        ),
-                        Positioned(
+                        ),*/
+                        /*Positioned(
                           left: 120,
                           top: 40,
                           child: PopupMenuButton<MatchPlayerStatus>(
@@ -173,15 +175,15 @@ class _MatchHomePageState extends State<MatchHomePage> {
                               ),
                             ],
                           ),
-                        ),
-                        Positioned(
+                        ),*/
+                        /*Positioned(
                           left: 15,
                           top: 55,
                           child: Text(
                             "(${gamePlayer.status.value})",
                             style: TextStyle(fontSize: 12),
                           ),
-                        )
+                        )*/
                       ],
                     ),
                   );
