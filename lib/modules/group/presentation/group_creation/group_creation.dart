@@ -37,7 +37,7 @@ class _GroupCreationState extends State<GroupCreation> {
               height: 16,
             ),
             Padding(
-              padding: EdgeInsets.symmetric(horizontal:32, vertical: 16),
+              padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
               child: ClipRRect(
                 borderRadius: BorderRadius.all(Radius.circular(16)),
                 child: AspectRatio(
@@ -192,14 +192,15 @@ class _GroupCreationState extends State<GroupCreation> {
     return TextField(
       controller: controller,
       decoration: InputDecoration(
-          label: Text(label),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(6),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderSide: const BorderSide(width: 1, color: Colors.grey),
-            borderRadius: BorderRadius.circular(6),
-          )),
+        label: Text(label),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(6),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderSide: const BorderSide(width: 1, color: Colors.grey),
+          borderRadius: BorderRadius.circular(6),
+        ),
+      ),
     );
   }
 

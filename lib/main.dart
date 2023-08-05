@@ -1,15 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:team_randomizer/modules/home/presentation/home_page.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 import 'firebase_options.dart';
 
+bool shouldUseFirebaseEmulator = false;
+
+late final FirebaseApp app;
+late final FirebaseAuth auth;
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  FirebaseApp app = await Firebase.initializeApp(
+  app = await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  print(app.options.databaseURL);
+  auth = FirebaseAuth.instanceFor(app: app);
   runApp(const MyApp());
 }
 
