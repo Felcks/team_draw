@@ -53,20 +53,14 @@ class _LoginVerificationPageState extends State<LoginVerificationPage> {
                     if (snapshot.hasData) {
                       String? authenticationId = snapshot.data?.uid;
                       if (authenticationId == null) return LoginPage();
-
-                      _userRepository.getUser(authenticationId).then(
-                        (value) {
-                          if (value.isEmpty) {
-                            FirebaseAuth.instance.signOut();
-                          } else {
-                            loggedUser = value.first;
-                          }
-                        },
-                      );
-
                       return GroupListPage();
                     }
-                    return LoginPage();
+
+                    if (loggedUser != null) {
+                      return GroupListPage();
+                    } else {
+                      return LoginPage();
+                    }
                   },
                 ),
               ),

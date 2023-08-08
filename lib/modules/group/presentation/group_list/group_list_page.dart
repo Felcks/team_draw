@@ -1,10 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:team_randomizer/main.dart';
 import 'package:team_randomizer/modules/group/presentation/group_creation/group_creation.dart';
 import 'package:team_randomizer/modules/group/presentation/group_home/group_home_page.dart';
 import 'package:team_randomizer/modules/group/presentation/group_list/group_widget.dart';
 import 'package:team_randomizer/modules/group/domain/repositories/group_repository.dart';
 
+import '../../../authentication/domain/repositories/user_repository.dart';
 import '../../domain/models/group.dart';
 
 class GroupListPage extends StatefulWidget {
@@ -18,6 +20,7 @@ class _GroupListPageState extends State<GroupListPage> {
   List<Group> _groups = List.empty(growable: true);
 
   GroupRepositoryImpl repositoryImpl = GroupRepositoryImpl();
+  UserRepository _userRepository = UserRepositoryImpl();
 
   Function() _groupListUnregister = () {};
 
@@ -25,12 +28,23 @@ class _GroupListPageState extends State<GroupListPage> {
   void initState() {
     super.initState();
 
-    _groupListUnregister = repositoryImpl.listenGroups((list) {
-      setState(() {
-        print(list);
-        _groups = list;
-      });
-    });
+    String authenticationId = auth.currentUser?.uid ?? "";
+    _userRepository.getUser(authenticationId).then(
+      (value) {
+        if (value.isEmpty) {
+          loggedUser = null;
+          FirebaseAuth.instance.signOut();
+        } else {
+          loggedUser = value.first;
+          _groupListUnregister = repositoryImpl.listenGroups((list) {
+            setState(() {
+              print(list);
+              _groups = list;
+            });
+          });
+        }
+      },
+    );
   }
 
   @override
@@ -56,8 +70,7 @@ class _GroupListPageState extends State<GroupListPage> {
                   "Sign Out",
                   style: TextStyle(fontWeight: FontWeight.normal, fontSize: 20),
                 ),
-                onPressed: () {
-                },
+                onPressed: () {},
               ),
             ),
             Text(
@@ -70,6 +83,7 @@ class _GroupListPageState extends State<GroupListPage> {
                 style: TextStyle(fontWeight: FontWeight.normal, fontSize: 20),
               ),
               onPressed: () async {
+                loggedUser = null;
                 await FirebaseAuth.instance.signOut();
               },
             ),

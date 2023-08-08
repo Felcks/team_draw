@@ -1,6 +1,7 @@
 import 'package:day_night_time_picker/lib/state/time.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:team_randomizer/main.dart';
 import 'package:team_randomizer/modules/match/domain/models/game_date.dart';
 import 'package:team_randomizer/modules/group/domain/repositories/group_repository.dart';
 import 'package:team_randomizer/modules/group/presentation/group_creation/define_hour_widget.dart';
@@ -172,6 +173,7 @@ class _GroupCreationState extends State<GroupCreation> {
             onPressed: () {
               Group group = Group(
                 id: Uuid().v4(),
+                userId: loggedUser?.id ?? "",
                 title: _titleTextFieldController.text,
                 startTime: TimeOfDay(hour: _startTime.hour, minute: _startTime.minute),
                 endTime: TimeOfDay(hour: _endTime.hour, minute: _endTime.minute),

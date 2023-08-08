@@ -10,7 +10,7 @@ bool shouldUseFirebaseEmulator = false;
 
 late final FirebaseApp app;
 late final FirebaseAuth auth;
-late final AppUser.User loggedUser;
+AppUser.User? loggedUser;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
