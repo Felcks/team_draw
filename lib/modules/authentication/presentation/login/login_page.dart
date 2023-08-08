@@ -106,7 +106,7 @@ class _LoginPageState extends State<LoginPage> {
                                     borderSide: const BorderSide(width: 1, color: Colors.grey),
                                     borderRadius: BorderRadius.circular(6),
                                   ),
-                                  hintText: "Password",
+                                  hintText: "Senha",
                                   contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
                                   hintStyle: TextStyle(fontSize: 15),
                                   suffixIcon: IconButton(
@@ -139,7 +139,7 @@ class _LoginPageState extends State<LoginPage> {
                                         mainAxisSize: MainAxisSize.min,
                                         children: <Widget>[
                                           Text(
-                                            'Sign in',
+                                            'Iniciar sessão',
                                             style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onPrimary),
                                           ),
                                         ],
@@ -189,7 +189,7 @@ class _LoginPageState extends State<LoginPage> {
                                         width: 32,
                                       ),
                                       Text(
-                                        'Sign in with Google',
+                                        'Entrar com Google',
                                         style:
                                             TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold, color: Colors.white),
                                       ),

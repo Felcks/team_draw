@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:team_randomizer/modules/group/presentation/group_creation/group_creation.dart';
 import 'package:team_randomizer/modules/group/presentation/group_home/group_home_page.dart';
@@ -42,11 +43,38 @@ class _GroupListPageState extends State<GroupListPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Center(
-            child: Text(
-          "Grupos",
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-        )),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Visibility(
+              visible: false,
+              maintainSize: true,
+              maintainAnimation: true,
+              maintainState: true,
+              child: TextButton(
+                child: Text(
+                  "Sign Out",
+                  style: TextStyle(fontWeight: FontWeight.normal, fontSize: 20),
+                ),
+                onPressed: () {
+                },
+              ),
+            ),
+            Text(
+              "Grupos",
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            TextButton(
+              child: Text(
+                "Sign Out",
+                style: TextStyle(fontWeight: FontWeight.normal, fontSize: 20),
+              ),
+              onPressed: () async {
+                await FirebaseAuth.instance.signOut();
+              },
+            ),
+          ],
+        ),
       ),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 8),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:team_randomizer/modules/home/presentation/home_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:team_randomizer/modules/authentication/domain/models/user.dart' as AppUser;
 
 import 'firebase_options.dart';
 
@@ -9,6 +10,7 @@ bool shouldUseFirebaseEmulator = false;
 
 late final FirebaseApp app;
 late final FirebaseAuth auth;
+late final AppUser.User loggedUser;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

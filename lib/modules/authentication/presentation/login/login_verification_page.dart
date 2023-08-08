@@ -3,8 +3,11 @@ import 'package:flutter/widgets.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:team_randomizer/modules/authentication/domain/repositories/user_repository.dart';
 import 'package:team_randomizer/modules/authentication/presentation/login/login_page.dart';
 import 'package:team_randomizer/modules/group/presentation/group_list/group_list_page.dart';
+import 'package:team_randomizer/modules/authentication/domain/models/user.dart' as AppUser;
+import 'package:uuid/uuid.dart';
 
 import '../../../../main.dart';
 
@@ -16,6 +19,7 @@ class LoginVerificationPage extends StatefulWidget {
 }
 
 class _LoginVerificationPageState extends State<LoginVerificationPage> {
+  UserRepository _userRepository = UserRepositoryImpl();
 
   @override
   Widget build(BuildContext context) {
@@ -45,17 +49,26 @@ class _LoginVerificationPageState extends State<LoginVerificationPage> {
                 ),
               ),
               SizedBox(
-                width: constraints.maxWidth >= 1200
-                    ? constraints.maxWidth / 2
-                    : constraints.maxWidth,
+                width: constraints.maxWidth >= 1200 ? constraints.maxWidth / 2 : constraints.maxWidth,
                 child: StreamBuilder<User?>(
                   stream: auth.authStateChanges(),
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
+                      String? authenticationId = snapshot.data?.uid;
+                      if (authenticationId == null) return LoginPage();
+
+                      _userRepository.getUser(authenticationId).then(
+                        (value) {
+                          if (value.isEmpty) {
+                            FirebaseAuth.instance.signOut();
+                          } else {
+                            loggedUser = value.first;
+                          }
+                        },
+                      );
+
                       return GroupListPage();
-                      //return const ProfilePage();
                     }
-                    //return const AuthGate();
                     return LoginPage();
                   },
                 ),
