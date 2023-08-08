@@ -203,7 +203,7 @@ class _LoginPageState extends State<LoginPage> {
                                   Navigator.of(context).pushNamedAndRemoveUntil
                                     (RouteName.Home, (Route<dynamic> route) => false
                                   );*/
-                                }).catchError((e) => print(e));
+                                }).catchError((e) { print(e); });
                               },
                             ),
                             SizedBox(

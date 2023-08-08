@@ -2,7 +2,6 @@ import 'package:team_randomizer/modules/match/domain/repositories/match_reposito
 import 'package:team_randomizer/modules/match/domain/models/match.dart';
 import 'package:uuid/uuid.dart';
 
-import '../models/game_date.dart';
 import '../../../group/domain/models/group.dart';
 
 abstract class GenerateNextMatchUseCase {

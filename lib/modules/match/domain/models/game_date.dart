@@ -5,7 +5,6 @@ class GameDate {
 
   GameDate({required this.weekDay});
 
-  @override
   DateTime getNextDate() {
     DateTime now = DateTime.now();
     while(now.weekday != weekDay) {

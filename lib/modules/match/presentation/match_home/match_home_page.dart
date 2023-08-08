@@ -8,7 +8,6 @@ import 'package:team_randomizer/modules/player/domain/player_repository.dart';
 import 'package:team_randomizer/modules/player/presentation/match_player_widget.dart';
 import 'package:team_randomizer/modules/team/presentation/new_team_draw_page.dart';
 
-import '../../../player/presentation/new_player_widget.dart';
 import '../../../stopwatch/presentation/timer_page.dart';
 
 class MatchHomePage extends StatefulWidget {
@@ -98,7 +97,6 @@ class _MatchHomePageState extends State<MatchHomePage> {
   }
 
   Widget playersListWidget() {
-    MatchPlayerStatus selectedMatchPlayerStatus = MatchPlayerStatus.NOT_CONFIRMED;
     return SafeArea(
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 16),

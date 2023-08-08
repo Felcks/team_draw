@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../../match/domain/models/match_player.dart';
 import '../../match/domain/models/match_player_status.dart';
-import '../domain/player.dart';
 
 class MatchPlayerWidget extends StatefulWidget {
   final MatchPlayer matchPlayer;

@@ -2,12 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:team_randomizer/modules/authentication/domain/repositories/user_repository.dart';
 import 'package:team_randomizer/modules/authentication/presentation/login/login_page.dart';
 import 'package:team_randomizer/modules/group/presentation/group_list/group_list_page.dart';
-import 'package:team_randomizer/modules/authentication/domain/models/user.dart' as AppUser;
-import 'package:uuid/uuid.dart';
 
 import '../../../../main.dart';
 
