@@ -15,17 +15,19 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  GlobalKey<FormState> _userLoginFormKey = GlobalKey();
+  final GlobalKey<FormState> _userLoginFormKey = GlobalKey();
 
   bool _isSignUp = false;
   bool _passwordVisible = false;
 
-  TextEditingController _emailController = TextEditingController();
-  TextEditingController _passwordController = TextEditingController();
-  TextEditingController _passwordConfirmationController = TextEditingController();
-  TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _passwordConfirmationController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
 
-  UserRepository _userRepository = UserRepositoryImpl();
+  final UserRepository _userRepository = UserRepositoryImpl();
+
+  String _loginError = "";
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +44,7 @@ class _LoginPageState extends State<LoginPage> {
               decoration: BoxDecoration(
                 image: DecorationImage(
                   fit: BoxFit.cover,
-                  image: AssetImage('assets/football_bg.avif'),
+                  image: const AssetImage('assets/football_bg.avif'),
                   colorFilter: ColorFilter.mode(
                     Colors.green.withOpacity(.25),
                     BlendMode.colorBurn,
@@ -54,9 +56,9 @@ class _LoginPageState extends State<LoginPage> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                Text(
+                const Text(
                   "Jogo Organizado",
-                  style: TextStyle(color: Colors.white, fontSize: 80, fontFamily: "Varane"),
+                  style: TextStyle(color: Colors.white, fontSize: 40, fontFamily: "Varane"),
                 ),
                 (_isSignUp) ? signUpForms() : loginForms(),
               ],
@@ -71,17 +73,29 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
+  void onSignInButtonPressed() {
+    bool? isValid = _userLoginFormKey.currentState?.validate();
+    if(isValid == true) {
+      signInWithEmail();
+    }
+  }
+
   void signInWithEmail() async {
     try {
       final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: _emailController.text,
         password: _passwordController.text,
       );
+      _loginError = "";
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
-        print('No user found for that email.');
+        setState(() {
+          _loginError = "Não foi encontrado usuário com esse email";
+        });
       } else if (e.code == 'wrong-password') {
-        print('Wrong password provided for that user.');
+        setState(() {
+          _loginError = "Usuário e senha incompatíveis";
+        });
       }
     }
   }
@@ -95,7 +109,7 @@ class _LoginPageState extends State<LoginPage> {
       await user!.updateDisplayName(_nameController.text);
       await user.reload();
 
-      AppUser.User appUser = AppUser.User(id: Uuid().v4(), authenticationId: user.uid, name: _nameController.text);
+      AppUser.User appUser = AppUser.User(id: const Uuid().v4(), authenticationId: user.uid, name: _nameController.text);
       _userRepository.createUser(appUser);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'invalid-email') {
@@ -108,169 +122,186 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget loginForms() {
-    return Container(
-      child: Form(
-        key: _userLoginFormKey,
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16),
-          child: Card(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
-            child: Column(
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Text(
-                    "Login",
-                    style: TextStyle(fontWeight: FontWeight.w800, fontSize: 24),
-                  ),
+    return Form(
+      key: _userLoginFormKey,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: Card(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+          child: Column(
+            children: <Widget>[
+              const Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Text(
+                  "Login",
+                  style: TextStyle(fontWeight: FontWeight.w800, fontSize: 24),
                 ),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
-                  child: TextFormField(
-                    controller: _emailController,
-                    style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(width: 1, color: Colors.grey),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      hintText: "Email",
-                      hintStyle: TextStyle(fontSize: 15),
-                      contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-                    ),
-                    cursorColor: Colors.black,
-                    keyboardType: TextInputType.emailAddress,
-                  ),
-                ),
-                SizedBox(
-                  height: 16,
-                ),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
-                  child: TextFormField(
-                    obscureText: !_passwordVisible,
-                    controller: _passwordController,
-                    style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(width: 1, color: Colors.grey),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      hintText: "Senha",
-                      contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-                      hintStyle: TextStyle(fontSize: 15),
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _passwordVisible ? Icons.visibility : Icons.visibility_off,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            _passwordVisible = !_passwordVisible;
-                          });
-                        },
-                      ),
-                    ),
-                    cursorColor: Colors.black,
-                  ),
-                ),
-                SizedBox(
-                  height: 16,
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: InkWell(
-                    child: Container(
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(16), color: Theme.of(context).colorScheme.primary),
-                      child: Padding(
-                        padding: EdgeInsets.all(16),
-                        child: Center(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            mainAxisSize: MainAxisSize.min,
-                            children: <Widget>[
-                              Text(
-                                "Iniciar sessão",
-                                style: TextStyle(
-                                    fontSize: 16.0,
-                                    fontWeight: FontWeight.bold,
-                                    color: Theme.of(context).colorScheme.onPrimary),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    onTap: () {
-                      signInWithEmail();
-                    },
-                  ),
-                ),
-                SizedBox(
-                  height: 48,
-                ),
-                TextButton(
-                  onPressed: () {
-                    setState(() {
-                      clearTextInputs();
-                      _isSignUp = true;
-                    });
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: TextFormField(
+                  controller: _emailController,
+                  validator: (value) {
+                    RegExp exp = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+                    RegExpMatch? match = exp.firstMatch(value ?? "");
+                    if(match == null) {
+                      return "Insira um email válido";
+                    }
+                    return null;
                   },
-                  child: Text("Ainda não possui login? Registre-se"),
+                  style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(width: 1, color: Colors.grey),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    hintText: "Email",
+                    hintStyle: const TextStyle(fontSize: 15),
+                    contentPadding: const EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+                  ),
+                  cursorColor: Colors.black,
+                  keyboardType: TextInputType.emailAddress,
                 ),
-                Visibility(
-                  visible: false,
-                  child: InkWell(
-                    child: Container(
-                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(20), color: Colors.black),
-                      child: Padding(
-                        padding: EdgeInsets.all(16),
+              ),
+              const SizedBox(
+                height: 16,
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: TextFormField(
+                  obscureText: !_passwordVisible,
+                  controller: _passwordController,
+                  validator: (value) {
+                    if((value?.length ?? 0) < 6) {
+                      return "A senha deve conter pelo menos 6 caracteres";
+                    }
+
+                    return null;
+                  },
+                  style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(width: 1, color: Colors.grey),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    hintText: "Senha",
+                    contentPadding: const EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+                    hintStyle: const TextStyle(fontSize: 15),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _passwordVisible ? Icons.visibility : Icons.visibility_off,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _passwordVisible = !_passwordVisible;
+                        });
+                      },
+                    ),
+                  ),
+                  cursorColor: Colors.black,
+                ),
+              ),
+              const SizedBox(
+                height: 16,
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: InkWell(
+                  child: Container(
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16), color: Theme.of(context).colorScheme.primary),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Center(
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           mainAxisSize: MainAxisSize.min,
                           children: <Widget>[
-                            Container(
-                              height: 32.0,
-                              width: 32.0,
-                              decoration: BoxDecoration(
-                                image: DecorationImage(image: AssetImage('assets/google.jpg'), fit: BoxFit.cover),
-                                shape: BoxShape.circle,
-                              ),
-                            ),
-                            SizedBox(
-                              width: 32,
-                            ),
                             Text(
-                              'Entrar com Google',
-                              style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold, color: Colors.white),
+                              "Iniciar sessão",
+                              style: TextStyle(
+                                  fontSize: 16.0,
+                                  fontWeight: FontWeight.bold,
+                                  color: Theme.of(context).colorScheme.onPrimary),
                             ),
                           ],
                         ),
                       ),
                     ),
-                    onTap: () async {
-                      signInWithGoogle().then((User? user) {
-                        /*model.clearAllModels();
-                                    Navigator.of(context).pushNamedAndRemoveUntil
-                                      (RouteName.Home, (Route<dynamic> route) => false
-                                    );*/
-                      }).catchError((e) {
-                        print(e);
-                      });
-                    },
                   ),
+                  onTap: () {
+                    onSignInButtonPressed();
+                  },
                 ),
-                SizedBox(
-                  height: 16,
+              ),
+              const SizedBox(
+                height: 16,
+              ),
+              Text(_loginError, style: TextStyle(color: Colors.red.withRed(215)),),
+              const SizedBox(
+                height: 16,
+              ),
+              TextButton(
+                onPressed: () {
+                  setState(() {
+                    clearTextInputs();
+                    _isSignUp = true;
+                  });
+                },
+                child: const Text("Ainda não possui login? Registre-se"),
+              ),
+              Visibility(
+                visible: false,
+                child: InkWell(
+                  child: Container(
+                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(20), color: Colors.black),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          Container(
+                            height: 32.0,
+                            width: 32.0,
+                            decoration: const BoxDecoration(
+                              image: DecorationImage(image: AssetImage('assets/google.jpg'), fit: BoxFit.cover),
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                          const SizedBox(
+                            width: 32,
+                          ),
+                          const Text(
+                            'Entrar com Google',
+                            style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold, color: Colors.white),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  onTap: () async {
+                    signInWithGoogle().then((User? user) {
+                      /*model.clearAllModels();
+                                  Navigator.of(context).pushNamedAndRemoveUntil
+                                    (RouteName.Home, (Route<dynamic> route) => false
+                                  );*/
+                    }).catchError((e) {
+                      print(e);
+                    });
+                  },
                 ),
-              ],
-            ),
+              ),
+              const SizedBox(
+                height: 16,
+              ),
+            ],
           ),
         ),
       ),
@@ -282,23 +313,23 @@ class _LoginPageState extends State<LoginPage> {
       child: Form(
         key: _userLoginFormKey,
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Card(
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
             child: Column(
               children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
+                const Padding(
+                  padding: EdgeInsets.all(16.0),
                   child: Text(
                     "Registro",
                     style: TextStyle(fontWeight: FontWeight.w800, fontSize: 24),
                   ),
                 ),
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: TextFormField(
                     controller: _emailController,
-                    style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
+                    style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
                     decoration: InputDecoration(
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(6),
@@ -308,22 +339,22 @@ class _LoginPageState extends State<LoginPage> {
                         borderRadius: BorderRadius.circular(6),
                       ),
                       hintText: "Email",
-                      hintStyle: TextStyle(fontSize: 15),
-                      contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+                      hintStyle: const TextStyle(fontSize: 15),
+                      contentPadding: const EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
                     ),
                     cursorColor: Colors.black,
                     keyboardType: TextInputType.emailAddress,
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 16,
                 ),
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: TextFormField(
                     obscureText: !_passwordVisible,
                     controller: _passwordController,
-                    style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
+                    style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
                     decoration: InputDecoration(
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(6),
@@ -333,8 +364,8 @@ class _LoginPageState extends State<LoginPage> {
                         borderRadius: BorderRadius.circular(6),
                       ),
                       hintText: "Senha",
-                      contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-                      hintStyle: TextStyle(fontSize: 15),
+                      contentPadding: const EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+                      hintStyle: const TextStyle(fontSize: 15),
                       suffixIcon: IconButton(
                         icon: Icon(
                           _passwordVisible ? Icons.visibility : Icons.visibility_off,
@@ -349,15 +380,15 @@ class _LoginPageState extends State<LoginPage> {
                     cursorColor: Colors.black,
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 16,
                 ),
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: TextFormField(
                     obscureText: !_passwordVisible,
                     controller: _passwordConfirmationController,
-                    style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
+                    style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
                     decoration: InputDecoration(
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(6),
@@ -367,8 +398,8 @@ class _LoginPageState extends State<LoginPage> {
                         borderRadius: BorderRadius.circular(6),
                       ),
                       hintText: "Confirme a senha",
-                      contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-                      hintStyle: TextStyle(fontSize: 15),
+                      contentPadding: const EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+                      hintStyle: const TextStyle(fontSize: 15),
                       suffixIcon: IconButton(
                         icon: Icon(
                           _passwordVisible ? Icons.visibility : Icons.visibility_off,
@@ -383,14 +414,14 @@ class _LoginPageState extends State<LoginPage> {
                     cursorColor: Colors.black,
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 16,
                 ),
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: TextFormField(
                     controller: _nameController,
-                    style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
+                    style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
                     decoration: InputDecoration(
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(6),
@@ -400,14 +431,14 @@ class _LoginPageState extends State<LoginPage> {
                         borderRadius: BorderRadius.circular(6),
                       ),
                       hintText: "Nome",
-                      hintStyle: TextStyle(fontSize: 15),
-                      contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+                      hintStyle: const TextStyle(fontSize: 15),
+                      contentPadding: const EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
                     ),
                     cursorColor: Colors.black,
                     keyboardType: TextInputType.emailAddress,
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 16,
                 ),
                 Padding(
@@ -417,7 +448,7 @@ class _LoginPageState extends State<LoginPage> {
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(16), color: Theme.of(context).colorScheme.primary),
                       child: Padding(
-                        padding: EdgeInsets.all(16),
+                        padding: const EdgeInsets.all(16),
                         child: Center(
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -440,7 +471,7 @@ class _LoginPageState extends State<LoginPage> {
                     },
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 48,
                 ),
                 TextButton(
@@ -450,9 +481,9 @@ class _LoginPageState extends State<LoginPage> {
                       _isSignUp = false;
                     });
                   },
-                  child: Text("Voltar"),
+                  child: const Text("Voltar"),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 16,
                 ),
               ],
