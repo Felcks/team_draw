@@ -4,13 +4,13 @@ import '../repositories/team_player_repository.dart';
 abstract class GetGeneratedTeamsUseCase {
   TeamPlayerRepository teamPlayerRepository = TeamPlayerRepositoryImpl();
 
-  void Function() invoke(String matchId, Function(List<SortedTeam> list) onValue);
+  void Function() invoke(String groupId, String matchId, Function(List<SortedTeam> list) onValue);
 }
 
 class GetGeneratedTeamsUseCaseImpl extends GetGeneratedTeamsUseCase {
   @override
-  void Function() invoke(String matchId, Function(List<SortedTeam> list) onValue) {
-    Function() teamPlayersUpdateUnregister = teamPlayerRepository.listenTeamPlayers(matchId, (list) {
+  void Function() invoke(String groupId, String matchId, Function(List<SortedTeam> list) onValue) {
+    Function() teamPlayersUpdateUnregister = teamPlayerRepository.listenTeamPlayers(groupId, matchId, (list) {
       List<SortedTeam> generatedTeams = List.empty(growable: true);
 
       list.forEach((element) {

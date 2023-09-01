@@ -11,7 +11,7 @@ abstract class MatchPlayerRepository {
 
   void editMatchPlayer(MatchPlayer input);
 
-  void Function() listenMatchPlayers(String matchId, onValue(List<MatchPlayer> list));
+  void Function() listenMatchPlayers(String groupId, String matchId, onValue(List<MatchPlayer> list));
 }
 
 class MatchPlayerRepositoryImpl extends MatchPlayerRepository {
@@ -37,9 +37,9 @@ class MatchPlayerRepositoryImpl extends MatchPlayerRepository {
   }
 
   @override
-  void Function() listenMatchPlayers(String matchId, Function(List<MatchPlayer> list) onValue) {
+  void Function() listenMatchPlayers(String groupId, String matchId, Function(List<MatchPlayer> list) onValue) {
     final subscription = _db.collection("match_player").where("matchId", isEqualTo: matchId).snapshots().listen((event) async {
-      final players = await playerRepository.getPlayers();
+      final players = await playerRepository.getPlayers(groupId);
       final result = event.docs.map(
         (doc) {
           MatchPlayerDTO dto = MatchPlayerDTO.fromJson(

@@ -21,7 +21,7 @@ class GroupHomePage extends StatefulWidget {
 class _GroupHomePageState extends State<GroupHomePage> {
   List<Player> _players = List.empty(growable: true);
 
-  PlayerRepositoryImpl _playerRepository = PlayerRepositoryImpl();
+  final PlayerRepositoryImpl _playerRepository = PlayerRepositoryImpl();
 
   Function() _playerUpdateUnregister = () {};
 
@@ -29,7 +29,7 @@ class _GroupHomePageState extends State<GroupHomePage> {
   void initState() {
     super.initState();
 
-    _playerUpdateUnregister = _playerRepository.listenPlayers((list) {
+    _playerUpdateUnregister = _playerRepository.listenPlayers(widget.group.id, (list) {
       setState(() {
         _players = list;
       });

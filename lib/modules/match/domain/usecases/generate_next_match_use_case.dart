@@ -1,3 +1,4 @@
+import 'package:team_randomizer/modules/core/utils.dart';
 import 'package:team_randomizer/modules/match/domain/repositories/match_repository.dart';
 import 'package:team_randomizer/modules/match/domain/models/match.dart';
 import 'package:uuid/uuid.dart';
@@ -5,21 +6,27 @@ import 'package:uuid/uuid.dart';
 import '../../../group/domain/models/group.dart';
 
 abstract class GenerateNextMatchUseCase {
-  bool invoke(Group group, DateTime lastMatchDate);
+  Future<bool> invoke(Group group, DateTime lastMatchDate);
 }
 
 class GenerateNextMatchUseCaseImpl extends GenerateNextMatchUseCase {
   MatchRepository matchRepository = MatchRepositoryImpl();
 
   @override
-  bool invoke(Group group, DateTime lastMatchDate) {
+  Future<bool> invoke(Group group, DateTime lastMatchDate) async {
     DateTime _groupGameDate = group.date.getNextDate();
-    if (lastMatchDate.day == _groupGameDate.day &&
-        lastMatchDate.month == _groupGameDate.month &&
-        lastMatchDate.year == _groupGameDate.year) return false;
+    bool result = false;
 
-    Match match = Match(id: Uuid().v4(), groupId: group.id, date: _groupGameDate);
-    matchRepository.createMatch(match);
-    return true;
+    List<Match> matches = await matchRepository.getMatches(group.id);
+    Match match = matches.firstWhere(
+        (element) => element.date.isSameDate(lastMatchDate), orElse: () {
+      Match match =
+          Match(id: Uuid().v4(), groupId: group.id, date: _groupGameDate);
+      matchRepository.createMatch(match);
+      result = true;
+      return match;
+    });
+
+    return result;
   }
 }

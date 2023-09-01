@@ -52,13 +52,13 @@ class _NewTeamDrawPageState extends State<NewTeamDrawPage> {
   }
 
   void listenToUpdates() {
-    _matchPlayerUpdateUnregister = _matchPlayerRepository.listenMatchPlayers(widget.match.id, (list) {
+    _matchPlayerUpdateUnregister = _matchPlayerRepository.listenMatchPlayers(widget.match.groupId, widget.match.id, (list) {
       setState(() {
         _matchPlayers = list;
       });
     });
 
-    _teamPlayersUpdateUnregister = _generatedTeamsUseCase.invoke(widget.match.id, (list) {
+    _teamPlayersUpdateUnregister = _generatedTeamsUseCase.invoke(widget.match.groupId, widget.match.id, (list) {
       setState(() {
         _sortedTeams = list;
       });

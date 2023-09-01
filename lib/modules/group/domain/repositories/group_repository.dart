@@ -45,7 +45,7 @@ class GroupRepositoryImpl extends GroupRepository {
   }
 
   @override
-  void Function() listenGroups(onValue(List<Group> list)) {
+  void Function() listenGroups(Function(List<Group> list) onValue) {
     final subscription = _db.collection("groups").where("userId", isEqualTo: loggedUser!.id).snapshots().listen((event) {
     final result = event.docs.map((doc) {
           GroupDTO groupDTO = GroupDTO.fromJson(doc.data());

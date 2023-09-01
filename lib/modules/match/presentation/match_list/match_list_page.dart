@@ -28,7 +28,7 @@ class _MatchListPageState extends State<MatchListPage> {
   void initState() {
     super.initState();
 
-    _matchUpdateUnregister = matchRepository.listenMatches((list) {
+    _matchUpdateUnregister = matchRepository.listenMatches(widget.group.id, (list) {
       setState(() {
         list.sort((a, b) => b.date.compareTo(a.date));
         _matches = list;
@@ -46,20 +46,20 @@ class _MatchListPageState extends State<MatchListPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           "Partidas",
           style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         ),
       ),
       body: SafeArea(
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Column(
             children: [
               Expanded(
                 flex: 10,
                 child: GridView.builder(
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
                     crossAxisSpacing: 8,
                     mainAxisSpacing: 8,
@@ -83,15 +83,17 @@ class _MatchListPageState extends State<MatchListPage> {
                     } else {
                       return Card(
                         child: InkWell(
-                          onTap: () {
-                            bool result = _generateNextMatchUseCase.invoke(
-                                widget.group, _matches.firstOrNull?.date ?? DateTime.now());
+                          onTap: () async {
+                            bool result = await _generateNextMatchUseCase.invoke(
+                                widget.group, _matches.firstOrNull?.date ?? DateTime.now()
+                            );
 
-                            if (result == false)
+                            if (result == false) {
                               ScaffoldMessenger.of(context)
-                                  .showSnackBar(SnackBar(content: Text("Já existe partida em andamento")));
+                                  .showSnackBar(const SnackBar(content: Text("Já existe partida em andamento")));
+                            }
                           },
-                          child: Column(
+                          child: const Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Icon(
