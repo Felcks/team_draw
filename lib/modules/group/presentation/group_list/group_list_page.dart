@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:team_randomizer/main.dart';
+import 'package:team_randomizer/modules/core/window_size_class.dart';
 import 'package:team_randomizer/modules/group/presentation/group_creation/group_creation.dart';
 import 'package:team_randomizer/modules/group/presentation/group_home/group_home_page.dart';
 import 'package:team_randomizer/modules/group/presentation/group_list/group_widget.dart';
@@ -20,7 +21,7 @@ class _GroupListPageState extends State<GroupListPage> {
   List<Group> _groups = List.empty(growable: true);
 
   GroupRepositoryImpl repositoryImpl = GroupRepositoryImpl();
-  UserRepository _userRepository = UserRepositoryImpl();
+  final UserRepository _userRepository = UserRepositoryImpl();
 
   Function() _groupListUnregister = () {};
 
@@ -66,19 +67,19 @@ class _GroupListPageState extends State<GroupListPage> {
               maintainAnimation: true,
               maintainState: true,
               child: TextButton(
-                child: Text(
+                child: const Text(
                   "Sign Out",
                   style: TextStyle(fontWeight: FontWeight.normal, fontSize: 20),
                 ),
                 onPressed: () {},
               ),
             ),
-            Text(
+            const Text(
               "Grupos",
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             TextButton(
-              child: Text(
+              child: const Text(
                 "Sign Out",
                 style: TextStyle(fontWeight: FontWeight.normal, fontSize: 20),
               ),
@@ -91,13 +92,10 @@ class _GroupListPageState extends State<GroupListPage> {
         ),
       ),
       body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 8),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            SizedBox(
-              height: 16,
-            ),
             Expanded(
               flex: 10,
               child: _groupList(),
@@ -108,10 +106,20 @@ class _GroupListPageState extends State<GroupListPage> {
     );
   }
 
+
+
   Widget _groupList() {
+    WindowSizeClass widthSizeClass = getWidthWindowSizeClass(context);
+    int rows = 1;
+    if(widthSizeClass == WindowSizeClass.MEDIUM) {
+      rows = 2;
+    } else if(widthSizeClass == WindowSizeClass.EXPANDED) {
+      rows = 3;
+    }
+
     return GridView.builder(
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
+        crossAxisCount: rows,
         crossAxisSpacing: 2,
         mainAxisSpacing: 4,
       ),
@@ -143,7 +151,7 @@ class _GroupListPageState extends State<GroupListPage> {
       onTap: () {
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (context) => GroupCreation(),
+            builder: (context) => const GroupCreation(),
           ),
         );
       },
@@ -152,11 +160,11 @@ class _GroupListPageState extends State<GroupListPage> {
           children: [
             Container(
               decoration: BoxDecoration(
-                borderRadius: new BorderRadius.circular(16.0),
+                borderRadius: BorderRadius.circular(16.0),
                 shape: BoxShape.rectangle,
                 color: Colors.grey.withOpacity(0.1),
               ),
-              child: Center(
+              child: const Center(
                 child: Icon(
                   Icons.add,
                   size: 48,

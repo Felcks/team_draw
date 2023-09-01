@@ -21,7 +21,7 @@ class GroupWidget extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ClipRRect(
-              borderRadius: BorderRadius.only(topRight: Radius.circular(16), topLeft: Radius.circular(16)),
+              borderRadius: const BorderRadius.only(topRight: Radius.circular(16), topLeft: Radius.circular(16)),
               child: AspectRatio(
                 aspectRatio: 16 / 9,
                 child: Image.network(
@@ -32,12 +32,12 @@ class GroupWidget extends StatelessWidget {
             ),
             Flexible(
               child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8),
+                padding: const EdgeInsets.symmetric(horizontal: 8),
                 child: Center(
                   child: Text(
                     group.title,
                     maxLines: 2,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Colors.black,
                       fontSize: 22,
                       fontWeight: FontWeight.normal,
@@ -60,47 +60,47 @@ class GroupWidget extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 32),
+            padding: const EdgeInsets.symmetric(horizontal: 32),
             child: Row(
               children: [
-                Text(
+                const Text(
                   "Próxima data: ",
                   style: TextStyle(color: Colors.black),
                 ),
                 Text(
                   group.date.getNextDateFormatted(),
-                  style: TextStyle(color: Colors.black),
+                  style: const TextStyle(color: Colors.black),
                 ),
               ],
             ),
           ),
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 32),
+            padding: const EdgeInsets.symmetric(horizontal: 32),
             child: Row(
               children: [
-                Text(
+                const Text(
                   "Horário: ",
                   style: TextStyle(color: Colors.black),
                 ),
                 Text(
                   group.startTime.format(context) + " - " + group.endTime.format(context),
-                  style: TextStyle(color: Colors.black),
+                  style: const TextStyle(color: Colors.black),
                 ),
               ],
             ),
           ),
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 32),
+            padding: const EdgeInsets.symmetric(horizontal: 32),
             child: Row(
               children: [
-                Text(
+                const Text(
                   "Local: ",
                   style: TextStyle(color: Colors.black),
                 ),
                 ClipRect(
                   child: Text(
                     group.local,
-                    style: TextStyle(color: Colors.black),
+                    style: const TextStyle(color: Colors.black),
                   ),
                 ),
               ],
