@@ -19,6 +19,8 @@ class _PlayerCreationPageState extends State<PlayerCreationPage> {
   TextEditingController _nameTextFieldController = TextEditingController();
   double _overall = 50;
 
+  final GlobalKey<FormState> _formKey = GlobalKey();
+
   PlayerRepositoryImpl playerRepository = PlayerRepositoryImpl();
 
   @override
@@ -39,7 +41,7 @@ class _PlayerCreationPageState extends State<PlayerCreationPage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             _header(),
-            SizedBox(
+            const SizedBox(
               height: 16,
             ),
             /*_photoWidget(),
@@ -49,14 +51,15 @@ class _PlayerCreationPageState extends State<PlayerCreationPage> {
             Expanded(
               flex: 9,
               child: Center(
-                child: Container(
+                child: Form(
+                  key: _formKey,
                   child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         _nameTextField(),
-                        SizedBox(
+                        const SizedBox(
                           height: 16,
                         ),
                         _overallWidget()
@@ -82,7 +85,7 @@ class _PlayerCreationPageState extends State<PlayerCreationPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         TextButton(
-          child: Text("Cancelar"),
+          child: const Text("Cancelar"),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -94,17 +97,22 @@ class _PlayerCreationPageState extends State<PlayerCreationPage> {
               padding: const EdgeInsets.only(top: 14.0),
               child: Text(
                 (widget.player == null) ? "Adicionar Jogador" : "Editar Jogador",
-                style: TextStyle(fontWeight: FontWeight.bold),
+                style: const TextStyle(fontWeight: FontWeight.bold),
               ),
             ),
           ],
         ),
         TextButton(
-          child: Text("Ok"),
+          child: const Text("Ok"),
           onPressed: () {
+
+            if(_formKey.currentState?.validate() == false) {
+              return;
+            }
+
             if (widget.player == null) {
               Player player = Player(
-                id: Uuid().v4(),
+                id: const Uuid().v4(),
                 groupId: widget.group.id,
                 name: _nameTextFieldController.text,
                 overall: _overall.toInt(),
@@ -130,10 +138,17 @@ class _PlayerCreationPageState extends State<PlayerCreationPage> {
   }
 
   Widget _nameTextField() {
-    return TextField(
+    return TextFormField(
       controller: _nameTextFieldController,
+      validator: (value) {
+        if((value?.length ?? 0) > 20) {
+          return "Nome deve possuir menos de 20 caracters";
+        }
+
+        return null;
+      },
       decoration: InputDecoration(
-        label: Text("Nome"),
+        label: const Text("Nome"),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(6),
         ),
@@ -156,10 +171,10 @@ class _PlayerCreationPageState extends State<PlayerCreationPage> {
         ),
       ),
       child: Padding(
-        padding: EdgeInsets.symmetric(vertical: 16),
+        padding: const EdgeInsets.symmetric(vertical: 16),
         child: Column(
           children: [
-            Text(
+            const Text(
               "Overall",
               style: TextStyle(fontSize: 20),
             ),
@@ -187,7 +202,7 @@ class _PlayerCreationPageState extends State<PlayerCreationPage> {
         aspectRatio: 3 / 4,
         child: Card(
           child: ClipRRect(
-            borderRadius: BorderRadius.all(Radius.circular(16)),
+            borderRadius: const BorderRadius.all(Radius.circular(16)),
             child: Image.network(
               "https://i2-prod.chroniclelive.co.uk/incoming/article21727252.ece/ALTERNATES/s1227b/0_FernandezJPG.jpg",
               fit: BoxFit.cover,

@@ -12,17 +12,17 @@ class NewPlayerWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(top: 8),
+      padding: const EdgeInsets.only(top: 8),
       child: Card(
         child: Container(
           decoration: BoxDecoration(
             borderRadius: new BorderRadius.all(
-              Radius.circular(12)
+              const Radius.circular(12)
             ),
             shape: BoxShape.rectangle,
           ),
           child: Padding(
-            padding: EdgeInsets.all(16),
+            padding: const EdgeInsets.all(16),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -30,16 +30,16 @@ class NewPlayerWidget extends StatelessWidget {
                   children: [
                     Text(
                       player.name,
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                   ],
                 ),
                 Column(
                   children: [
-                    Text("Overall Rating", style: TextStyle(fontSize: 12)),
+                    const Text("Overall Rating", style: TextStyle(fontSize: 12)),
                     Text(
                       player.overall.toString(),
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     )
                   ],
                 )
