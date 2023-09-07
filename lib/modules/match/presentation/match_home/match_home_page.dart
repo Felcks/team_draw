@@ -85,7 +85,7 @@ class _MatchHomePageState extends State<MatchHomePage> {
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Jogadores'),
           BottomNavigationBarItem(icon: Icon(Icons.abc_outlined), label: 'Times'),
-          BottomNavigationBarItem(icon: Icon(Icons.hourglass_bottom), label: 'Cronometro'),
+          //BottomNavigationBarItem(icon: Icon(Icons.hourglass_bottom), label: 'Cronometro'),
         ],
       ),
       body: (_selectedIndex == 0)
