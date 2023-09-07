@@ -6,12 +6,11 @@ import 'package:team_randomizer/modules/team/domain/models/team.dart';
 import 'package:team_randomizer/modules/team/domain/usecases/team_draw_use_case.dart';
 import 'package:uuid/uuid.dart';
 
-class TeamDrawByOverallUseCase extends TeamDrawUseCase {
+class TeamDrawByRandomizationUseCase extends TeamDrawUseCase {
   @override
   List<SortedTeam> invoke(List<Player> players, int playersPerTeam) {
     int amountOfTeamsToGenerate = players.length ~/ playersPerTeam;
-    List<SortedTeam> bestSortedTeams = generateTeams(players, amountOfTeamsToGenerate, playersPerTeam);
-    double lowerStandardDerivation = calculateStandardDerivation(bestSortedTeams);
+    List<SortedTeam> lastSortedTeams = generateTeams(players, amountOfTeamsToGenerate, playersPerTeam);
 
     for (int i = 0; i < 1000; i++) {
       int pos1 = Random().nextInt(players.length);
@@ -22,14 +21,10 @@ class TeamDrawByOverallUseCase extends TeamDrawUseCase {
       players[pos2] = aux;
 
       List<SortedTeam> sortedTeams = generateTeams(players, amountOfTeamsToGenerate, playersPerTeam);
-      double currentStandardDerivation = calculateStandardDerivation(sortedTeams);
-      if (currentStandardDerivation < lowerStandardDerivation) {
-        lowerStandardDerivation = currentStandardDerivation;
-        bestSortedTeams = sortedTeams;
-      }
+      lastSortedTeams = sortedTeams;
     }
 
-    return bestSortedTeams;
+    return lastSortedTeams;
   }
 
   List<SortedTeam> generateTeams(List<Player> players, int teamsGenerated, int playersPerTeam) {
@@ -49,11 +44,4 @@ class TeamDrawByOverallUseCase extends TeamDrawUseCase {
     return result;
   }
 
-  double calculateStandardDerivation(List<SortedTeam> teams) {
-    List<double> teamsOverall = teams.map((e) => e.getOverall()).toList(growable: false);
-    double mean = (teamsOverall.reduce((value, element) => value + element) / teams.length);
-    double variance = (teamsOverall.reduce((value, element) => value + pow(element - mean, 2)) / teams.length);
-    double derivation = sqrt(variance);
-    return derivation;
-  }
 }

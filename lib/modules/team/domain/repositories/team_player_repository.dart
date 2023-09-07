@@ -61,6 +61,14 @@ class TeamPlayerRepositoryImpl extends TeamPlayerRepository {
           );
 
           Player player = players.firstWhere((element) => element.id == dto.playerId);
+          if(!teams.map((e) => e.id).contains(dto.teamId)) {
+            return TeamPlayer(
+              player: player,
+              team: teams.first,
+              matchId: dto.matchId,
+            );
+          }
+
           Team team = teams.firstWhere((element) => element.id == dto.teamId);
 
           return TeamPlayer(

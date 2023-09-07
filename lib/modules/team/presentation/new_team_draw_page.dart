@@ -7,6 +7,7 @@ import 'package:team_randomizer/modules/match/domain/models/match.dart';
 import 'package:team_randomizer/modules/team/domain/repositories/team_repository.dart';
 import 'package:team_randomizer/modules/team/domain/usecases/get_generated_teams.dart';
 import 'package:team_randomizer/modules/team/domain/usecases/team_draw_by_overall_use_case.dart';
+import 'package:team_randomizer/modules/team/domain/usecases/team_draw_by_randomization_use_case.dart';
 import 'package:team_randomizer/modules/team/domain/usecases/team_draw_use_case.dart';
 import '../../player/domain/player.dart';
 import '../../match/domain/models/match_player.dart';
@@ -42,8 +43,11 @@ class _NewTeamDrawPageState extends State<NewTeamDrawPage> {
   //TODO: Make stopwatch decreasing time
   //TODO: Allow change team configuration (side by side with matches, but 1/4 of size, search icon)
 
-  GetGeneratedTeamsUseCase _generatedTeamsUseCase = GetGeneratedTeamsUseCaseImpl();
-  TeamDrawUseCase _teamDrawUseCase = TeamDrawByOverallUseCase();
+  final GetGeneratedTeamsUseCase _generatedTeamsUseCase =
+      GetGeneratedTeamsUseCaseImpl();
+  final TeamDrawUseCase _teamDrawByOverallUseCase = TeamDrawByOverallUseCase();
+  final TeamDrawUseCase _teamDrawByRandomizationUseCase = TeamDrawByRandomizationUseCase();
+
 
   @override
   void initState() {
@@ -52,13 +56,15 @@ class _NewTeamDrawPageState extends State<NewTeamDrawPage> {
   }
 
   void listenToUpdates() {
-    _matchPlayerUpdateUnregister = _matchPlayerRepository.listenMatchPlayers(widget.match.groupId, widget.match.id, (list) {
+    _matchPlayerUpdateUnregister = _matchPlayerRepository
+        .listenMatchPlayers(widget.match.groupId, widget.match.id, (list) {
       setState(() {
         _matchPlayers = list;
       });
     });
 
-    _teamPlayersUpdateUnregister = _generatedTeamsUseCase.invoke(widget.match.groupId, widget.match.id, (list) {
+    _teamPlayersUpdateUnregister = _generatedTeamsUseCase
+        .invoke(widget.match.groupId, widget.match.id, (list) {
       setState(() {
         _sortedTeams = list;
       });
@@ -83,25 +89,34 @@ class _NewTeamDrawPageState extends State<NewTeamDrawPage> {
 
   Widget drawHome() {
     if (_sortedTeams.isEmpty) {
-      return Center(
-        child: Text("Nenhum time sorteado"),
+      return const Center(
+        child: Text("Times não definidos"),
       );
     } else {
       return _showTeamsWidget();
     }
   }
 
-  void executeTeamDraw() {
-    _sortedTeams = _teamDrawUseCase.invoke(getPlayersReady().map((e) => e.player).toList(), _playersPerTeam);
+  void executeTeamDrawByOverall() {
+    _sortedTeams = _teamDrawByOverallUseCase.invoke(
+        getPlayersReady().map((e) => e.player).toList(), _playersPerTeam);
     saveSortedTeams();
   }
+
+  void executeTeamDrawByRandomization() {
+    _sortedTeams = _teamDrawByRandomizationUseCase.invoke(
+        getPlayersReady().map((e) => e.player).toList(), _playersPerTeam);
+    saveSortedTeams();
+  }
+
 
   void saveSortedTeams() {
     _sortedTeams.forEach((sortedTeam) {
       _teamRepository.createTeam(sortedTeam.team);
 
       sortedTeam.players.forEach((player) {
-        teamPlayerRepository.createTeamPlayer(TeamPlayer(team: sortedTeam.team, player: player, matchId: widget.match.id));
+        teamPlayerRepository.createTeamPlayer(TeamPlayer(
+            team: sortedTeam.team, player: player, matchId: widget.match.id));
       });
     });
   }
@@ -112,7 +127,8 @@ class _NewTeamDrawPageState extends State<NewTeamDrawPage> {
 
     _sortedTeams.forEach((sortedTeam) {
       sortedTeam.players.forEach((element) {
-        teamPlayerRepository.deleteTeamPlayer(TeamPlayer(team: sortedTeam.team, player: element, matchId: widget.match.id));
+        teamPlayerRepository.deleteTeamPlayer(TeamPlayer(
+            team: sortedTeam.team, player: element, matchId: widget.match.id));
       });
       _teamRepository.deleteTeam(sortedTeam.team);
     });
@@ -123,7 +139,7 @@ class _NewTeamDrawPageState extends State<NewTeamDrawPage> {
   Widget _showTeamsWidget() {
     return SafeArea(
       child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         child: SingleChildScrollView(
           child: Column(
             children: List.generate(
@@ -131,7 +147,7 @@ class _NewTeamDrawPageState extends State<NewTeamDrawPage> {
               (index) {
                 SortedTeam generatedTeam = _sortedTeams[index];
                 return Padding(
-                  padding: EdgeInsets.symmetric(vertical: 8),
+                  padding: const EdgeInsets.symmetric(vertical: 8),
                   child: Column(
                     children: [
                       Row(
@@ -139,7 +155,7 @@ class _NewTeamDrawPageState extends State<NewTeamDrawPage> {
                         children: [
                           Text(
                             generatedTeam.team.name,
-                            style: TextStyle(fontSize: 20),
+                            style: const TextStyle(fontSize: 20),
                           ),
                           Text(
                             "Overall - ${(generatedTeam.players.map((e) => e.overall).reduce((value, element) => value + element) / generatedTeam.players.length).toInt()}",
@@ -171,22 +187,22 @@ class _NewTeamDrawPageState extends State<NewTeamDrawPage> {
   Widget _configurationWidget(void Function(void Function()) setModalState) {
     return SafeArea(
       child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               "Configurações",
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
-            SizedBox(
+            const SizedBox(
               height: 8,
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  "Jogadores Prontos:",
+                  "Jogadores prontos:",
                   style: _getConfigTextStyle(),
                 ),
                 Text(
@@ -212,7 +228,7 @@ class _NewTeamDrawPageState extends State<NewTeamDrawPage> {
                               if (_playersPerTeam > 0) _playersPerTeam -= 1;
                             });
                           },
-                          icon: Icon(Icons.remove_circle)),
+                          icon: const Icon(Icons.remove_circle)),
                       Text(
                         _playersPerTeam.toString(),
                         style: _getConfigTextStyle(),
@@ -223,7 +239,7 @@ class _NewTeamDrawPageState extends State<NewTeamDrawPage> {
                               _playersPerTeam += 1;
                             });
                           },
-                          icon: Icon(Icons.add_circle)),
+                          icon: const Icon(Icons.add_circle)),
                     ],
                   ),
                 )
@@ -242,11 +258,28 @@ class _NewTeamDrawPageState extends State<NewTeamDrawPage> {
                 ),
               ],
             ),
-            SizedBox(height: 32,),
-            Center(child: ElevatedButton(onPressed: () {
-              cleanSortedTeams();
-              executeTeamDraw();
-            }, child: Text("Sortear")))
+            const SizedBox(
+              height: 32,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    cleanSortedTeams();
+                    executeTeamDrawByRandomization();
+                  },
+                  child: const Text("Sortear"),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    cleanSortedTeams();
+                    executeTeamDrawByOverall();
+                  },
+                  child: const Text("Balancear"),
+                ),
+              ],
+            )
           ],
         ),
       ),
@@ -254,7 +287,8 @@ class _NewTeamDrawPageState extends State<NewTeamDrawPage> {
   }
 
   TextStyle _getConfigTextStyle() {
-    return TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.grey.shade600);
+    return TextStyle(
+        fontSize: 16, fontWeight: FontWeight.w600, color: Colors.grey.shade600);
   }
 
   FloatingActionButton getFloatActionButton() {
@@ -264,7 +298,7 @@ class _NewTeamDrawPageState extends State<NewTeamDrawPage> {
           _showConfiguration();
           //executeTeamDraw();
         },
-        label: Text("Gerar times"),
+        label: const Text("Gerar times"),
       );
     } else {
       return FloatingActionButton.extended(
@@ -273,13 +307,15 @@ class _NewTeamDrawPageState extends State<NewTeamDrawPage> {
           //cleanSortedTeams();
           //executeTeamDraw();
         },
-        label: Text("Refazer times"),
+        label: const Text("Refazer times"),
       );
     }
   }
 
   List<MatchPlayer> getPlayersReady() {
-    return _matchPlayers.where((element) => element.status == MatchPlayerStatus.READY).toList();
+    return _matchPlayers
+        .where((element) => element.status == MatchPlayerStatus.READY)
+        .toList();
   }
 
   int teamsAmount() {
@@ -294,12 +330,13 @@ class _NewTeamDrawPageState extends State<NewTeamDrawPage> {
       context: context,
       builder: (BuildContext context) {
         return StatefulBuilder(
-          builder: (BuildContext context, void Function(void Function()) setModalState) {
+          builder: (BuildContext context,
+              void Function(void Function()) setModalState) {
             return Container(
               height: MediaQuery.of(context).size.height * .42,
               width: MediaQuery.of(context).size.width,
-              decoration: BoxDecoration(
-                borderRadius: new BorderRadius.only(
+              decoration: const BoxDecoration(
+                borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(32),
                   topRight: Radius.circular(32),
                 ),
@@ -310,38 +347,41 @@ class _NewTeamDrawPageState extends State<NewTeamDrawPage> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
-                  SizedBox(
+                  const SizedBox(
                     height: 16,
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 32,
                     child: Divider(
                       color: Colors.black,
                       height: 1,
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 8,
                   ),
-                  Text(
+                  const Text(
                     "Sorteio",
-                    style: TextStyle(fontSize: 22, color: Colors.black, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                        fontSize: 22,
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 8,
                   ),
                   Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Container(
                       decoration: BoxDecoration(
-                        borderRadius: new BorderRadius.all(
+                        borderRadius: const BorderRadius.all(
                           Radius.circular(8),
                         ),
                         shape: BoxShape.rectangle,
                         color: Colors.grey.withOpacity(0),
                       ),
                       child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 8.0),
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
                         child: _configurationWidget(setModalState),
                       ),
                     ),

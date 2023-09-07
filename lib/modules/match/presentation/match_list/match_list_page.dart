@@ -85,7 +85,7 @@ class _MatchListPageState extends State<MatchListPage> {
                         child: InkWell(
                           onTap: () async {
                             bool result = await _generateNextMatchUseCase.invoke(
-                                widget.group, _matches.firstOrNull?.date ?? DateTime.now()
+                                widget.group
                             );
 
                             if (result == false) {
