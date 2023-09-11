@@ -16,6 +16,7 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final GlobalKey<FormState> _userLoginFormKey = GlobalKey();
+  final GlobalKey<FormState> _userSigUpFormKey = GlobalKey();
 
   bool _isSignUp = false;
   bool _passwordVisible = false;
@@ -28,6 +29,7 @@ class _LoginPageState extends State<LoginPage> {
   final UserRepository _userRepository = UserRepositoryImpl();
 
   String _loginError = "";
+  String _signupError = "";
 
   @override
   Widget build(BuildContext context) {
@@ -75,7 +77,7 @@ class _LoginPageState extends State<LoginPage> {
 
   void onSignInButtonPressed() {
     bool? isValid = _userLoginFormKey.currentState?.validate();
-    if(isValid == true) {
+    if (isValid == true) {
       signInWithEmail();
     }
   }
@@ -96,7 +98,20 @@ class _LoginPageState extends State<LoginPage> {
         setState(() {
           _loginError = "Usuário e senha incompatíveis";
         });
+      } else {
+        if (e.code.isNotEmpty) {
+          setState(() {
+            _loginError = e.code.toString();
+          });
+        }
       }
+    }
+  }
+
+  void onSignUpWithEmailPressed() {
+    bool? isValid = _userSigUpFormKey.currentState?.validate();
+    if (isValid == true) {
+      signUpWithEmail();
     }
   }
 
@@ -104,20 +119,36 @@ class _LoginPageState extends State<LoginPage> {
     try {
       final credential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: _emailController.text, password: _passwordController.text);
+      print("AAAAAAAAAAAAAAAAAAAAA");
       User? user = credential.user;
-
+      print("BBBBBB");
       await user!.updateDisplayName(_nameController.text);
-      await user.reload();
 
-      AppUser.User appUser = AppUser.User(id: const Uuid().v4(), authenticationId: user.uid, name: _nameController.text);
+      print("CCCC");
+      //await user.reload();
+      print("DDDD");
+
+      AppUser.User appUser =
+          AppUser.User(id: const Uuid().v4(), authenticationId: user.uid, name: _nameController.text);
       _userRepository.createUser(appUser);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'invalid-email') {
-        print('The email address is badly formatted.');
+        setState(() {
+          _signupError = "Email mal formatado";
+        });
       } else if (e.code == 'wrong-password') {
-        print('Wrong password provided for that user.');
+        setState(() {
+          _signupError = "Usuário e senha incompatíveis";
+        });
+      } else {
+        print("AAAAAAAAAAAAAAAAAAAAAAAAAA------------------ ${e.code} --- ${e.credential?.accessToken}");
+        print(_signupError);
+        if (e.code.isNotEmpty) {
+          setState(() {
+            _signupError = e.code;
+          });
+        }
       }
-      print("SignupError ${e}");
     }
   }
 
@@ -133,7 +164,7 @@ class _LoginPageState extends State<LoginPage> {
               const Padding(
                 padding: EdgeInsets.all(16.0),
                 child: Text(
-                  "Login",
+                  "Entrar",
                   style: TextStyle(fontWeight: FontWeight.w800, fontSize: 24),
                 ),
               ),
@@ -144,7 +175,7 @@ class _LoginPageState extends State<LoginPage> {
                   validator: (value) {
                     RegExp exp = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
                     RegExpMatch? match = exp.firstMatch(value ?? "");
-                    if(match == null) {
+                    if (match == null) {
                       return "Insira um email válido";
                     }
                     return null;
@@ -175,7 +206,7 @@ class _LoginPageState extends State<LoginPage> {
                   obscureText: !_passwordVisible,
                   controller: _passwordController,
                   validator: (value) {
-                    if((value?.length ?? 0) < 6) {
+                    if ((value?.length ?? 0) < 6) {
                       return "A senha deve conter pelo menos 6 caracteres";
                     }
 
@@ -241,11 +272,14 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
               const SizedBox(
-                height: 16,
+                height: 8,
               ),
-              Text(_loginError, style: TextStyle(color: Colors.red.withRed(215)),),
+              Text(
+                _loginError,
+                style: TextStyle(color: Colors.red.withRed(215)),
+              ),
               const SizedBox(
-                height: 16,
+                height: 8,
               ),
               TextButton(
                 onPressed: () {
@@ -309,185 +343,223 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget signUpForms() {
-    return Container(
-      child: Form(
-        key: _userLoginFormKey,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Card(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
-            child: Column(
-              children: <Widget>[
-                const Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: Text(
-                    "Registro",
-                    style: TextStyle(fontWeight: FontWeight.w800, fontSize: 24),
-                  ),
+    return Form(
+      key: _userSigUpFormKey,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: Card(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+          child: Column(
+            children: <Widget>[
+              const Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Text(
+                  "Registro",
+                  style: TextStyle(fontWeight: FontWeight.w800, fontSize: 24),
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: TextFormField(
-                    controller: _emailController,
-                    style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(width: 1, color: Colors.grey),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      hintText: "Email",
-                      hintStyle: const TextStyle(fontSize: 15),
-                      contentPadding: const EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-                    ),
-                    cursorColor: Colors.black,
-                    keyboardType: TextInputType.emailAddress,
-                  ),
-                ),
-                const SizedBox(
-                  height: 16,
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: TextFormField(
-                    obscureText: !_passwordVisible,
-                    controller: _passwordController,
-                    style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(width: 1, color: Colors.grey),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      hintText: "Senha",
-                      contentPadding: const EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-                      hintStyle: const TextStyle(fontSize: 15),
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _passwordVisible ? Icons.visibility : Icons.visibility_off,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            _passwordVisible = !_passwordVisible;
-                          });
-                        },
-                      ),
-                    ),
-                    cursorColor: Colors.black,
-                  ),
-                ),
-                const SizedBox(
-                  height: 16,
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: TextFormField(
-                    obscureText: !_passwordVisible,
-                    controller: _passwordConfirmationController,
-                    style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(width: 1, color: Colors.grey),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      hintText: "Confirme a senha",
-                      contentPadding: const EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-                      hintStyle: const TextStyle(fontSize: 15),
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _passwordVisible ? Icons.visibility : Icons.visibility_off,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            _passwordVisible = !_passwordVisible;
-                          });
-                        },
-                      ),
-                    ),
-                    cursorColor: Colors.black,
-                  ),
-                ),
-                const SizedBox(
-                  height: 16,
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: TextFormField(
-                    controller: _nameController,
-                    style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(width: 1, color: Colors.grey),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      hintText: "Nome",
-                      hintStyle: const TextStyle(fontSize: 15),
-                      contentPadding: const EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-                    ),
-                    cursorColor: Colors.black,
-                    keyboardType: TextInputType.emailAddress,
-                  ),
-                ),
-                const SizedBox(
-                  height: 16,
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: InkWell(
-                    child: Container(
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(16), color: Theme.of(context).colorScheme.primary),
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Center(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            mainAxisSize: MainAxisSize.min,
-                            children: <Widget>[
-                              Text(
-                                "Registrar-se",
-                                style: TextStyle(
-                                    fontSize: 16.0,
-                                    fontWeight: FontWeight.bold,
-                                    color: Theme.of(context).colorScheme.onPrimary),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    onTap: () {
-                      signUpWithEmail();
-                    },
-                  ),
-                ),
-                const SizedBox(
-                  height: 48,
-                ),
-                TextButton(
-                  onPressed: () {
-                    setState(() {
-                      clearTextInputs();
-                      _isSignUp = false;
-                    });
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: TextFormField(
+                  controller: _emailController,
+                  validator: (value) {
+                    RegExp exp = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+                    RegExpMatch? match = exp.firstMatch(value ?? "");
+                    if (match == null) {
+                      return "Insira um email válido";
+                    }
+                    return null;
                   },
-                  child: const Text("Voltar"),
+                  style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(width: 1, color: Colors.grey),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    hintText: "Email",
+                    hintStyle: const TextStyle(fontSize: 15),
+                    contentPadding: const EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+                  ),
+                  cursorColor: Colors.black,
+                  keyboardType: TextInputType.emailAddress,
                 ),
-                const SizedBox(
-                  height: 16,
+              ),
+              const SizedBox(
+                height: 16,
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: TextFormField(
+                  obscureText: !_passwordVisible,
+                  controller: _passwordController,
+                  validator: (value) {
+                    if ((value?.length ?? 0) < 6) {
+                      return "A senha deve conter pelo menos 6 caracteres";
+                    }
+
+                    return null;
+                  },
+                  style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(width: 1, color: Colors.grey),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    hintText: "Senha",
+                    contentPadding: const EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+                    hintStyle: const TextStyle(fontSize: 15),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _passwordVisible ? Icons.visibility : Icons.visibility_off,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _passwordVisible = !_passwordVisible;
+                        });
+                      },
+                    ),
+                  ),
+                  cursorColor: Colors.black,
                 ),
-              ],
-            ),
+              ),
+              const SizedBox(
+                height: 16,
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: TextFormField(
+                  obscureText: !_passwordVisible,
+                  controller: _passwordConfirmationController,
+                  style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
+                  validator: (value) {
+                    if ((value?.length ?? 0) < 6) {
+                      return "A senha deve conter pelo menos 6 caracteres";
+                    }
+
+                    if(value != _passwordController.text) {
+                      return "Ambas a senhas devem ser identicas";
+                    }
+
+                    return null;
+                  },
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(width: 1, color: Colors.grey),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    hintText: "Confirme a senha",
+                    contentPadding: const EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+                    hintStyle: const TextStyle(fontSize: 15),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _passwordVisible ? Icons.visibility : Icons.visibility_off,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _passwordVisible = !_passwordVisible;
+                        });
+                      },
+                    ),
+                  ),
+                  cursorColor: Colors.black,
+                ),
+              ),
+              const SizedBox(
+                height: 16,
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: TextFormField(
+                  controller: _nameController,
+                  validator: (value) {
+                    if ((value?.length ?? 0) < 3) {
+                      return "Nome deve possuir pelo menos 3 caracteres";
+                    }
+
+                    return null;
+                  },
+                  style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(width: 1, color: Colors.grey),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    hintText: "Nome",
+                    hintStyle: const TextStyle(fontSize: 15),
+                    contentPadding: const EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+                  ),
+                  cursorColor: Colors.black,
+                  keyboardType: TextInputType.emailAddress,
+                ),
+              ),
+              const SizedBox(
+                height: 16,
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: InkWell(
+                  child: Container(
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16), color: Theme.of(context).colorScheme.primary),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Center(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            Text(
+                              "Registrar-se",
+                              style: TextStyle(
+                                  fontSize: 16.0,
+                                  fontWeight: FontWeight.bold,
+                                  color: Theme.of(context).colorScheme.onPrimary),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  onTap: () {
+                    onSignUpWithEmailPressed();
+                  },
+                ),
+              ),
+              const SizedBox(
+                height: 8,
+              ),
+              Text(
+                _signupError,
+                style: TextStyle(color: Colors.red.withRed(215)),
+              ),
+              const SizedBox(
+                height: 8,
+              ),
+              TextButton(
+                onPressed: () {
+                  setState(() {
+                    clearTextInputs();
+                    _isSignUp = false;
+                  });
+                },
+                child: const Text("Voltar"),
+              ),
+              const SizedBox(
+                height: 8,
+              ),
+            ],
           ),
         ),
       ),
@@ -499,6 +571,8 @@ class _LoginPageState extends State<LoginPage> {
     _nameController.text = "";
     _passwordController.text = "";
     _passwordConfirmationController.text = "";
+    _signupError = "";
+    _loginError = "";
   }
 
   final GoogleSignIn _googleSignIn = GoogleSignIn();

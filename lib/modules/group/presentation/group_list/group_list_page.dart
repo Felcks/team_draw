@@ -68,20 +68,20 @@ class _GroupListPageState extends State<GroupListPage> {
               maintainState: true,
               child: TextButton(
                 child: const Text(
-                  "Sign Out",
-                  style: TextStyle(fontWeight: FontWeight.normal, fontSize: 20),
+                  "Sair",
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                 ),
                 onPressed: () {},
               ),
             ),
             const Text(
               "Grupos",
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
             TextButton(
               child: const Text(
-                "Sign Out",
-                style: TextStyle(fontWeight: FontWeight.normal, fontSize: 20),
+                "Sair",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
               ),
               onPressed: () async {
                 loggedUser = null;
