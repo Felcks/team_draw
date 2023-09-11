@@ -36,7 +36,7 @@ class NewPlayerWidget extends StatelessWidget {
                 ),
                 Column(
                   children: [
-                    const Text("Overall Rating", style: TextStyle(fontSize: 12)),
+                    const Text("Habilidade", style: TextStyle(fontSize: 12)),
                     Text(
                       player.overall.toString(),
                       style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),

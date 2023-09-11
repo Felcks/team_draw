@@ -34,13 +34,13 @@ class _GroupCreationState extends State<GroupCreation> {
         child: Column(
           children: [
             _header(),
-            SizedBox(
+            const SizedBox(
               height: 16,
             ),
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
               child: ClipRRect(
-                borderRadius: BorderRadius.all(Radius.circular(16)),
+                borderRadius: const BorderRadius.all(Radius.circular(16)),
                 child: AspectRatio(
                   aspectRatio: 16 / 9,
                   child: Image.network(
@@ -50,17 +50,17 @@ class _GroupCreationState extends State<GroupCreation> {
                 ),
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 32,
             ),
             Container(
               color: Colors.white.withOpacity(0.1),
               child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Column(
                   children: [
                     _textField(_titleTextFieldController, "Nome"),
-                    SizedBox(
+                    const SizedBox(
                       height: 16,
                     ),
                     _textField(_locationTextFieldController, "Local"),
@@ -68,11 +68,11 @@ class _GroupCreationState extends State<GroupCreation> {
                 ),
               ),
             ),
-            SizedBox(
-              height: 32,
+            const SizedBox(
+              height: 16,
             ),
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 12),
               child: InkWell(
                 onTap: () {
                   _showWeekDaysModal();
@@ -81,21 +81,21 @@ class _GroupCreationState extends State<GroupCreation> {
                   child: SizedBox(
                     height: 60,
                     child: Padding(
-                      padding: EdgeInsets.all(8),
+                      padding: const EdgeInsets.all(8),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text("Dia da Semana"),
+                          const Text("Dia da Semana"),
                           Row(
                             children: [
                               Text(
                                 DateFormat("EEEE").format(_weekDay),
                                 style: TextStyle(color: Colors.black.withOpacity(1)),
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 width: 16,
                               ),
-                              Icon(Icons.chevron_right),
+                              const Icon(Icons.chevron_right),
                             ],
                           ),
                         ],
@@ -105,8 +105,8 @@ class _GroupCreationState extends State<GroupCreation> {
                 ),
               ),
             ),
-            SizedBox(
-              height: 32,
+            const SizedBox(
+              height: 16,
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -145,34 +145,36 @@ class _GroupCreationState extends State<GroupCreation> {
         SizedBox(
           height: 56,
           child: TextButton(
-            child: Text(
+            child: const Text(
               "Cancelar",
-              style: TextStyle(fontWeight: FontWeight.normal, fontSize: 20),
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
             ),
             onPressed: () {
               Navigator.pop(context);
             },
           ),
         ),
-        SizedBox(
+        const SizedBox(
           height: 56,
           child: Center(
             child: Text(
               "Novo Grupo",
-              style: TextStyle(fontWeight: FontWeight.normal, fontSize: 20),
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
             ),
           ),
         ),
         SizedBox(
           height: 56,
           child: TextButton(
-            child: Text(
+            child: const Text(
               "OK",
-              style: TextStyle(fontWeight: FontWeight.normal, fontSize: 20),
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
             ),
             onPressed: () {
+              
+
               Group group = Group(
-                id: Uuid().v4(),
+                id: const Uuid().v4(),
                 userId: loggedUser?.id ?? "",
                 title: _titleTextFieldController.text,
                 startTime: TimeOfDay(hour: _startTime.hour, minute: _startTime.minute),
@@ -218,44 +220,44 @@ class _GroupCreationState extends State<GroupCreation> {
             return Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
-                SizedBox(
+                const SizedBox(
                   height: 16,
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 32,
                   child: Divider(
                     color: Colors.black,
                     height: 1,
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 8,
                 ),
-                Text(
+                const Text(
                   "Dia da semana",
                   style: TextStyle(fontSize: 22, color: Colors.black, fontWeight: FontWeight.bold),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 32,
                 ),
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Container(
                     decoration: BoxDecoration(
-                      borderRadius: new BorderRadius.all(
+                      borderRadius: const BorderRadius.all(
                         Radius.circular(8),
                       ),
                       shape: BoxShape.rectangle,
                       color: Colors.grey.withOpacity(0.1),
                     ),
                     child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 8.0),
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
                       child: Column(
                         children: List.generate(
                           DateTime.daysPerWeek,
                           (index) {
                             return Padding(
-                              padding: EdgeInsets.symmetric(vertical: 4, horizontal: 0),
+                              padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 0),
                               child: Column(
                                 children: [
                                   InkWell(
@@ -266,7 +268,7 @@ class _GroupCreationState extends State<GroupCreation> {
                                       Navigator.pop(context);
                                     },
                                     child: Padding(
-                                      padding: EdgeInsets.all(8),
+                                      padding: const EdgeInsets.all(8),
                                       child: Row(
                                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                         children: [
@@ -274,7 +276,7 @@ class _GroupCreationState extends State<GroupCreation> {
                                             DateFormat("EEEE").format(monday.add(Duration(days: index))),
                                             style: TextStyle(color: Colors.black.withOpacity(1)),
                                           ),
-                                          (_weekDay.weekday - 1 == index) ? Icon(Icons.done) : Container(),
+                                          (_weekDay.weekday - 1 == index) ? const Icon(Icons.done) : Container(),
                                         ],
                                       ),
                                     ),

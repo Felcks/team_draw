@@ -91,7 +91,7 @@ class _MatchPlayerWidgetState extends State<MatchPlayerWidget> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text("Overall Rating", style: TextStyle(fontSize: 12)),
+                      const Text("Habilidade", style: TextStyle(fontSize: 12)),
                       Text(
                         widget.matchPlayer.player.overall.toString(),
                         style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),

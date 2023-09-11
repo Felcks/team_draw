@@ -141,6 +141,10 @@ class _PlayerCreationPageState extends State<PlayerCreationPage> {
     return TextFormField(
       controller: _nameTextFieldController,
       validator: (value) {
+        if((value?.isEmpty == true)) {
+          return "Nome é obrigatório";
+        }
+
         if((value?.length ?? 0) > 20) {
           return "Nome deve possuir menos de 20 caracters";
         }
@@ -175,7 +179,7 @@ class _PlayerCreationPageState extends State<PlayerCreationPage> {
         child: Column(
           children: [
             const Text(
-              "Overall",
+              "Habilidade",
               style: TextStyle(fontSize: 20),
             ),
             Slider(

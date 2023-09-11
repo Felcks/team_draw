@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:team_randomizer/modules/group/domain/models/group.dart';
 import 'package:team_randomizer/modules/player/domain/player.dart';
 import 'package:team_randomizer/modules/match/presentation/match_list/match_list_page.dart';
@@ -28,6 +29,7 @@ class _GroupHomePageState extends State<GroupHomePage> {
   @override
   void initState() {
     super.initState();
+    initializeDateFormatting();
 
     _playerUpdateUnregister = _playerRepository.listenPlayers(widget.group.id, (list) {
       setState(() {
@@ -63,7 +65,7 @@ class _GroupHomePageState extends State<GroupHomePage> {
               top: 32,
               child: IconButton(
                 iconSize: 32,
-                icon: Icon(Icons.arrow_back),
+                icon: const Icon(Icons.arrow_back),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
@@ -75,7 +77,7 @@ class _GroupHomePageState extends State<GroupHomePage> {
             height: MediaQuery.of(context).size.height - startOfCard,
             child: Container(
               decoration: BoxDecoration(
-                borderRadius: new BorderRadius.only(
+                borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(32),
                   topRight: Radius.circular(32),
                 ),
@@ -85,88 +87,88 @@ class _GroupHomePageState extends State<GroupHomePage> {
               child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    SizedBox(
+                    const SizedBox(
                       height: 16,
                     ),
-                    SizedBox(
+                    const SizedBox(
                         width: 60,
                         child: Divider(
                           color: Colors.black,
                           height: 1,
                         )),
-                    SizedBox(
+                    const SizedBox(
                       height: 8,
                     ),
                     Text(
                       widget.group.title,
-                      style: TextStyle(fontSize: 30, color: Colors.black, fontWeight: FontWeight.bold),
+                      style: const TextStyle(fontSize: 30, color: Colors.black, fontWeight: FontWeight.bold),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 8,
                     ),
                     Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16),
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Row(
                         children: [
-                          Text(
+                          const Text(
                             "Próxima data: ",
                             style: TextStyle(color: Colors.black, fontSize: 18),
                           ),
                           Text(
                             _formatNextDate(widget.group.date.getNextDate()),
-                            style: TextStyle(color: Colors.black, fontSize: 18),
+                            style: const TextStyle(color: Colors.black, fontSize: 18),
                           ),
                           //TODO substituir com data correta do jogo
                         ],
                       ),
                     ),
                     Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16),
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Row(
                         children: [
-                          Text(
+                          const Text(
                             "Horário: ",
                             style: TextStyle(color: Colors.black, fontSize: 18),
                           ),
                           Text(
                             widget.group.startTime.format(context) + " - " + widget.group.endTime.format(context),
-                            style: TextStyle(color: Colors.black, fontSize: 18),
+                            style: const TextStyle(color: Colors.black, fontSize: 18),
                           ),
                         ],
                       ),
                     ),
                     Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16),
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Row(
                         children: [
-                          Text(
+                          const Text(
                             "Local: ",
                             style: TextStyle(color: Colors.black, fontSize: 18),
                           ),
                           ClipRect(
                             child: Text(
                               widget.group.local,
-                              style: TextStyle(color: Colors.black, fontSize: 18),
+                              style: const TextStyle(color: Colors.black, fontSize: 18),
                             ),
                           ),
                         ],
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 16,
                     ),
                     Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16),
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: groupActions(),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 16,
                     ),
                     Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16),
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: _groupPlayersWidget(),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 16,
                     ),
                   ],
@@ -205,7 +207,7 @@ class _GroupHomePageState extends State<GroupHomePage> {
                         children: [
                           Container(
                             decoration: BoxDecoration(
-                              borderRadius: new BorderRadius.circular(16.0),
+                              borderRadius: BorderRadius.circular(16.0),
                               shape: BoxShape.rectangle,
                             ),
                           ),
@@ -216,7 +218,7 @@ class _GroupHomePageState extends State<GroupHomePage> {
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
                                 Image.asset("assets/football-field.png"),
-                                Text(
+                                const Text(
                                   "Partidas",
                                   style: TextStyle(fontSize: 24),
                                 ),
@@ -239,7 +241,7 @@ class _GroupHomePageState extends State<GroupHomePage> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        Row(
+        const Row(
           children: [
             Text(
               "Jogadores",
@@ -247,7 +249,7 @@ class _GroupHomePageState extends State<GroupHomePage> {
             ),
           ],
         ),
-        SizedBox(
+        const SizedBox(
           height: 8,
         ),
         Column(
@@ -277,7 +279,7 @@ class _GroupHomePageState extends State<GroupHomePage> {
               } else {
                 return Column(
                   children: [
-                    SizedBox(
+                    const SizedBox(
                       height: 8,
                     ),
                     Card(
@@ -287,7 +289,7 @@ class _GroupHomePageState extends State<GroupHomePage> {
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             IconButton(
-                              icon: Icon(
+                              icon: const Icon(
                                 Icons.add,
                                 size: 48,
                               ),
