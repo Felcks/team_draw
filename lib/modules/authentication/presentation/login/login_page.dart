@@ -136,7 +136,6 @@ class _LoginPageState extends State<LoginPage> {
           _signupError = "Usuário e senha incompatíveis";
         });
       } else {
-        print("AAAAAAAAAAAAAAAAAAAAAAAAAA------------------ ${e.code} --- ${e.credential?.accessToken}");
         print(_signupError);
         if (e.code.isNotEmpty) {
           setState(() {

@@ -19,14 +19,16 @@ class GroupCreation extends StatefulWidget {
 }
 
 class _GroupCreationState extends State<GroupCreation> {
-  TextEditingController _titleTextFieldController = TextEditingController();
-  TextEditingController _locationTextFieldController = TextEditingController();
+  final TextEditingController _titleTextFieldController = TextEditingController();
+  final TextEditingController _locationTextFieldController = TextEditingController();
+
+  final GlobalKey<FormState> _groupCreationFormKey = GlobalKey();
 
   DateTime _weekDay = DateTime(2018);
   Time _startTime = Time(hour: 18, minute: 00, second: 00);
   Time _endTime = Time(hour: 19, minute: 00, second: 00);
 
-  GroupRepository _groupRepository = GroupRepositoryImpl();
+  final GroupRepository _groupRepository = GroupRepositoryImpl();
 
   @override
   void initState() {
@@ -38,107 +40,150 @@ class _GroupCreationState extends State<GroupCreation> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Column(
-          children: [
-            _header(),
-            const SizedBox(
-              height: 16,
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-              child: ClipRRect(
-                borderRadius: const BorderRadius.all(Radius.circular(16)),
-                child: AspectRatio(
-                  aspectRatio: 16 / 9,
-                  child: Image.network(
-                    "https://lh5.googleusercontent.com/p/AF1QipNczAUhbyQf2koTig0m41v7eShuv8MffbD6YCB8=w650-h486-k-no",
-                    fit: BoxFit.fill,
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              _header(),
+              const SizedBox(
+                height: 16,
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                child: ClipRRect(
+                  borderRadius: const BorderRadius.all(Radius.circular(16)),
+                  child: AspectRatio(
+                    aspectRatio: 16 / 9,
+                    child: Image.network(
+                      "https://lh5.googleusercontent.com/p/AF1QipNczAUhbyQf2koTig0m41v7eShuv8MffbD6YCB8=w650-h486-k-no",
+                      fit: BoxFit.fill,
+                    ),
                   ),
                 ),
               ),
-            ),
-            const SizedBox(
-              height: 32,
-            ),
-            Container(
-              color: Colors.white.withOpacity(0.1),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Column(
-                  children: [
-                    _textField(_titleTextFieldController, "Nome do grupo"),
-                    const SizedBox(
-                      height: 16,
+              const SizedBox(
+                height: 32,
+              ),
+              Container(
+                color: Colors.white.withOpacity(0.1),
+                child: Form(
+                  key: _groupCreationFormKey,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Column(
+                      children: [
+                        TextFormField(
+                          controller: _titleTextFieldController,
+                          validator: (value) {
+                            if ((value?.length ?? 0) < 3) {
+                              return "Grupo deve possuir um nome de pelo menos 3 caracteres";
+                            }
+
+                            return null;
+                          },
+                          decoration: InputDecoration(
+                            label: Text("Nome do grupo"),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(width: 1, color: Colors.grey),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 16,
+                        ),
+                        TextFormField(
+                          controller: _locationTextFieldController,
+                          validator: (value) {
+                            if ((value?.length ?? 0) < 3) {
+                              return "O local do grupo deve ter pelo menos 3 caracteres";
+                            }
+
+                            return null;
+                          },
+                          decoration: InputDecoration(
+                            label: Text("Local"),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(width: 1, color: Colors.grey),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                    _textField(_locationTextFieldController, "Local"),
-                  ],
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(
-              height: 16,
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              child: InkWell(
-                onTap: () {
-                  _showWeekDaysModal();
-                },
-                child: Card(
-                  child: SizedBox(
-                    height: 60,
-                    child: Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text("Dia da Semana"),
-                          Row(
-                            children: [
-                              Text(
-                                DateFormat("EEEE").format(_weekDay),
-                                style: TextStyle(color: Colors.black.withOpacity(1)),
-                              ),
-                              const SizedBox(
-                                width: 16,
-                              ),
-                              const Icon(Icons.chevron_right),
-                            ],
-                          ),
-                        ],
+              const SizedBox(
+                height: 16,
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                child: InkWell(
+                  onTap: () {
+                    _showWeekDaysModal();
+                  },
+                  child: Card(
+                    child: SizedBox(
+                      height: 60,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text("Dia da Semana"),
+                            Row(
+                              children: [
+                                Text(
+                                  DateFormat("EEEE").format(_weekDay),
+                                  style: TextStyle(color: Colors.black.withOpacity(1)),
+                                ),
+                                const SizedBox(
+                                  width: 16,
+                                ),
+                                const Icon(Icons.chevron_right),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
                 ),
               ),
-            ),
-            const SizedBox(
-              height: 16,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                DefineHourWidget(
-                  time: _startTime,
-                  label: "Início",
-                  onChange: (time) {
-                    setState(() {
-                      _startTime = time;
-                    });
-                  },
-                ),
-                DefineHourWidget(
-                  time: _endTime,
-                  label: "Fim",
-                  onChange: (time) {
-                    setState(() {
-                      _endTime = time;
-                    });
-                  },
-                ),
-              ],
-            )
-          ],
+              const SizedBox(
+                height: 16,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  DefineHourWidget(
+                    time: _startTime,
+                    label: "Início",
+                    onChange: (time) {
+                      setState(() {
+                        _startTime = time;
+                      });
+                    },
+                  ),
+                  DefineHourWidget(
+                    time: _endTime,
+                    label: "Fim",
+                    onChange: (time) {
+                      setState(() {
+                        _endTime = time;
+                      });
+                    },
+                  ),
+                ],
+              )
+            ],
+          ),
         ),
       ),
     );
@@ -178,18 +223,21 @@ class _GroupCreationState extends State<GroupCreation> {
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
             ),
             onPressed: () {
-              Group group = Group(
-                id: const Uuid().v4(),
-                userId: loggedUser?.id ?? "",
-                title: _titleTextFieldController.text,
-                startTime: TimeOfDay(hour: _startTime.hour, minute: _startTime.minute),
-                endTime: TimeOfDay(hour: _endTime.hour, minute: _endTime.minute),
-                local: _locationTextFieldController.text,
-                image: "",
-                date: GameDate(weekDay: _weekDay.weekday),
-              );
-              _groupRepository.createGroup(group);
-              Navigator.pop(context);
+              bool? isValid = _groupCreationFormKey.currentState?.validate();
+              if (isValid == true) {
+                Group group = Group(
+                  id: const Uuid().v4(),
+                  userId: loggedUser?.id ?? "",
+                  title: _titleTextFieldController.text,
+                  startTime: TimeOfDay(hour: _startTime.hour, minute: _startTime.minute),
+                  endTime: TimeOfDay(hour: _endTime.hour, minute: _endTime.minute),
+                  local: _locationTextFieldController.text,
+                  image: "",
+                  date: GameDate(weekDay: _weekDay.weekday),
+                );
+                _groupRepository.createGroup(group);
+                Navigator.pop(context);
+              }
             },
           ),
         )
