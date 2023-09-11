@@ -1,5 +1,6 @@
 import 'package:day_night_time_picker/lib/state/time.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:team_randomizer/main.dart';
 import 'package:team_randomizer/modules/match/domain/models/game_date.dart';
@@ -26,6 +27,12 @@ class _GroupCreationState extends State<GroupCreation> {
   Time _endTime = Time(hour: 19, minute: 00, second: 00);
 
   GroupRepository _groupRepository = GroupRepositoryImpl();
+
+  @override
+  void initState() {
+    super.initState();
+    initializeDateFormatting();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,7 +66,7 @@ class _GroupCreationState extends State<GroupCreation> {
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Column(
                   children: [
-                    _textField(_titleTextFieldController, "Nome"),
+                    _textField(_titleTextFieldController, "Nome do grupo"),
                     const SizedBox(
                       height: 16,
                     ),
@@ -159,7 +166,7 @@ class _GroupCreationState extends State<GroupCreation> {
           child: Center(
             child: Text(
               "Novo Grupo",
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
           ),
         ),
@@ -171,8 +178,6 @@ class _GroupCreationState extends State<GroupCreation> {
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
             ),
             onPressed: () {
-              
-
               Group group = Group(
                 id: const Uuid().v4(),
                 userId: loggedUser?.id ?? "",

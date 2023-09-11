@@ -119,14 +119,9 @@ class _LoginPageState extends State<LoginPage> {
     try {
       final credential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: _emailController.text, password: _passwordController.text);
-      print("AAAAAAAAAAAAAAAAAAAAA");
       User? user = credential.user;
-      print("BBBBBB");
       await user!.updateDisplayName(_nameController.text);
-
-      print("CCCC");
       //await user.reload();
-      print("DDDD");
 
       AppUser.User appUser =
           AppUser.User(id: const Uuid().v4(), authenticationId: user.uid, name: _nameController.text);

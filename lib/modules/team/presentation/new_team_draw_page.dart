@@ -36,6 +36,9 @@ class _NewTeamDrawPageState extends State<NewTeamDrawPage> {
 
   int _playersPerTeam = 1;
 
+
+  String _error = "";
+
   //TODO: Create Widgets to show the teams (copy from old team_draw)
   //TODO: New usecase to randomize teams with new classes
   //TODO: Move Player to right package
@@ -259,13 +262,27 @@ class _NewTeamDrawPageState extends State<NewTeamDrawPage> {
               ],
             ),
             const SizedBox(
-              height: 32,
+              height: 8,
+            ),
+            Text(
+              _error,
+              style: TextStyle(color: Colors.red.withRed(215)),
+            ),
+            const SizedBox(
+              height: 16,
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 ElevatedButton(
                   onPressed: () {
+                    if(getPlayersReady().length < _playersPerTeam) {
+                      setModalState(() {
+                        _error = "Deve-se ter mais jogadores prontos do que jogadores por time";
+                      });
+                      return;
+                    }
+
                     cleanSortedTeams();
                     executeTeamDrawByRandomization();
                   },
@@ -273,6 +290,13 @@ class _NewTeamDrawPageState extends State<NewTeamDrawPage> {
                 ),
                 ElevatedButton(
                   onPressed: () {
+                    if(getPlayersReady().length < _playersPerTeam) {
+                      setModalState(() {
+                        _error = "Deve-se ter mais jogadores prontos do que jogadores por time";
+                      });
+                      return;
+                    }
+
                     cleanSortedTeams();
                     executeTeamDrawByOverall();
                   },
@@ -319,13 +343,15 @@ class _NewTeamDrawPageState extends State<NewTeamDrawPage> {
   }
 
   int teamsAmount() {
-    if (getPlayersReady().length == 0 || _playersPerTeam <= 0)
+    if (getPlayersReady().isEmpty || _playersPerTeam <= 0) {
       return 0;
-    else
-      return (getPlayersReady().length / _playersPerTeam).toInt();
+    } else {
+      return getPlayersReady().length ~/ _playersPerTeam;
+    }
   }
 
   void _showConfiguration() {
+    _error = "";
     showModalBottomSheet<void>(
       context: context,
       builder: (BuildContext context) {
@@ -333,7 +359,7 @@ class _NewTeamDrawPageState extends State<NewTeamDrawPage> {
           builder: (BuildContext context,
               void Function(void Function()) setModalState) {
             return Container(
-              height: MediaQuery.of(context).size.height * .42,
+              height: MediaQuery.of(context).size.height * .45,
               width: MediaQuery.of(context).size.width,
               decoration: const BoxDecoration(
                 borderRadius: BorderRadius.only(
