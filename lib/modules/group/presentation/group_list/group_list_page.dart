@@ -110,7 +110,7 @@ class _GroupListPageState extends State<GroupListPage> {
 
   Widget _groupList() {
     WindowSizeClass widthSizeClass = getWidthWindowSizeClass(context);
-    int rows = 1;
+    int rows = 2;
     if(widthSizeClass == WindowSizeClass.MEDIUM) {
       rows = 2;
     } else if(widthSizeClass == WindowSizeClass.EXPANDED) {
