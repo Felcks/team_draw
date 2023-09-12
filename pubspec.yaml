@@ -47,16 +47,14 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
-  # The "flutter_lints" package below contains a set of recommended lints to
-  # encourage good coding practices. The lint set provided by the package is
-  # activated in the `analysis_options.yaml` file located at the root of your
-  # package. See that file for information about deactivating specific lint
-  # rules and activating additional ones.
   flutter_lints: ^2.0.0
   build_runner: ^2.4.6
   freezed: ^2.4.1
   json_serializable: ^6.7.1
+  flutter_app_name: ^0.1.0
+
+flutter_app_name:
+    name: "Jogo Organizado"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -74,7 +72,9 @@ flutter:
   # https://www.flaticon.com/free-icon/football-field_5808371:
   # https://www.flaticon.com/free-icon/soccer-player_919420?term=soccer+player&page=1&position=12&origin=search&related_id=919420
   # https://www.flaticon.com/free-icon/soccer_4389768?term=soccer+player&page=1&position=60&origin=search&related_id=4389768
-
+  # https://br:freepik:com/icone/futebol_1169096#fromView=search&term=soccer&page=11&position=77
+  # https://br.freepik.com/icone/futebol_188864#fromView=search&term=soccer&page=4&position=8
+  # https://br.freepik.com/icone/futebol_4297947#fromView=search&term=soccer&page=5&position=52
   assets:
   - assets/football-field.png
   - assets/dice.png
