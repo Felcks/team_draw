@@ -34,7 +34,8 @@ class _MatchHomePageState extends State<MatchHomePage> {
   void initState() {
     super.initState();
 
-    _matchPlayerUpdateUnregister = _matchPlayerRepository.listenMatchPlayers(widget.match.groupId, widget.match.id, (list) {
+    _matchPlayerUpdateUnregister =
+        _matchPlayerRepository.listenMatchPlayers(widget.match.groupId, widget.match.id, (list) {
       setState(() {
         _matchPlayers = list;
         if (!_listeningPlayersChange) {
@@ -72,7 +73,7 @@ class _MatchHomePageState extends State<MatchHomePage> {
       appBar: AppBar(
         title: Text(
           "Partida ${DateFormat("EEEE (dd/MM)").format(widget.match.date)}",
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -92,42 +93,49 @@ class _MatchHomePageState extends State<MatchHomePage> {
           ? playersListWidget()
           : (_selectedIndex == 1)
               ? NewTeamDrawPage(match: widget.match) //TeamDrawPage(game: widget.match)
-              : TimerPage(),
+              : const TimerPage(),
     );
   }
 
   Widget playersListWidget() {
     return SafeArea(
       child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Expanded(
-              flex: 10,
-              child: ListView.builder(
-                padding: EdgeInsets.zero,
-                itemCount: _matchPlayers.length,
-                itemBuilder: (context, index) {
-                  MatchPlayer gamePlayer = _matchPlayers[index];
-                  return SizedBox(
-                    height: 85,
-                    child: Stack(
-                      fit: StackFit.passthrough,
-                      children: [
-                        Align(
-                          alignment: Alignment.topCenter,
-                          child: SizedBox(
-                            height: 85,
-                            child: MatchPlayerWidget(
-                              matchPlayer: gamePlayer,
-                              onMatchPlayerStatusUpdate: (player) {
-                                _matchPlayerRepository.editMatchPlayer(player);
-                              },
-                            ),
-                          ),
-                        ),
-                        /*Positioned.fill(
+            (_matchPlayers.isEmpty)
+                ? const Expanded(
+                    child: Center(
+                        child: Text(
+                    "Nenhum jogador adicionado, adicione jogadores em detalhes do grupo.",
+                    textAlign: TextAlign.center,
+                  )))
+                : Expanded(
+                    flex: 10,
+                    child: ListView.builder(
+                      padding: EdgeInsets.zero,
+                      itemCount: _matchPlayers.length,
+                      itemBuilder: (context, index) {
+                        MatchPlayer gamePlayer = _matchPlayers[index];
+                        return SizedBox(
+                          height: 85,
+                          child: Stack(
+                            fit: StackFit.passthrough,
+                            children: [
+                              Align(
+                                alignment: Alignment.topCenter,
+                                child: SizedBox(
+                                  height: 85,
+                                  child: MatchPlayerWidget(
+                                    matchPlayer: gamePlayer,
+                                    onMatchPlayerStatusUpdate: (player) {
+                                      _matchPlayerRepository.editMatchPlayer(player);
+                                    },
+                                  ),
+                                ),
+                              ),
+                              /*Positioned.fill(
                           child: Padding(
                             padding: const EdgeInsets.only(top: 8.0),
                             child: Container(
@@ -139,7 +147,7 @@ class _MatchHomePageState extends State<MatchHomePage> {
                             ),
                           ),
                         ),*/
-                        /*Positioned(
+                              /*Positioned(
                           left: 120,
                           top: 40,
                           child: PopupMenuButton<MatchPlayerStatus>(
@@ -174,7 +182,7 @@ class _MatchHomePageState extends State<MatchHomePage> {
                             ],
                           ),
                         ),*/
-                        /*Positioned(
+                              /*Positioned(
                           left: 15,
                           top: 55,
                           child: Text(
@@ -182,12 +190,12 @@ class _MatchHomePageState extends State<MatchHomePage> {
                             style: TextStyle(fontSize: 12),
                           ),
                         )*/
-                      ],
+                            ],
+                          ),
+                        );
+                      },
                     ),
-                  );
-                },
-              ),
-            ),
+                  ),
           ],
         ),
       ),
