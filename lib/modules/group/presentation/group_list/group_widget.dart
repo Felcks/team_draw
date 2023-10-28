@@ -47,7 +47,7 @@ class GroupWidget extends StatelessWidget {
                 ),
               ),
             ),
-            (isTablet(context)) ? _tabletLayout(context) : Container()
+            (isTablet(context)) ? _tabletLayout(context) : _tabletLayout(context)
           ],
         ),
       ),

@@ -5,9 +5,11 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:team_randomizer/main.dart';
 import 'package:team_randomizer/modules/authentication/domain/repositories/user_repository.dart';
 import 'package:team_randomizer/modules/authentication/domain/models/user.dart' as AppUser;
+import 'package:team_randomizer/modules/group/presentation/group_list/group_list_page.dart';
 import 'package:uuid/uuid.dart';
 
 class LoginPage extends StatefulWidget {
+
   const LoginPage({Key? key}) : super(key: key);
 
   @override
@@ -30,10 +32,27 @@ class _LoginPageState extends State<LoginPage> {
 
   String _loginError = "";
   String _signupError = "";
+  bool showProgressBar = true;
+
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(const Duration(seconds: 2), () {
+      setState(() {
+        showProgressBar = false;
+      });
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
     Size deviceSize = MediaQuery.of(context).size;
+
+
+
+
+
 
     return WillPopScope(
       child: Scaffold(
@@ -57,7 +76,7 @@ class _LoginPageState extends State<LoginPage> {
             Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
+              children: (showProgressBar) ? [const Center(child: CircularProgressIndicator(color: Colors.white,))] : <Widget>[
                 const Text(
                   "Jogo Organizado",
                   style: TextStyle(color: Colors.white, fontSize: 40, fontFamily: "Varane"),
@@ -89,7 +108,10 @@ class _LoginPageState extends State<LoginPage> {
         password: _passwordController.text,
       );
       _loginError = "";
+      FirebaseAuth.instance.currentUser?.refreshToken;
+
     } on FirebaseAuthException catch (e) {
+      print("exception signing $e");
       if (e.code == 'user-not-found') {
         setState(() {
           _loginError = "Não foi encontrado usuário com esse email";
@@ -121,11 +143,14 @@ class _LoginPageState extends State<LoginPage> {
           .createUserWithEmailAndPassword(email: _emailController.text, password: _passwordController.text);
       User? user = credential.user;
       await user!.updateDisplayName(_nameController.text);
-      //await user.reload();
 
       AppUser.User appUser =
           AppUser.User(id: const Uuid().v4(), authenticationId: user.uid, name: _nameController.text);
       _userRepository.createUser(appUser);
+      loggedUser = appUser;
+      FirebaseAuth.instance.currentUser?.getIdTokenResult(true);
+
+      await user.reload();
     } on FirebaseAuthException catch (e) {
       if (e.code == 'invalid-email') {
         setState(() {
@@ -262,6 +287,10 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   onTap: () {
                     onSignInButtonPressed();
+                  },
+                  onLongPress: () {
+                    _emailController.text = "teste6@teste.com";
+                    _passwordController.text = "123456";
                   },
                 ),
               ),
@@ -436,7 +465,7 @@ class _LoginPageState extends State<LoginPage> {
                       return "A senha deve conter pelo menos 6 caracteres";
                     }
 
-                    if(value != _passwordController.text) {
+                    if (value != _passwordController.text) {
                       return "Ambas a senhas devem ser identicas";
                     }
 
@@ -528,6 +557,10 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   onTap: () {
                     onSignUpWithEmailPressed();
+                  },
+                  onLongPress: () {
+                    _emailController.text = "teste6@teste.com";
+                    _passwordController.text = "123456";
                   },
                 ),
               ),

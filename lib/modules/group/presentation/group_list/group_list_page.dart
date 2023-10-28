@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:team_randomizer/main.dart';
+import 'package:team_randomizer/modules/authentication/presentation/login/login_page.dart';
 import 'package:team_randomizer/modules/core/window_size_class.dart';
 import 'package:team_randomizer/modules/group/presentation/group_creation/group_creation.dart';
 import 'package:team_randomizer/modules/group/presentation/group_home/group_home_page.dart';
@@ -29,23 +30,11 @@ class _GroupListPageState extends State<GroupListPage> {
   void initState() {
     super.initState();
 
-    String authenticationId = auth.currentUser?.uid ?? "";
-    _userRepository.getUser(authenticationId).then(
-      (value) {
-        if (value.isEmpty) {
-          loggedUser = null;
-          FirebaseAuth.instance.signOut();
-        } else {
-          loggedUser = value.first;
-          _groupListUnregister = repositoryImpl.listenGroups((list) {
-            setState(() {
-              print(list);
-              _groups = list;
-            });
-          });
-        }
-      },
-    );
+    _groupListUnregister = repositoryImpl.listenGroups((list) {
+      setState(() {
+        _groups = list;
+      });
+    });
   }
 
   @override
@@ -68,7 +57,7 @@ class _GroupListPageState extends State<GroupListPage> {
               maintainState: true,
               child: TextButton(
                 child: const Text(
-                  "Sair",
+                  "Invisible",
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                 ),
                 onPressed: () {},
@@ -86,6 +75,12 @@ class _GroupListPageState extends State<GroupListPage> {
               onPressed: () async {
                 loggedUser = null;
                 await FirebaseAuth.instance.signOut();
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(
+                    builder: (context) => LoginPage(),
+                  ),
+                    (r) => false,
+                );
               },
             ),
           ],
@@ -110,11 +105,11 @@ class _GroupListPageState extends State<GroupListPage> {
 
   Widget _groupList() {
     WindowSizeClass widthSizeClass = getWidthWindowSizeClass(context);
-    int rows = 2;
+    int rows = 1;
     if(widthSizeClass == WindowSizeClass.MEDIUM) {
-      rows = 2;
+      rows = 1;
     } else if(widthSizeClass == WindowSizeClass.EXPANDED) {
-      rows = 3;
+      rows = 1;
     }
 
     return GridView.builder(

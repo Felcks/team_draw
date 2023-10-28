@@ -5,6 +5,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:team_randomizer/modules/authentication/domain/repositories/user_repository.dart';
 import 'package:team_randomizer/modules/authentication/presentation/login/login_page.dart';
 import 'package:team_randomizer/modules/group/presentation/group_list/group_list_page.dart';
+import 'package:team_randomizer/modules/authentication/domain/models/user.dart' as AppUser;
+import 'package:uuid/uuid.dart';
 
 import '../../../../main.dart';
 
@@ -17,6 +19,7 @@ class LoginVerificationPage extends StatefulWidget {
 
 class _LoginVerificationPageState extends State<LoginVerificationPage> {
   UserRepository _userRepository = UserRepositoryImpl();
+
 
   @override
   Widget build(BuildContext context) {
@@ -50,17 +53,31 @@ class _LoginVerificationPageState extends State<LoginVerificationPage> {
                 child: StreamBuilder<User?>(
                   stream: auth.authStateChanges(),
                   builder: (context, snapshot) {
+
                     if (snapshot.hasData) {
                       String? authenticationId = snapshot.data?.uid;
-                      if (authenticationId == null) return LoginPage();
-                      return GroupListPage();
+                      if (authenticationId != null) {
+                        _userRepository.getUser(authenticationId).then(
+                          (value) {
+                            if (value.isEmpty) {
+                              loggedUser = null;
+                              FirebaseAuth.instance.signOut();
+                            } else {
+                              loggedUser = value.first;
+                              FirebaseAuth.instance.currentUser?.refreshToken;
+                              Navigator.of(context).pushAndRemoveUntil(
+                                MaterialPageRoute(
+                                  builder: (context) => GroupListPage(),
+                                ),
+                                (r) => false,
+                              );
+                            }
+                          },
+                        );
+                      }
                     }
 
-                    if (loggedUser != null) {
-                      return GroupListPage();
-                    } else {
-                      return LoginPage();
-                    }
+                    return const LoginPage();
                   },
                 ),
               ),
