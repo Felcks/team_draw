@@ -9,7 +9,6 @@ import 'package:team_randomizer/modules/group/presentation/group_list/group_list
 import 'package:uuid/uuid.dart';
 
 class LoginPage extends StatefulWidget {
-
   const LoginPage({Key? key}) : super(key: key);
 
   @override
@@ -37,22 +36,43 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
+
+    authStateChanges.listen((User? user) {
+      if (user != null) {
+        String? authenticationId = user.uid;
+        _userRepository.getUser(authenticationId).then(
+          (value) {
+            if (value.isEmpty) {
+              loggedUser = null;
+              FirebaseAuth.instance.signOut();
+            } else {
+              loggedUser = value.first;
+              FirebaseAuth.instance.currentUser?.refreshToken;
+              Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(
+                  builder: (context) => const GroupListPage(),
+                ),
+                (r) => false,
+              );
+            }
+          },
+        );
+      } else {
+        loggedUser = null;
+      }
+    });
     Future.delayed(const Duration(seconds: 2), () {
-      setState(() {
-        showProgressBar = false;
-      });
+      if (loggedUser == null) {
+        setState(() {
+          showProgressBar = false;
+        });
+      }
     });
   }
-
 
   @override
   Widget build(BuildContext context) {
     Size deviceSize = MediaQuery.of(context).size;
-
-
-
-
-
 
     return WillPopScope(
       child: Scaffold(
@@ -76,13 +96,20 @@ class _LoginPageState extends State<LoginPage> {
             Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               crossAxisAlignment: CrossAxisAlignment.center,
-              children: (showProgressBar) ? [const Center(child: CircularProgressIndicator(color: Colors.white,))] : <Widget>[
-                const Text(
-                  "Jogo Organizado",
-                  style: TextStyle(color: Colors.white, fontSize: 40, fontFamily: "Varane"),
-                ),
-                (_isSignUp) ? signUpForms() : loginForms(),
-              ],
+              children: (showProgressBar)
+                  ? [
+                      const Center(
+                          child: CircularProgressIndicator(
+                        color: Colors.white,
+                      ))
+                    ]
+                  : <Widget>[
+                      const Text(
+                        "Jogo Organizado",
+                        style: TextStyle(color: Colors.white, fontSize: 40, fontFamily: "Varane"),
+                      ),
+                      (_isSignUp) ? signUpForms() : loginForms(),
+                    ],
             ),
           ],
         ),
@@ -103,15 +130,15 @@ class _LoginPageState extends State<LoginPage> {
 
   void signInWithEmail() async {
     try {
+      await FirebaseAuth.instance.signOut();
       final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: _emailController.text,
         password: _passwordController.text,
       );
       _loginError = "";
       FirebaseAuth.instance.currentUser?.refreshToken;
-
     } on FirebaseAuthException catch (e) {
-      print("exception signing $e");
+      print("script2 exception signing $e");
       if (e.code == 'user-not-found') {
         setState(() {
           _loginError = "Não foi encontrado usuário com esse email";
@@ -287,10 +314,6 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   onTap: () {
                     onSignInButtonPressed();
-                  },
-                  onLongPress: () {
-                    _emailController.text = "teste6@teste.com";
-                    _passwordController.text = "123456";
                   },
                 ),
               ),
@@ -558,10 +581,6 @@ class _LoginPageState extends State<LoginPage> {
                   onTap: () {
                     onSignUpWithEmailPressed();
                   },
-                  onLongPress: () {
-                    _emailController.text = "teste6@teste.com";
-                    _passwordController.text = "123456";
-                  },
                 ),
               ),
               const SizedBox(
@@ -618,20 +637,20 @@ class _LoginPageState extends State<LoginPage> {
 
     UserCredential userCredential = await auth.signInWithCredential(credential);
 
-    User? _user = userCredential.user ?? null;
+    User? _user = userCredential.user;
 
     if (_user == null) return null;
 
-    assert(!_user!.isAnonymous);
+    assert(!_user.isAnonymous);
 
-    assert(await _user!.getIdToken() != null);
+    assert(await _user.getIdToken() != null);
 
     User currentUser = await auth.currentUser!;
 
-    assert(_user!.uid == currentUser.uid);
+    assert(_user.uid == currentUser.uid);
 
-    print("User Name: ${_user!.displayName}");
-    print("User Email ${_user!.email}");
+    print("User Name: ${_user.displayName}");
+    print("User Email ${_user.email}");
 
     return _user;
   }

@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:team_randomizer/main.dart';
 import 'package:team_randomizer/modules/authentication/presentation/login/login_page.dart';
 import 'package:team_randomizer/modules/core/window_size_class.dart';
@@ -22,13 +23,13 @@ class _GroupListPageState extends State<GroupListPage> {
   List<Group> _groups = List.empty(growable: true);
 
   GroupRepositoryImpl repositoryImpl = GroupRepositoryImpl();
-  final UserRepository _userRepository = UserRepositoryImpl();
 
   Function() _groupListUnregister = () {};
 
   @override
   void initState() {
     super.initState();
+    initializeDateFormatting();
 
     _groupListUnregister = repositoryImpl.listenGroups((list) {
       setState(() {
@@ -77,7 +78,7 @@ class _GroupListPageState extends State<GroupListPage> {
                 await FirebaseAuth.instance.signOut();
                 Navigator.of(context).pushAndRemoveUntil(
                   MaterialPageRoute(
-                    builder: (context) => LoginPage(),
+                    builder: (context) => const LoginPage(),
                   ),
                     (r) => false,
                 );

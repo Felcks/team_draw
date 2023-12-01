@@ -12,6 +12,7 @@ bool shouldUseFirebaseEmulator = false;
 
 late final FirebaseApp app;
 late final FirebaseAuth auth;
+late final Stream<User?> authStateChanges;
 AppUser.User? loggedUser;
 
 Future<void> main() async {
@@ -20,6 +21,7 @@ Future<void> main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   auth = FirebaseAuth.instanceFor(app: app);
+  authStateChanges = auth.authStateChanges();
   Intl.systemLocale = await findSystemLocale();
   runApp(const MyApp());
 }
