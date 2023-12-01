@@ -81,7 +81,7 @@ flutter:
   - assets/pop.png
   - assets/playing-card.png
   - assets/google.jpg
-  - assets/football_bg.avif
+  - assets/football_bg.png
 
   fonts:
     - family: Fulbo

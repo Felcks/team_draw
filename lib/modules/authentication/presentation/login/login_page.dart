@@ -85,7 +85,7 @@ class _LoginPageState extends State<LoginPage> {
               decoration: BoxDecoration(
                 image: DecorationImage(
                   fit: BoxFit.cover,
-                  image: const AssetImage('assets/football_bg.avif'),
+                  image: const AssetImage('assets/football_bg.png'),
                   colorFilter: ColorFilter.mode(
                     Colors.green.withOpacity(.25),
                     BlendMode.colorBurn,
