@@ -38,6 +38,7 @@ class _LoginPageState extends State<LoginPage> {
     super.initState();
 
     authStateChanges.listen((User? user) {
+      print("script2 stateChanges $user");
       if (user != null) {
         String? authenticationId = user.uid;
         _userRepository.getUser(authenticationId).then(
@@ -177,8 +178,14 @@ class _LoginPageState extends State<LoginPage> {
       loggedUser = appUser;
       FirebaseAuth.instance.currentUser?.getIdTokenResult(true);
 
-      await user.reload();
+      final credential2 = await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: _emailController.text,
+        password: _passwordController.text,
+      );
+      _signupError = "";
+      FirebaseAuth.instance.currentUser?.refreshToken;
     } on FirebaseAuthException catch (e) {
+      print("script2 error login $e");
       if (e.code == 'invalid-email') {
         setState(() {
           _signupError = "Email mal formatado";
