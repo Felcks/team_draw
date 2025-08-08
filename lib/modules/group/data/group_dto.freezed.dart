@@ -21,6 +21,7 @@ GroupDTO _$GroupDTOFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$GroupDTO {
   String get id => throw _privateConstructorUsedError;
+  String get userId => throw _privateConstructorUsedError;
   String get title => throw _privateConstructorUsedError;
   String get local => throw _privateConstructorUsedError;
   String? get image => throw _privateConstructorUsedError;
@@ -41,6 +42,7 @@ abstract class $GroupDTOCopyWith<$Res> {
   @useResult
   $Res call(
       {String id,
+      String userId,
       String title,
       String local,
       String? image,
@@ -63,6 +65,7 @@ class _$GroupDTOCopyWithImpl<$Res, $Val extends GroupDTO>
   @override
   $Res call({
     Object? id = null,
+    Object? userId = null,
     Object? title = null,
     Object? local = null,
     Object? image = freezed,
@@ -74,6 +77,10 @@ class _$GroupDTOCopyWithImpl<$Res, $Val extends GroupDTO>
       id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      userId: null == userId
+          ? _value.userId
+          : userId // ignore: cast_nullable_to_non_nullable
               as String,
       title: null == title
           ? _value.title
@@ -112,6 +119,7 @@ abstract class _$$_GroupDTOCopyWith<$Res> implements $GroupDTOCopyWith<$Res> {
   @useResult
   $Res call(
       {String id,
+      String userId,
       String title,
       String local,
       String? image,
@@ -132,6 +140,7 @@ class __$$_GroupDTOCopyWithImpl<$Res>
   @override
   $Res call({
     Object? id = null,
+    Object? userId = null,
     Object? title = null,
     Object? local = null,
     Object? image = freezed,
@@ -143,6 +152,10 @@ class __$$_GroupDTOCopyWithImpl<$Res>
       id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      userId: null == userId
+          ? _value.userId
+          : userId // ignore: cast_nullable_to_non_nullable
               as String,
       title: null == title
           ? _value.title
@@ -177,6 +190,7 @@ class __$$_GroupDTOCopyWithImpl<$Res>
 class _$_GroupDTO implements _GroupDTO {
   const _$_GroupDTO(
       {required this.id,
+      required this.userId,
       required this.title,
       required this.local,
       required this.image,
@@ -189,6 +203,8 @@ class _$_GroupDTO implements _GroupDTO {
 
   @override
   final String id;
+  @override
+  final String userId;
   @override
   final String title;
   @override
@@ -204,7 +220,7 @@ class _$_GroupDTO implements _GroupDTO {
 
   @override
   String toString() {
-    return 'GroupDTO(id: $id, title: $title, local: $local, image: $image, startTime: $startTime, endTime: $endTime, weekDay: $weekDay)';
+    return 'GroupDTO(id: $id, userId: $userId, title: $title, local: $local, image: $image, startTime: $startTime, endTime: $endTime, weekDay: $weekDay)';
   }
 
   @override
@@ -213,6 +229,7 @@ class _$_GroupDTO implements _GroupDTO {
         (other.runtimeType == runtimeType &&
             other is _$_GroupDTO &&
             (identical(other.id, id) || other.id == id) &&
+            (identical(other.userId, userId) || other.userId == userId) &&
             (identical(other.title, title) || other.title == title) &&
             (identical(other.local, local) || other.local == local) &&
             (identical(other.image, image) || other.image == image) &&
@@ -224,8 +241,8 @@ class _$_GroupDTO implements _GroupDTO {
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(
-      runtimeType, id, title, local, image, startTime, endTime, weekDay);
+  int get hashCode => Object.hash(runtimeType, id, userId, title, local, image,
+      startTime, endTime, weekDay);
 
   @JsonKey(ignore: true)
   @override
@@ -244,6 +261,7 @@ class _$_GroupDTO implements _GroupDTO {
 abstract class _GroupDTO implements GroupDTO {
   const factory _GroupDTO(
       {required final String id,
+      required final String userId,
       required final String title,
       required final String local,
       required final String? image,
@@ -255,6 +273,8 @@ abstract class _GroupDTO implements GroupDTO {
 
   @override
   String get id;
+  @override
+  String get userId;
   @override
   String get title;
   @override

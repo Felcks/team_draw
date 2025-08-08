@@ -8,6 +8,7 @@ part of 'group_dto.dart';
 
 _$_GroupDTO _$$_GroupDTOFromJson(Map<String, dynamic> json) => _$_GroupDTO(
       id: json['id'] as String,
+      userId: json['userId'] as String,
       title: json['title'] as String,
       local: json['local'] as String,
       image: json['image'] as String?,
@@ -19,6 +20,7 @@ _$_GroupDTO _$$_GroupDTOFromJson(Map<String, dynamic> json) => _$_GroupDTO(
 Map<String, dynamic> _$$_GroupDTOToJson(_$_GroupDTO instance) =>
     <String, dynamic>{
       'id': instance.id,
+      'userId': instance.userId,
       'title': instance.title,
       'local': instance.local,
       'image': instance.image,

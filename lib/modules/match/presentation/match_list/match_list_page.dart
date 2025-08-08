@@ -9,6 +9,7 @@ import '../../../group/domain/models/group.dart';
 
 class MatchListPage extends StatefulWidget {
   final Group group;
+
   const MatchListPage({Key? key, required this.group}) : super(key: key);
 
   @override
@@ -16,7 +17,6 @@ class MatchListPage extends StatefulWidget {
 }
 
 class _MatchListPageState extends State<MatchListPage> {
-
   MatchRepository matchRepository = MatchRepositoryImpl();
   GenerateNextMatchUseCase _generateNextMatchUseCase = GenerateNextMatchUseCaseImpl();
 
@@ -28,8 +28,9 @@ class _MatchListPageState extends State<MatchListPage> {
   void initState() {
     super.initState();
 
-    _matchUpdateUnregister = matchRepository.listenMatches((list) {
+    _matchUpdateUnregister = matchRepository.listenMatches(widget.group.id, (list) {
       setState(() {
+        list.sort((a, b) => b.date.compareTo(a.date));
         _matches = list;
       });
     });
@@ -44,27 +45,21 @@ class _MatchListPageState extends State<MatchListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text(
+          "Partidas",
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+        ),
+      ),
       body: SafeArea(
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Column(
             children: [
               Expanded(
-                flex: 1,
-                child: Row(
-                  children: [
-                    Text(
-                      "Partidas",
-                      style: TextStyle(fontSize: 22),
-                      textAlign: TextAlign.start,
-                    ),
-                  ],
-                ),
-              ),
-              Expanded(
                 flex: 10,
                 child: GridView.builder(
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
                     crossAxisSpacing: 8,
                     mainAxisSpacing: 8,
@@ -86,33 +81,29 @@ class _MatchListPageState extends State<MatchListPage> {
                         },
                       );
                     } else {
-                      return Stack(
-                        children: [
-                          Container(
-                            decoration: BoxDecoration(
-                              borderRadius: new BorderRadius.circular(32.0),
-                              shape: BoxShape.rectangle,
-                              color: Colors.grey.withOpacity(0.1),
-                            ),
+                      return Card(
+                        child: InkWell(
+                          onTap: () async {
+                            bool result = await _generateNextMatchUseCase.invoke(
+                                widget.group
+                            );
+
+                            if (result == false) {
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(const SnackBar(content: Text("Já existe partida em andamento")));
+                            }
+                          },
+                          child: const Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.add,
+                                size: 48,
+                              ),
+                              Text("Gerar partida")
+                            ],
                           ),
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                IconButton(
-                                  onPressed: () {
-                                    _generateNextMatchUseCase.invoke(widget.group, _matches.lastOrNull?.date ?? DateTime.now());
-                                  },
-                                  icon: Icon(
-                                    Icons.add,
-                                    size: 48,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
+                        ),
                       );
                     }
                   },

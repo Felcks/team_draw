@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:team_randomizer/modules/match/domain/models/match.dart';
 import 'package:team_randomizer/modules/match/domain/models/match_player.dart';
 import 'package:team_randomizer/modules/match/domain/models/match_player_status.dart';
 import 'package:team_randomizer/modules/match/domain/repositories/match_player_repository.dart';
 import 'package:team_randomizer/modules/player/domain/player_repository.dart';
+import 'package:team_randomizer/modules/player/presentation/match_player_widget.dart';
 import 'package:team_randomizer/modules/team/presentation/new_team_draw_page.dart';
 
-import '../../../player/presentation/new_player_widget.dart';
 import '../../../stopwatch/presentation/timer_page.dart';
 
 class MatchHomePage extends StatefulWidget {
@@ -23,7 +24,7 @@ class _MatchHomePageState extends State<MatchHomePage> {
 
   List<MatchPlayer> _matchPlayers = List.empty(growable: true);
   PlayerRepository playerRepository = PlayerRepositoryImpl();
-  MatchPlayerRepository _matchPlayerRepository = MatchPlayerRepositoryImpl();
+  final MatchPlayerRepository _matchPlayerRepository = MatchPlayerRepositoryImpl();
   bool _listeningPlayersChange = false;
 
   Function() _matchPlayerUpdateUnregister = () {};
@@ -33,7 +34,8 @@ class _MatchHomePageState extends State<MatchHomePage> {
   void initState() {
     super.initState();
 
-    _matchPlayerUpdateUnregister = _matchPlayerRepository.listenMatchPlayers(widget.match.id, (list) {
+    _matchPlayerUpdateUnregister =
+        _matchPlayerRepository.listenMatchPlayers(widget.match.groupId, widget.match.id, (list) {
       setState(() {
         _matchPlayers = list;
         if (!_listeningPlayersChange) {
@@ -52,7 +54,7 @@ class _MatchHomePageState extends State<MatchHomePage> {
   }
 
   void listenToPlayersChange() {
-    _playerUpdateUnregister = playerRepository.listenPlayers((list) {
+    _playerUpdateUnregister = playerRepository.listenPlayers(widget.match.groupId, (list) {
       list.forEach((element) {
         //adding status to a player that wasn't there
         List<String> playersIdOnMatchPlayers = _matchPlayers.map((e) => e.player.id).toList();
@@ -68,6 +70,12 @@ class _MatchHomePageState extends State<MatchHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          "Partida ${DateFormat("EEEE (dd/MM)").format(widget.match.date)}",
+          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+        ),
+      ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: (int index) {
@@ -78,56 +86,56 @@ class _MatchHomePageState extends State<MatchHomePage> {
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Jogadores'),
           BottomNavigationBarItem(icon: Icon(Icons.abc_outlined), label: 'Times'),
-          BottomNavigationBarItem(icon: Icon(Icons.hourglass_bottom), label: 'Cronometro'),
+          //BottomNavigationBarItem(icon: Icon(Icons.hourglass_bottom), label: 'Cronometro'),
         ],
       ),
       body: (_selectedIndex == 0)
           ? playersListWidget()
           : (_selectedIndex == 1)
               ? NewTeamDrawPage(match: widget.match) //TeamDrawPage(game: widget.match)
-              : TimerPage(),
+              : const TimerPage(),
     );
   }
 
   Widget playersListWidget() {
-    MatchPlayerStatus selectedMatchPlayerStatus = MatchPlayerStatus.NOT_CONFIRMED;
     return SafeArea(
       child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Expanded(
-              flex: 1,
-              child: Row(
-                children: [
-                  Text(
-                    "Jogadores",
-                    style: TextStyle(fontSize: 22),
-                  ),
-                ],
-              ),
-            ),
-            Expanded(
-              flex: 10,
-              child: ListView.builder(
-                padding: EdgeInsets.zero,
-                itemCount: _matchPlayers.length,
-                itemBuilder: (context, index) {
-                  MatchPlayer gamePlayer = _matchPlayers[index];
-                  return SizedBox(
-                    height: 85,
-                    child: Stack(
-                      fit: StackFit.passthrough,
-                      children: [
-                        Align(
-                          alignment: Alignment.topCenter,
-                          child: SizedBox(
-                            height: 85,
-                            child: NewPlayerWidget(player: gamePlayer.player),
-                          ),
-                        ),
-                        Positioned.fill(
+            (_matchPlayers.isEmpty)
+                ? const Expanded(
+                    child: Center(
+                        child: Text(
+                    "Nenhum jogador adicionado, adicione jogadores em detalhes do grupo.",
+                    textAlign: TextAlign.center,
+                  )))
+                : Expanded(
+                    flex: 10,
+                    child: ListView.builder(
+                      padding: EdgeInsets.zero,
+                      itemCount: _matchPlayers.length,
+                      itemBuilder: (context, index) {
+                        MatchPlayer gamePlayer = _matchPlayers[index];
+                        return SizedBox(
+                          height: 85,
+                          child: Stack(
+                            fit: StackFit.passthrough,
+                            children: [
+                              Align(
+                                alignment: Alignment.topCenter,
+                                child: SizedBox(
+                                  height: 85,
+                                  child: MatchPlayerWidget(
+                                    matchPlayer: gamePlayer,
+                                    onMatchPlayerStatusUpdate: (player) {
+                                      _matchPlayerRepository.editMatchPlayer(player);
+                                    },
+                                  ),
+                                ),
+                              ),
+                              /*Positioned.fill(
                           child: Padding(
                             padding: const EdgeInsets.only(top: 8.0),
                             child: Container(
@@ -138,8 +146,8 @@ class _MatchHomePageState extends State<MatchHomePage> {
                               ),
                             ),
                           ),
-                        ),
-                        Positioned(
+                        ),*/
+                              /*Positioned(
                           left: 120,
                           top: 40,
                           child: PopupMenuButton<MatchPlayerStatus>(
@@ -173,21 +181,21 @@ class _MatchHomePageState extends State<MatchHomePage> {
                               ),
                             ],
                           ),
-                        ),
-                        Positioned(
+                        ),*/
+                              /*Positioned(
                           left: 15,
                           top: 55,
                           child: Text(
                             "(${gamePlayer.status.value})",
                             style: TextStyle(fontSize: 12),
                           ),
-                        )
-                      ],
+                        )*/
+                            ],
+                          ),
+                        );
+                      },
                     ),
-                  );
-                },
-              ),
-            ),
+                  ),
           ],
         ),
       ),

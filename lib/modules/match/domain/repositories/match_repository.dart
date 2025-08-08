@@ -7,7 +7,12 @@ abstract class MatchRepository {
 
   void editMatch(Match input);
 
-  void Function() listenMatches(onValue(List<Match> list));
+  void Function() listenMatches(
+    String groupId,
+    Function(List<Match> list) onValue,
+  );
+
+  Future<List<Match>> getMatches(String groupId);
 }
 
 class MatchRepositoryImpl extends MatchRepository {
@@ -21,10 +26,8 @@ class MatchRepositoryImpl extends MatchRepository {
       dateInMillis: input.date.millisecondsSinceEpoch,
     );
 
-    _db
-        .collection("matches")
-        .add(dto.toJson())
-        .then((DocumentReference doc) => print('DocumentSnapshot added with ID: ${doc.id}'));
+    _db.collection("matches").add(dto.toJson()).then((DocumentReference doc) =>
+        print('DocumentSnapshot added with ID: ${doc.id}'));
   }
 
   @override
@@ -35,19 +38,25 @@ class MatchRepositoryImpl extends MatchRepository {
       dateInMillis: input.date.millisecondsSinceEpoch,
     );
 
-    _db
-        .collection("matches")
-        .add(dto.toJson())
-        .then((DocumentReference doc) => print('DocumentSnapshot added with ID: ${doc.id}'));
+    _db.collection("matches").add(dto.toJson()).then((DocumentReference doc) =>
+        print('DocumentSnapshot added with ID: ${doc.id}'));
   }
 
   @override
-  void Function() listenMatches(Function(List<Match> list) onValue) {
-    final subscription = _db.collection("matches").snapshots().listen((event) {
+  void Function() listenMatches(
+      String groupId, Function(List<Match> list) onValue) {
+    final subscription = _db
+        .collection("matches")
+        .where("groupId", isEqualTo: groupId)
+        .snapshots()
+        .listen((event) {
       final result = event.docs.map(
         (doc) {
           MatchDTO dto = MatchDTO.fromJson(doc.data());
-          return Match(id: dto.id, groupId: dto.groupId, date: DateTime.fromMillisecondsSinceEpoch(dto.dateInMillis));
+          return Match(
+              id: dto.id,
+              groupId: dto.groupId,
+              date: DateTime.fromMillisecondsSinceEpoch(dto.dateInMillis));
         },
       );
 
@@ -55,5 +64,20 @@ class MatchRepositoryImpl extends MatchRepository {
     });
 
     return () => subscription.cancel();
+  }
+
+  @override
+  Future<List<Match>> getMatches(String groupId) async {
+    final value = await _db
+        .collection("matches")
+        .where("groupId", isEqualTo: groupId)
+        .get();
+    return value.docs.map((doc) {
+      MatchDTO dto = MatchDTO.fromJson(doc.data());
+      return Match(
+          id: dto.id,
+          groupId: dto.groupId,
+          date: DateTime.fromMillisecondsSinceEpoch(dto.dateInMillis));
+    }).toList();
   }
 }

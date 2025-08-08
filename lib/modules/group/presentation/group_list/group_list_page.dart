@@ -1,9 +1,15 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:team_randomizer/main.dart';
+import 'package:team_randomizer/modules/authentication/presentation/login/login_page.dart';
+import 'package:team_randomizer/modules/core/window_size_class.dart';
 import 'package:team_randomizer/modules/group/presentation/group_creation/group_creation.dart';
 import 'package:team_randomizer/modules/group/presentation/group_home/group_home_page.dart';
 import 'package:team_randomizer/modules/group/presentation/group_list/group_widget.dart';
 import 'package:team_randomizer/modules/group/domain/repositories/group_repository.dart';
 
+import '../../../authentication/domain/repositories/user_repository.dart';
 import '../../domain/models/group.dart';
 
 class GroupListPage extends StatefulWidget {
@@ -23,10 +29,10 @@ class _GroupListPageState extends State<GroupListPage> {
   @override
   void initState() {
     super.initState();
+    initializeDateFormatting();
 
     _groupListUnregister = repositoryImpl.listenGroups((list) {
       setState(() {
-        print(list);
         _groups = list;
       });
     });
@@ -40,46 +46,78 @@ class _GroupListPageState extends State<GroupListPage> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(
-
-        ),
-        body: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Expanded(
-                flex: 1,
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Grupos",
-                      style: TextStyle(fontSize: 24, fontWeight: FontWeight.normal),
-                      textAlign: TextAlign.start,
-                    ),
-                  ],
+    return Scaffold(
+      appBar: AppBar(
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Visibility(
+              visible: false,
+              maintainSize: true,
+              maintainAnimation: true,
+              maintainState: true,
+              child: TextButton(
+                child: const Text(
+                  "Invisible",
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                 ),
+                onPressed: () {},
               ),
-              Expanded(
-                flex: 10,
-                child: _groupList(),
+            ),
+            const Text(
+              "Grupos",
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
+            TextButton(
+              child: const Text(
+                "Sair",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
               ),
-            ],
-          ),
+              onPressed: () async {
+                loggedUser = null;
+                await FirebaseAuth.instance.signOut();
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(
+                    builder: (context) => const LoginPage(),
+                  ),
+                    (r) => false,
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Expanded(
+              flex: 10,
+              child: _groupList(),
+            ),
+          ],
         ),
       ),
     );
   }
 
+
+
   Widget _groupList() {
+    WindowSizeClass widthSizeClass = getWidthWindowSizeClass(context);
+    int rows = 1;
+    if(widthSizeClass == WindowSizeClass.MEDIUM) {
+      rows = 1;
+    } else if(widthSizeClass == WindowSizeClass.EXPANDED) {
+      rows = 1;
+    }
+
     return GridView.builder(
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 8,
-        mainAxisSpacing: 8,
+        crossAxisCount: rows,
+        crossAxisSpacing: 2,
+        mainAxisSpacing: 4,
       ),
       itemCount: _groups.length + 1,
       itemBuilder: (context, index) {
@@ -105,37 +143,33 @@ class _GroupListPageState extends State<GroupListPage> {
   }
 
   Widget _createGroupWidget() {
-    return Stack(
-      children: [
-        Container(
-          decoration: BoxDecoration(
-            borderRadius: new BorderRadius.circular(32.0),
-            shape: BoxShape.rectangle,
-            color: Colors.grey.withOpacity(0.1),
+    return InkWell(
+      onTap: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => const GroupCreation(),
           ),
-        ),
-        Align(
-          alignment: Alignment.centerLeft,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              IconButton(
-                icon: Icon(
+        );
+      },
+      child: Card(
+        child: Stack(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16.0),
+                shape: BoxShape.rectangle,
+                color: Colors.grey.withOpacity(0.1),
+              ),
+              child: const Center(
+                child: Icon(
                   Icons.add,
                   size: 48,
                 ),
-                onPressed: () async {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => GroupCreation(),
-                    ),
-                  );
-                },
               ),
-            ],
-          ),
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 }

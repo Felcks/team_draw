@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:team_randomizer/main.dart';
 import 'package:team_randomizer/modules/match/domain/models/game_date.dart';
 import 'package:team_randomizer/modules/group/domain/models/group.dart';
 import 'package:team_randomizer/modules/group/data/group_dto.dart';
@@ -23,6 +24,7 @@ class GroupRepositoryImpl extends GroupRepository {
   Future<void> createGroup(Group group) async {
     GroupDTO dto = GroupDTO(
       id: group.id,
+      userId: group.userId,
       title: group.title,
       local: group.local,
       image: group.image,
@@ -43,12 +45,13 @@ class GroupRepositoryImpl extends GroupRepository {
   }
 
   @override
-  void Function() listenGroups(onValue(List<Group> list)) {
-    final subscription = _db.collection("groups").snapshots().listen((event) {
+  void Function() listenGroups(Function(List<Group> list) onValue) {
+    final subscription = _db.collection("groups").where("userId", isEqualTo: loggedUser!.id).snapshots().listen((event) {
     final result = event.docs.map((doc) {
           GroupDTO groupDTO = GroupDTO.fromJson(doc.data());
           return Group(
             id: groupDTO.id,
+            userId: groupDTO.userId,
             title: groupDTO.title,
             startTime: TimeOfDay(
                 hour: int.parse(groupDTO.startTime.split(":")[0]),

@@ -9,7 +9,7 @@ import 'package:uuid/uuid.dart';
 class TeamDrawByOverallUseCase extends TeamDrawUseCase {
   @override
   List<SortedTeam> invoke(List<Player> players, int playersPerTeam) {
-    int amountOfTeamsToGenerate = (players.length / playersPerTeam).toInt();
+    int amountOfTeamsToGenerate = players.length ~/ playersPerTeam;
     List<SortedTeam> bestSortedTeams = generateTeams(players, amountOfTeamsToGenerate, playersPerTeam);
     double lowerStandardDerivation = calculateStandardDerivation(bestSortedTeams);
 

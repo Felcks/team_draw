@@ -1,9 +1,10 @@
+import 'package:intl/intl.dart';
+
 class GameDate {
   final int weekDay;
 
   GameDate({required this.weekDay});
 
-  @override
   DateTime getNextDate() {
     DateTime now = DateTime.now();
     while(now.weekday != weekDay) {
@@ -11,5 +12,9 @@ class GameDate {
     }
 
     return now;
+  }
+
+  String getNextDateFormatted() {
+    return DateFormat('EEEE (dd/MM)').format(getNextDate());
   }
 }

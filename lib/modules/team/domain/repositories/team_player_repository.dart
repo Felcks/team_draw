@@ -14,7 +14,7 @@ abstract class TeamPlayerRepository {
 
   void deleteTeamPlayer(TeamPlayer input);
 
-  void Function() listenTeamPlayers(String matchId, onValue(List<TeamPlayer> list));
+  void Function() listenTeamPlayers(String groupId, String matchId, onValue(List<TeamPlayer> list));
 }
 
 class TeamPlayerRepositoryImpl extends TeamPlayerRepository {
@@ -50,9 +50,9 @@ class TeamPlayerRepositoryImpl extends TeamPlayerRepository {
   }
 
   @override
-  void Function() listenTeamPlayers(String matchId, Function(List<TeamPlayer> list) onValue) {
+  void Function() listenTeamPlayers(String groupId, String matchId, Function(List<TeamPlayer> list) onValue) {
     final subscription = _db.collection("team_player").where("matchId", isEqualTo: matchId).snapshots().listen((event) async {
-      final players = await playerRepository.getPlayers();
+      final players = await playerRepository.getPlayers(groupId);
       final teams = await teamRepository.getTeams();
       final result = event.docs.map(
             (doc) {
@@ -61,6 +61,14 @@ class TeamPlayerRepositoryImpl extends TeamPlayerRepository {
           );
 
           Player player = players.firstWhere((element) => element.id == dto.playerId);
+          if(!teams.map((e) => e.id).contains(dto.teamId)) {
+            return TeamPlayer(
+              player: player,
+              team: teams.first,
+              matchId: dto.matchId,
+            );
+          }
+
           Team team = teams.firstWhere((element) => element.id == dto.teamId);
 
           return TeamPlayer(

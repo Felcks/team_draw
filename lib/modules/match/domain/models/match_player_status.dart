@@ -1,8 +1,8 @@
 enum MatchPlayerStatus {
-  CANCELLED("Cancelado"),
+  CANCELLED("Cancelou"),
   NOT_CONFIRMED("Não confirmou"),
   CONFIRMED("Confirmado"),
-  READY("Pronto");
+  READY("Pronto / Em campo");
 
   final String value;
   const MatchPlayerStatus(this.value);

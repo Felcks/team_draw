@@ -7,9 +7,9 @@ abstract class PlayerRepository {
 
   void editPlayer(Player player);
 
-  void Function() listenPlayers(onValue(List<Player> list));
+  void Function() listenPlayers(String groupId, Function(List<Player> list) onValue);
 
-  Future<List<Player>> getPlayers();
+  Future<List<Player>> getPlayers(String groupId);
 }
 
 class PlayerRepositoryImpl extends PlayerRepository {
@@ -47,8 +47,8 @@ class PlayerRepositoryImpl extends PlayerRepository {
   }
 
   @override
-  void Function() listenPlayers(onValue(List<Player> list)) {
-    final subscription = _db.collection("players").snapshots().listen((event) {
+  void Function() listenPlayers(String groupId, Function(List<Player> list) onValue) {
+    final subscription = _db.collection("players").where("groupId", isEqualTo: groupId).snapshots().listen((event) {
       final result = event.docs.map(
             (doc) {
           PlayerDTO dto = PlayerDTO.fromJson(doc.data());
@@ -68,8 +68,8 @@ class PlayerRepositoryImpl extends PlayerRepository {
   }
 
   @override
-  Future<List<Player>> getPlayers() async {
-    final value = await _db.collection("players").get();
+  Future<List<Player>> getPlayers(String groupId) async {
+    final value = await _db.collection("players").where("groupId", isEqualTo: groupId).get();
     return value.docs.map((doc) {
       PlayerDTO dto = PlayerDTO.fromJson(doc.data());
       return Player(

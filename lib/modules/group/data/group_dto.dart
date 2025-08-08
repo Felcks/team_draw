@@ -9,6 +9,7 @@ class GroupDTO with  _$GroupDTO {
 
   const factory GroupDTO({
     required String id,
+    required String userId,
     required String title,
     required String local,
     required String? image,
