@@ -42,7 +42,7 @@ class _LoginPageState extends State<LoginPage> {
       if (user != null) {
         String? authenticationId = user.uid;
         _userRepository.getUser(authenticationId).then(
-          (value) {
+              (value) {
             if (value.isEmpty) {
               loggedUser = null;
               FirebaseAuth.instance.signOut();
@@ -53,7 +53,7 @@ class _LoginPageState extends State<LoginPage> {
                 MaterialPageRoute(
                   builder: (context) => const GroupListPage(),
                 ),
-                (r) => false,
+                    (r) => false,
               );
             }
           },
@@ -73,11 +73,16 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    Size deviceSize = MediaQuery.of(context).size;
+    Size deviceSize = MediaQuery
+        .of(context)
+        .size;
 
     return WillPopScope(
       child: Scaffold(
-        backgroundColor: Theme.of(context).colorScheme.background,
+        backgroundColor: Theme
+            .of(context)
+            .colorScheme
+            .background,
         body: Stack(
           children: <Widget>[
             Container(
@@ -99,18 +104,18 @@ class _LoginPageState extends State<LoginPage> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: (showProgressBar)
                   ? [
-                      const Center(
-                          child: CircularProgressIndicator(
-                        color: Colors.white,
-                      ))
-                    ]
+                const Center(
+                    child: CircularProgressIndicator(
+                      color: Colors.white,
+                    ))
+              ]
                   : <Widget>[
-                      const Text(
-                        "Jogo Organizado",
-                        style: TextStyle(color: Colors.white, fontSize: 40, fontFamily: "Varane"),
-                      ),
-                      (_isSignUp) ? signUpForms() : loginForms(),
-                    ],
+                const Text(
+                  "Jogo Organizado",
+                  style: TextStyle(color: Colors.white, fontSize: 40, fontFamily: "Varane"),
+                ),
+                (_isSignUp) ? signUpForms() : loginForms(),
+              ],
             ),
           ],
         ),
@@ -173,7 +178,7 @@ class _LoginPageState extends State<LoginPage> {
       await user!.updateDisplayName(_nameController.text);
 
       AppUser.User appUser =
-          AppUser.User(id: const Uuid().v4(), authenticationId: user.uid, name: _nameController.text);
+      AppUser.User(id: const Uuid().v4(), authenticationId: user.uid, name: _nameController.text);
       _userRepository.createUser(appUser);
       loggedUser = appUser;
       FirebaseAuth.instance.currentUser?.getIdTokenResult(true);
@@ -299,7 +304,10 @@ class _LoginPageState extends State<LoginPage> {
                 child: InkWell(
                   child: Container(
                     decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(16), color: Theme.of(context).colorScheme.primary),
+                        borderRadius: BorderRadius.circular(16), color: Theme
+                        .of(context)
+                        .colorScheme
+                        .primary),
                     child: Padding(
                       padding: const EdgeInsets.all(16),
                       child: Center(
@@ -312,7 +320,10 @@ class _LoginPageState extends State<LoginPage> {
                               style: TextStyle(
                                   fontSize: 16.0,
                                   fontWeight: FontWeight.bold,
-                                  color: Theme.of(context).colorScheme.onPrimary),
+                                  color: Theme
+                                      .of(context)
+                                      .colorScheme
+                                      .onPrimary),
                             ),
                           ],
                         ),
@@ -374,14 +385,11 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                   onTap: () async {
-                    signInWithGoogle().then((User? user) {
-                      /*model.clearAllModels();
-                                  Navigator.of(context).pushNamedAndRemoveUntil
-                                    (RouteName.Home, (Route<dynamic> route) => false
-                                  );*/
-                    }).catchError((e) {
-                      print(e);
-                    });
+                    // Adjust this signin someday
+                    // signInWithGoogle().then((User? user) {
+                    // }).catchError((e) {
+                    //   print(e);
+                    // });
                   },
                 ),
               ),
@@ -565,7 +573,10 @@ class _LoginPageState extends State<LoginPage> {
                 child: InkWell(
                   child: Container(
                     decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(16), color: Theme.of(context).colorScheme.primary),
+                        borderRadius: BorderRadius.circular(16), color: Theme
+                        .of(context)
+                        .colorScheme
+                        .primary),
                     child: Padding(
                       padding: const EdgeInsets.all(16),
                       child: Center(
@@ -578,7 +589,10 @@ class _LoginPageState extends State<LoginPage> {
                               style: TextStyle(
                                   fontSize: 16.0,
                                   fontWeight: FontWeight.bold,
-                                  color: Theme.of(context).colorScheme.onPrimary),
+                                  color: Theme
+                                      .of(context)
+                                      .colorScheme
+                                      .onPrimary),
                             ),
                           ],
                         ),
@@ -628,37 +642,39 @@ class _LoginPageState extends State<LoginPage> {
     _loginError = "";
   }
 
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
-
-  Future<User?> signInWithGoogle() async {
-    GoogleSignInAccount? googleSignInAccount = await _googleSignIn.signIn();
-
-    if (googleSignInAccount == null) return null;
-
-    GoogleSignInAuthentication googleSignInAuthentication = await googleSignInAccount.authentication;
-
-    AuthCredential credential = GoogleAuthProvider.credential(
-      accessToken: googleSignInAuthentication.accessToken,
-      idToken: googleSignInAuthentication.idToken,
-    );
-
-    UserCredential userCredential = await auth.signInWithCredential(credential);
-
-    User? _user = userCredential.user;
-
-    if (_user == null) return null;
-
-    assert(!_user.isAnonymous);
-
-    assert(await _user.getIdToken() != null);
-
-    User currentUser = await auth.currentUser!;
-
-    assert(_user.uid == currentUser.uid);
-
-    print("User Name: ${_user.displayName}");
-    print("User Email ${_user.email}");
-
-    return _user;
-  }
+  final GoogleSignIn _googleSignIn = GoogleSignIn.instance;
 }
+
+// Adjust google signin someday https://pub.dev/packages/google_sign_in/example
+//   Future<User?> signInWithGoogle() async {
+//     GoogleSignInAccount? googleSignInAccount = await _googleSignIn.signIn();
+//
+//     if (googleSignInAccount == null) return null;
+//
+//     GoogleSignInAuthentication googleSignInAuthentication = await googleSignInAccount.authentication;
+//
+//     AuthCredential credential = GoogleAuthProvider.credential(
+//       accessToken: googleSignInAuthentication.accessToken,
+//       idToken: googleSignInAuthentication.idToken,
+//     );
+//
+//     UserCredential userCredential = await auth.signInWithCredential(credential);
+//
+//     User? _user = userCredential.user;
+//
+//     if (_user == null) return null;
+//
+//     assert(!_user.isAnonymous);
+//
+//     assert(await _user.getIdToken() != null);
+//
+//     User currentUser = await auth.currentUser!;
+//
+//     assert(_user.uid == currentUser.uid);
+//
+//     print("User Name: ${_user.displayName}");
+//     print("User Email ${_user.email}");
+//
+//     return _user;
+//   }
+// }
